@@ -1,24 +1,13 @@
 {
-  "editor.defaultFormatter": "oxc.oxc-vscode",
-
-  // 保存时自动格式化
-  "editor.formatOnSave": true,
-
-  // 保存时触发 code action
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "always"
+  "chat.promptFilesRecommendations": {
+    "speckit.constitution": true,
+    "speckit.specify": true,
+    "speckit.plan": true,
+    "speckit.tasks": true,
+    "speckit.implement": true
   },
-
-  // 👇 关键：为 vue 单独指定
-  "[vue]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-
-  // 顺手也加上
-  "[typescript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+  "chat.tools.terminal.autoApprove": {
+    ".specify/scripts/bash/": true,
+    ".specify/scripts/powershell/": true
   }
 }
