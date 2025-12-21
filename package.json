@@ -12,7 +12,8 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "prepare": "husky",
-    "commitlint": "commitlint --edit"
+    "commitlint": "commitlint --edit",
+    "test": "vitest"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
@@ -39,6 +40,7 @@
     "unplugin-auto-import": "^20.3.0",
     "unplugin-vue-components": "^30.0.0",
     "vite": "npm:rolldown-vite@7.2.5",
+    "vitest": "^4.0.16",
     "vue-tsc": "^3.1.4"
   },
   "lint-staged": {
