@@ -1,73 +1,145 @@
-# [PROJECT_NAME] Constitution
+<!--
+Sync Impact Report:
+- Version: 0.0.0 → 1.0.0
+- Modified principles: N/A (initial creation)
+- Added sections: All core principles (TypeScript Strictness, Code Quality, State Management, Testing Discipline, Production Observability)
+- Removed sections: N/A
+- Templates: ⚠ Will create templates/plan-template.md, spec-template.md, tasks-template.md as needed
+- Follow-up: None
+-->
 
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Project Constitution
+
+**Project Name:** Data Analysis Platform  
+**Constitution Version:** 1.0.0  
+**Ratification Date:** 2025-12-21  
+**Last Amended:** 2025-12-21
+
+---
+
+## Purpose
+
+This constitution establishes the non-negotiable technical and governance principles for the Data Analysis Platform. All contributors, features, and specifications MUST comply with these principles. Any deviation requires explicit amendment to this constitution.
+
+---
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
+### Principle 1: TypeScript Strict Mode
 
-<!-- Example: I. Library-First -->
+**Name:** TypeScript Strict Mode Enforcement
 
-[PRINCIPLE_1_DESCRIPTION]
+**Rule:**  
+All TypeScript code MUST be written with strict mode enabled (`strict: true` in tsconfig.json). No implicit `any`, no type assertions without justification, no unchecked index access. Type safety is non-negotiable.
 
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+**Rationale:**  
+Strict typing catches runtime errors at compile time, improves code maintainability, enables safe refactoring, and serves as living documentation. In a data analysis platform where data transformations are critical, type safety prevents data corruption and processing errors.
 
-### [PRINCIPLE_2_NAME]
+### Principle 2: Code Quality Gate
 
-<!-- Example: II. CLI Interface -->
+**Name:** Pre-commit Quality Enforcement
 
-[PRINCIPLE_2_DESCRIPTION]
+**Rule:**  
+Every commit MUST pass:
 
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- `oxlint` linting with zero errors
+- `oxfmt` formatting check
+- `vue-tsc` type check with zero errors
 
-### [PRINCIPLE_3_NAME]
+Git hooks (husky + lint-staged) enforce this automatically. No bypass allowed (no `--no-verify`).
 
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+**Rationale:**  
+Automated quality gates prevent technical debt accumulation. oxlint's performance enables fast feedback loops. Consistent formatting reduces code review friction. Type checking at commit time ensures the codebase remains compilable.
 
-[PRINCIPLE_3_DESCRIPTION]
+### Principle 3: Centralized State Management
 
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Name:** Pinia as Single Source of Truth
 
-### [PRINCIPLE_4_NAME]
+**Rule:**  
+All application state MUST be managed through Pinia stores. Component local state is only permitted for UI-specific ephemeral state (form inputs, animations). Cross-component shared state, data fetching results, and business logic state MUST reside in Pinia.
 
-<!-- Example: IV. Integration Testing -->
+Vue Router manages page routing exclusively; no custom routing logic allowed.
 
-[PRINCIPLE_4_DESCRIPTION]
+**Rationale:**  
+Centralized state makes data flow predictable and debuggable. Pinia's TypeScript integration ensures type-safe state access. Separating routing (vue-router) from state (Pinia) enforces clear separation of concerns. In data analysis workflows, maintaining state consistency across views is critical.
 
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### Principle 4: Testing Discipline
 
-### [PRINCIPLE_5_NAME]
+**Name:** Test-Driven Quality Assurance
 
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+**Rule:**  
+All features MUST include:
 
-[PRINCIPLE_5_DESCRIPTION]
+- Unit tests (vitest) covering business logic, store actions, and utility functions
+- E2E tests covering user workflows and critical paths
 
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Minimum coverage thresholds:
 
-## [SECTION_2_NAME]
+- Unit tests: 80% line coverage for src/stores, src/utils
+- E2E tests: 100% coverage of primary user journeys
 
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Tests MUST pass before merge. No feature is "done" without tests.
 
-[SECTION_2_CONTENT]
+**Rationale:**  
+Data analysis platforms handle sensitive data and complex transformations. Bugs in calculations or data processing can have severe consequences. Automated tests serve as executable specifications and regression safety nets. E2E tests validate the entire stack including UI interactions.
 
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Principle 5: Production Observability
 
-## [SECTION_3_NAME]
+**Name:** Sentry Error Tracking
 
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**Rule:**  
+Sentry MUST be integrated for all environments (development logs locally, staging/production report to Sentry). All async operations, API calls, and data processing pipelines MUST implement error boundaries and explicit error reporting to Sentry with contextual metadata (user ID, operation type, data snapshot).
 
-[SECTION_3_CONTENT]
+**Rationale:**  
+Production errors in data analysis workflows often go unnoticed until users report incorrect results. Proactive error monitoring enables rapid incident response. Contextual error data accelerates debugging. Sentry integration is non-negotiable for maintaining platform reliability.
 
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+---
 
 ## Governance
 
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### Amendment Process
 
-[GOVERNANCE_RULES]
+1. Propose amendment via Pull Request to this file
+2. Include rationale and impact analysis
+3. Version bump following semantic versioning:
+   - MAJOR: Breaking principle changes
+   - MINOR: New principles or material expansions
+   - PATCH: Clarifications or non-semantic edits
+4. Requires approval from project maintainer(s)
+5. Update `LAST_AMENDED` date to merge date
 
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Compliance Review
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+- Constitution compliance is checked during PR reviews
+- Automated checks enforce Principles 1, 2, 4 (via CI/CD)
+- Principle 3 and 5 compliance verified through code review
+- Monthly audit of principle adherence recommended
 
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### Versioning Policy
+
+- This constitution follows semantic versioning
+- Version history tracked via git history
+- Breaking changes to principles require migration guide
+
+---
+
+## Dependencies
+
+This constitution assumes the following technical stack:
+
+- **Framework:** Vue 3 (Composition API + `<script setup>`)
+- **Language:** TypeScript 5.9+
+- **Styling:** Tailwind CSS 4.x
+- **State:** Pinia 3.x
+- **Routing:** Vue Router 4.x
+- **Testing:** Vitest 4.x (unit + e2e)
+- **Quality:** oxlint 1.x + oxfmt 0.x
+- **Observability:** Sentry
+- **Build:** Vite (Rolldown variant)
+- **Package Manager:** pnpm 10.x
+
+Stack changes require constitutional amendment if principles are affected.
+
+---
+
+_This constitution is the source of truth for project governance. When in doubt, refer here._
