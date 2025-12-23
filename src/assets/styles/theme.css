@@ -1,0 +1,128 @@
+/**
+ * 主题变量定义
+ * 整合 Element Plus 和自定义变量，支持亮色/暗色模式
+ */
+
+/* ==================== 亮色模式 ==================== */
+:root {
+  /* 自定义主题色 */
+  --color-primary: #146eff;
+  --color-primary-light: #4d8fff;
+  --color-primary-dark: #0052cc;
+
+  /* 功能色 */
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-info: #909399;
+
+  /* 中性色 - 文本 */
+  --color-text-primary: #303133;
+  --color-text-regular: #606266;
+  --color-text-secondary: #909399;
+  --color-text-placeholder: #c0c4cc;
+
+  /* 中性色 - 边框 */
+  --color-border: #dcdfe6;
+  --color-border-light: #e4e7ed;
+  --color-border-lighter: #ebeef5;
+
+  /* 中性色 - 背景 */
+  --color-background: #f5f7fa;
+  --color-background-light: #fafafa;
+
+  /* Element Plus 主题色覆盖 */
+  --el-color-primary: #146eff;
+  --el-color-primary-light-3: #4d8fff;
+  --el-color-primary-light-5: #8bb4ff;
+  --el-color-primary-light-7: #b8d3ff;
+  --el-color-primary-light-8: #d6e6ff;
+  --el-color-primary-light-9: #ebf3ff;
+  --el-color-primary-dark-2: #0052cc;
+}
+
+/* ==================== 暗色模式 ==================== */
+/* 使用 class 选择器 (Tailwind) */
+.dark {
+  /* 中性色 - 文本 */
+  --color-text-primary: #e5e7eb;
+  --color-text-regular: #d1d5db;
+  --color-text-secondary: #9ca3af;
+  --color-text-placeholder: #6b7280;
+
+  /* 中性色 - 边框 */
+  --color-border: #4b5563;
+  --color-border-light: #374151;
+  --color-border-lighter: #1f2937;
+
+  /* 中性色 - 背景 */
+  --color-background: #1f2937;
+  --color-background-light: #111827;
+
+  /* Element Plus 暗色模式变量 */
+  --el-bg-color: #1f2937;
+  --el-bg-color-page: #111827;
+  --el-bg-color-overlay: #1f2937;
+  --el-text-color-primary: #e5e7eb;
+  --el-text-color-regular: #d1d5db;
+  --el-text-color-secondary: #9ca3af;
+  --el-text-color-placeholder: #6b7280;
+  --el-border-color: #4b5563;
+  --el-border-color-light: #374151;
+  --el-border-color-lighter: #1f2937;
+  --el-fill-color-blank: #1f2937;
+  --el-fill-color: #374151;
+  --el-fill-color-light: #4b5563;
+  --el-fill-color-lighter: #6b7280;
+}
+
+/* 使用 data-theme 属性 (兼容性) */
+:root[data-theme='dark'] {
+  /* 中性色 - 文本 */
+  --color-text-primary: #e5e7eb;
+  --color-text-regular: #d1d5db;
+  --color-text-secondary: #9ca3af;
+  --color-text-placeholder: #6b7280;
+
+  /* 中性色 - 边框 */
+  --color-border: #4b5563;
+  --color-border-light: #374151;
+  --color-border-lighter: #1f2937;
+
+  /* 中性色 - 背景 */
+  --color-background: #1f2937;
+  --color-background-light: #111827;
+
+  /* Element Plus 暗色模式变量 */
+  --el-bg-color: #1f2937;
+  --el-bg-color-page: #111827;
+  --el-bg-color-overlay: #1f2937;
+  --el-text-color-primary: #e5e7eb;
+  --el-text-color-regular: #d1d5db;
+  --el-text-color-secondary: #9ca3af;
+  --el-text-color-placeholder: #6b7280;
+  --el-border-color: #4b5563;
+  --el-border-color-light: #374151;
+  --el-border-color-lighter: #1f2937;
+  --el-fill-color-blank: #1f2937;
+  --el-fill-color: #374151;
+  --el-fill-color-light: #4b5563;
+  --el-fill-color-lighter: #6b7280;
+}
+
+/* nprogress 样式定制 */
+#nprogress .bar {
+  background: var(--color-primary) !important;
+  height: 3px !important;
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--color-primary),
+    0 0 5px var(--color-primary) !important;
+}
+
+#nprogress .spinner-icon {
+  border-top-color: var(--color-primary) !important;
+  border-left-color: var(--color-primary) !important;
+}

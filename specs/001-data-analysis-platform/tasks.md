@@ -28,32 +28,32 @@
 
 ### 安装依赖
 
-- [ ] T001 安装 nprogress 依赖：`pnpm add nprogress && pnpm add -D @types/nprogress`
-- [ ] T002 [P] 安装 @sentry/vue 依赖（可选）：`pnpm add @sentry/vue`
+- [x] T001 安装 nprogress 依赖：`pnpm add nprogress && pnpm add -D @types/nprogress`
+- [x] T002 [P] 安装 @sentry/vue 依赖（可选）：`pnpm add @sentry/vue`
 
 ### 目录结构创建
 
-- [ ] T003 创建 src/api 目录（API 接口定义）
-- [ ] T004 创建 src/assets/styles 目录（全局样式和主题）
-- [ ] T005 创建 src/components 目录（可复用组件）
-- [ ] T006 创建 src/composables 目录（组合式函数）
-- [ ] T007 创建 src/layouts 目录（布局组件）
-- [ ] T008 创建 src/router 目录（路由配置）
-- [ ] T009 创建 src/stores 目录（Pinia 状态管理）
-- [ ] T010 创建 src/types 目录（TypeScript 类型定义）
-- [ ] T011 创建 src/utils 目录（工具函数）
-- [ ] T012 创建 src/views 目录（页面组件）
-- [ ] T013 创建 src/views/login 目录（登录页）
-- [ ] T014 创建 src/views/dashboard 目录（监控中心）
-- [ ] T015 创建 src/views/employee 目录（员工管理）
-- [ ] T016 创建 src/views/organization 目录（组织管理）
-- [ ] T017 创建 src/views/position 目录（职务管理）
-- [ ] T018 创建 src/views/sync 目录（同步任务管理）
+- [x] T003 创建 src/api 目录（API 接口定义）
+- [x] T004 创建 src/assets/styles 目录（全局样式和主题）
+- [x] T005 创建 src/components 目录（可复用组件）
+- [x] T006 创建 src/composables 目录（组合式函数）
+- [x] T007 创建 src/layouts 目录（布局组件）
+- [x] T008 创建 src/router 目录（路由配置）
+- [x] T009 创建 src/stores 目录（Pinia 状态管理）
+- [x] T010 创建 src/types 目录（TypeScript 类型定义）
+- [x] T011 创建 src/utils 目录（工具函数）
+- [x] T012 创建 src/views 目录（页面组件）
+- [x] T013 创建 src/views/login 目录（登录页）
+- [x] T014 创建 src/views/dashboard 目录（监控中心）
+- [x] T015 创建 src/views/employee 目录（员工管理）
+- [x] T016 创建 src/views/organization 目录（组织管理）
+- [x] T017 创建 src/views/position 目录（职务管理）
+- [x] T018 创建 src/views/sync 目录（同步任务管理）
 
 ### 环境变量配置
 
-- [ ] T019 创建 .env.development 文件配置开发环境变量（VITE_API_BASE_URL）
-- [ ] T020 创建 .env.production 文件配置生产环境变量
+- [x] T019 创建 .env.development 文件配置开发环境变量（VITE_API_BASE_URL）
+- [x] T020 创建 .env.production 文件配置生产环境变量
 
 ---
 
