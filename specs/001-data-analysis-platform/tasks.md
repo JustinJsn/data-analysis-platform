@@ -71,64 +71,64 @@
 
 ### TypeScript 类型定义
 
-- [ ] T021 [P] 创建 src/types/common.ts 定义通用类型（UnifiedResponse, ApiError等）
-- [ ] T022 [P] 创建 src/types/auth.ts 定义认证相关类型（User, AuthToken, LoginRequest）
-- [ ] T023 [P] 创建 src/types/employee.ts 定义员工相关类型（Employee, EmployeeFilters）
-- [ ] T024 [P] 创建 src/types/organization.ts 定义组织相关类型（Organization）
-- [ ] T025 [P] 创建 src/types/position.ts 定义职务相关类型（Position, PositionFilters）
-- [ ] T026 [P] 创建 src/types/sync.ts 定义同步任务类型（SyncBatch, SyncLog）
-- [ ] T027 创建 src/types/index.ts 统一导出所有类型
+- [x] T021 [P] 创建 src/types/common.ts 定义通用类型（UnifiedResponse, ApiError等）
+- [x] T022 [P] 创建 src/types/auth.ts 定义认证相关类型（User, AuthToken, LoginRequest）
+- [x] T023 [P] 创建 src/types/employee.ts 定义员工相关类型（Employee, EmployeeFilters）
+- [x] T024 [P] 创建 src/types/organization.ts 定义组织相关类型（Organization）
+- [x] T025 [P] 创建 src/types/position.ts 定义职务相关类型（Position, PositionFilters）
+- [x] T026 [P] 创建 src/types/sync.ts 定义同步任务类型（SyncBatch, SyncLog）
+- [x] T027 创建 src/types/index.ts 统一导出所有类型
 
 ### Axios 请求封装
 
-- [ ] T028 实现 src/utils/request.ts Axios 实例配置（baseURL, timeout, headers）
-- [ ] T029 实现 src/utils/request.ts 请求拦截器（注入 Token, nprogress.start()）
-- [ ] T030 实现 src/utils/request.ts 响应拦截器（统一响应处理, 错误处理, nprogress.done()）
-- [ ] T031 实现 src/utils/request.ts 401 错误处理逻辑（跳转登录页）
+- [x] T028 实现 src/utils/request.ts Axios 实例配置（baseURL, timeout, headers）
+- [x] T029 实现 src/utils/request.ts 请求拦截器（注入 Token, nprogress.start()）
+- [x] T030 实现 src/utils/request.ts 响应拦截器（统一响应处理, 错误处理, nprogress.done()）
+- [x] T031 实现 src/utils/request.ts 401 错误处理逻辑（跳转登录页）
 
 ### nprogress 集成
 
-- [ ] T032 创建 src/utils/nprogress.ts 配置 nprogress 样式（主题色 #146eff）
-- [ ] T033 在 src/main.ts 中导入 nprogress CSS
+- [x] T032 创建 src/utils/nprogress.ts 配置 nprogress 样式（主题色 #146eff）
+- [x] T033 在 src/main.ts 中导入 nprogress CSS
 
 ### Tailwind CSS 配置
 
-- [ ] T034 配置 tailwind.config.ts 主题颜色（primary: #146eff, 及其变体）
-- [ ] T035 配置 tailwind.config.ts 暗色模式（darkMode: ['class', '[data-theme="dark"]']）
-- [ ] T036 创建 src/assets/styles/theme.css 定义 CSS 变量（--color-primary, light/dark 模式）
-- [ ] T037 创建 src/assets/styles/components.css 定义自定义组件类（card, page-title, filter-section）
-- [ ] T038 在 src/main.ts 中导入全局样式
+- [x] T034 配置 tailwind.config.ts 主题颜色（primary: #146eff, 及其变体）
+- [x] T035 配置 tailwind.config.ts 暗色模式（darkMode: ['class', '[data-theme="dark"]']）
+- [x] T036 创建 src/assets/styles/theme.css 定义 CSS 变量（--color-primary, light/dark 模式）
+- [x] T037 创建 src/assets/styles/components.css 定义自定义组件类（card, page-title, filter-section）
+- [x] T038 在 src/main.ts 中导入全局样式
 
 ### 路由配置
 
-- [ ] T039 创建 src/router/routes.ts 定义路由表（login, dashboard, employees, organizations, positions, sync）
-- [ ] T040 创建 src/router/guards.ts 实现导航守卫（requiresAuth, permission 检查）
-- [ ] T041 创建 src/router/index.ts 创建路由实例并注册守卫
+- [x] T039 创建 src/router/routes.ts 定义路由表（login, dashboard, employees, organizations, positions, sync）
+- [x] T040 创建 src/router/guards.ts 实现导航守卫（requiresAuth, permission 检查）
+- [x] T041 创建 src/router/index.ts 创建路由实例并注册守卫
 
 ### API 接口定义
 
-- [ ] T042 复制 specs/001-data-analysis-platform/contracts/api-client.ts 到 src/types/api.ts
-- [ ] T043 创建 src/api/index.ts 实现 API 服务（调用 request 工具，返回 Promise）
+- [x] T042 复制 specs/001-data-analysis-platform/contracts/api-client.ts 到 src/types/api.ts
+- [x] T043 创建 src/api/index.ts 实现 API 服务（调用 request 工具，返回 Promise）
 
 ### 布局组件
 
-- [ ] T044 创建 src/layouts/DefaultLayout.vue 实现左右布局（el-container 结构）
-- [ ] T045 在 src/layouts/DefaultLayout.vue 实现侧边栏（el-menu, 可折叠）
-- [ ] T046 在 src/layouts/DefaultLayout.vue 实现顶部导航栏（用户信息, 主题切换）
-- [ ] T047 在 src/layouts/DefaultLayout.vue 实现主内容区域（router-view）
-- [ ] T048 创建 src/layouts/BlankLayout.vue 空白布局（用于登录页）
+- [x] T044 创建 src/layouts/DefaultLayout.vue 实现左右布局（el-container 结构）
+- [x] T045 在 src/layouts/DefaultLayout.vue 实现侧边栏（el-menu, 可折叠）
+- [x] T046 在 src/layouts/DefaultLayout.vue 实现顶部导航栏（用户信息, 主题切换）
+- [x] T047 在 src/layouts/DefaultLayout.vue 实现主内容区域（router-view）
+- [x] T048 创建 src/layouts/BlankLayout.vue 空白布局（用于登录页）
 
 ### 主题切换
 
-- [ ] T049 创建 src/composables/useTheme.ts 实现主题切换逻辑
-- [ ] T050 创建 src/stores/app.ts App Store（theme, sidebarCollapsed, menuList）
-- [ ] T051 在 App Store 中实现 toggleTheme() 方法
-- [ ] T052 在 App Store 中实现 toggleSidebar() 方法
+- [x] T049 创建 src/composables/useTheme.ts 实现主题切换逻辑
+- [x] T050 创建 src/stores/app.ts App Store（theme, sidebarCollapsed, menuList）
+- [x] T051 在 App Store 中实现 toggleTheme() 方法
+- [x] T052 在 App Store 中实现 toggleSidebar() 方法
 
 ### 工具函数
 
-- [ ] T053 [P] 创建 src/utils/validation.ts 实现表单验证规则（usernameRules, passwordRules）
-- [ ] T054 [P] 创建 src/utils/transform.ts 实现数据转换函数（formatDateTime, getSyncTypeLabel）
+- [x] T053 [P] 创建 src/utils/validation.ts 实现表单验证规则（usernameRules, passwordRules）
+- [x] T054 [P] 创建 src/utils/transform.ts 实现数据转换函数（formatDateTime, getSyncTypeLabel）
 
 ---
 

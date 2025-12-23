@@ -6,19 +6,18 @@ import type {
   LoginRequest,
   LoginResponse,
   User,
-  EmployeeVO,
-  EmployeeListFilters,
-  EmployeeListResponse,
-  OrganizationTreeNodeVO,
-  PositionVO,
-  PositionListFilters,
-  PositionListResponse,
-  SyncBatchVO,
-  SyncBatchFilters,
+  Employee,
+  EmployeeQueryParams,
+  PaginatedResponse,
+  Organization,
+  Position,
+  PositionQueryParams,
+  SyncBatch,
+  SyncBatchQueryParams,
   SyncBatchListResponse,
-  SyncBatchLogResponse,
+  SyncBatchLogsResponse,
   SyncTriggerRequest,
-  OrderedFlowStatusResponse,
+  OrderedFlowStatus,
   SimpleResponse,
 } from '@/types/api';
 
@@ -55,8 +54,8 @@ export const employeeApi = {
   /**
    * 获取员工列表
    */
-  getList(filters: EmployeeListFilters) {
-    return request.get<EmployeeListResponse>('/api/v1/employees', {
+  getList(filters: EmployeeQueryParams) {
+    return request.get<PaginatedResponse<Employee>>('/api/v1/employees', {
       params: filters,
     });
   },
@@ -65,7 +64,7 @@ export const employeeApi = {
    * 获取员工详情
    */
   getDetail(id: string) {
-    return request.get<EmployeeVO>(`/api/v1/employees/${id}`);
+    return request.get<Employee>(`/api/v1/employees/${id}`);
   },
 };
 
@@ -77,7 +76,7 @@ export const organizationApi = {
    * 获取组织树
    */
   getTree() {
-    return request.get<OrganizationTreeNodeVO[]>('/api/v1/organizations/tree');
+    return request.get<Organization[]>('/api/v1/organizations/tree');
   },
 };
 
@@ -88,8 +87,8 @@ export const positionApi = {
   /**
    * 获取职务列表
    */
-  getList(filters: PositionListFilters) {
-    return request.get<PositionListResponse>('/api/v1/positions', {
+  getList(filters: PositionQueryParams) {
+    return request.get<PaginatedResponse<Position>>('/api/v1/positions', {
       params: filters,
     });
   },
@@ -102,7 +101,7 @@ export const syncApi = {
   /**
    * 获取批次列表
    */
-  getBatches(filters: SyncBatchFilters) {
+  getBatches(filters: SyncBatchQueryParams) {
     return request.get<SyncBatchListResponse>('/api/v1/sync/batches', {
       params: filters,
     });
@@ -112,14 +111,14 @@ export const syncApi = {
    * 获取批次详情
    */
   getBatchDetail(batchId: string) {
-    return request.get<SyncBatchVO>(`/api/v1/sync/batches/${batchId}`);
+    return request.get<SyncBatch>(`/api/v1/sync/batches/${batchId}`);
   },
 
   /**
    * 获取批次日志
    */
   getBatchLogs(batchId: string) {
-    return request.get<SyncBatchLogResponse>(
+    return request.get<SyncBatchLogsResponse>(
       `/api/v1/sync/batches/${batchId}/logs`,
     );
   },
@@ -156,7 +155,7 @@ export const syncApi = {
    * 获取完整同步流程状态
    */
   getOrderedFlowStatus(batchId: string) {
-    return request.get<OrderedFlowStatusResponse>(
+    return request.get<OrderedFlowStatus>(
       `/api/v1/sync/ordered-flow/${batchId}/status`,
     );
   },
