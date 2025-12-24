@@ -18,7 +18,7 @@
           border
         >
           <el-descriptions-item label="员工编号">
-            {{ employeeStore.currentEmployee.employeeNumber }}
+            {{ employeeStore.currentEmployee.employeeNo }}
           </el-descriptions-item>
 
           <el-descriptions-item label="姓名">
@@ -26,63 +26,47 @@
           </el-descriptions-item>
 
           <el-descriptions-item label="手机号">
-            {{ employeeStore.currentEmployee.mobile || '-' }}
+            {{ employeeStore.currentEmployee.phone || '-' }}
           </el-descriptions-item>
 
           <el-descriptions-item label="邮箱">
             {{ employeeStore.currentEmployee.email || '-' }}
           </el-descriptions-item>
 
-          <el-descriptions-item label="所属组织">
-            {{ employeeStore.currentEmployee.organizationName }}
+          <el-descriptions-item label="所属组织" :span="2">
+            {{ employeeStore.currentEmployee.organizationName || '-' }}
           </el-descriptions-item>
 
-          <el-descriptions-item label="组织编码">
-            {{ employeeStore.currentEmployee.organizationCode }}
-          </el-descriptions-item>
-
-          <el-descriptions-item label="职务">
-            {{ employeeStore.currentEmployee.positionName }}
-          </el-descriptions-item>
-
-          <el-descriptions-item label="职务编码">
-            {{ employeeStore.currentEmployee.positionCode }}
+          <el-descriptions-item label="岗位职务" :span="2">
+            {{ employeeStore.currentEmployee.jobPostName || '-' }}
           </el-descriptions-item>
 
           <el-descriptions-item label="入职日期">
-            {{ formatDate(employeeStore.currentEmployee.hireDate) }}
+            {{ formatDate(employeeStore.currentEmployee.employmentDate) }}
           </el-descriptions-item>
 
-          <el-descriptions-item label="状态">
+          <el-descriptions-item label="在职状态">
             <el-tag
-              v-if="employeeStore.currentEmployee.status === 'active'"
+              v-if="employeeStore.currentEmployee.employmentStatus === 'active'"
               type="success"
             >
               在职
             </el-tag>
             <el-tag
-              v-else-if="employeeStore.currentEmployee.status === 'inactive'"
+              v-else-if="employeeStore.currentEmployee.employmentStatus === 'inactive'"
               type="info"
             >
               离职
             </el-tag>
             <el-tag
-              v-else-if="employeeStore.currentEmployee.status === 'suspended'"
+              v-else-if="employeeStore.currentEmployee.employmentStatus === 'suspended'"
               type="warning"
             >
               停用
             </el-tag>
             <el-tag v-else type="info">
-              {{ employeeStore.currentEmployee.status }}
+              {{ employeeStore.currentEmployee.employmentStatus }}
             </el-tag>
-          </el-descriptions-item>
-
-          <el-descriptions-item label="创建时间" :span="2">
-            {{ formatDateTime(employeeStore.currentEmployee.createdAt) }}
-          </el-descriptions-item>
-
-          <el-descriptions-item label="更新时间" :span="2">
-            {{ formatDateTime(employeeStore.currentEmployee.updatedAt) }}
           </el-descriptions-item>
         </el-descriptions>
       </template>

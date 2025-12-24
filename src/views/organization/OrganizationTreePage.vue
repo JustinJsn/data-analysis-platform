@@ -9,12 +9,12 @@
     <!-- 组织树卡片 -->
     <div class="card">
       <div v-loading="organizationStore.loading" class="tree-container">
-        <el-tree
+        <el-tree-v2
           v-if="organizationStore.tree.length > 0"
           :data="organizationStore.tree"
           :props="treeProps"
           node-key="id"
-          default-expand-all
+          :height="800"
           :expand-on-click-node="false"
           @node-click="handleNodeClick"
         >
@@ -27,7 +27,7 @@
               <span class="node-code">{{ data.code }}</span>
             </div>
           </template>
-        </el-tree>
+        </el-tree-v2>
 
         <!-- 空状态 -->
         <el-empty v-else description="暂无组织数据" />
@@ -91,9 +91,10 @@ const selectedOrganization = ref<Organization | null>(null);
 
 /**
  * 节点点击事件
+ * el-tree-v2 的 node-click 事件参数: (data, node, e)
  */
-const handleNodeClick = (data: Organization) => {
-  selectedOrganization.value = data;
+const handleNodeClick = (data: any) => {
+  selectedOrganization.value = data as Organization;
   drawerVisible.value = true;
 };
 
@@ -135,11 +136,11 @@ onMounted(async () => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  min-height: 600px;
+  min-height: 800px;
 }
 
 .tree-container {
-  min-height: 500px;
+  min-height: 800px;
 }
 
 .tree-node {
@@ -169,16 +170,16 @@ onMounted(async () => {
   border-radius: 4px;
 }
 
-:deep(.el-tree) {
+:deep(.el-tree-v2) {
   background: transparent;
 }
 
-:deep(.el-tree-node__content) {
+:deep(.el-tree-v2__node) {
   height: 36px;
   padding: 4px 0;
 }
 
-:deep(.el-tree-node__content:hover) {
+:deep(.el-tree-v2__node:hover) {
   background: var(--el-fill-color-light);
 }
 </style>
