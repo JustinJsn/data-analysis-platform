@@ -418,10 +418,10 @@
 
 ### Sentry 集成（可选）
 
-- [ ] T173 创建 src/utils/sentry.ts Sentry 初始化配置
-- [ ] T174 在 src/main.ts 调用 initSentry() 初始化 Sentry
-- [ ] T175 在全局错误处理器中集成 Sentry.captureException()
-- [ ] T176 在 Axios 拦截器中集成 Sentry 错误上报
+- [x] T173 创建 src/utils/sentry.ts Sentry 初始化配置
+- [x] T174 在 src/main.ts 调用 initSentry() 初始化 Sentry
+- [x] T175 在全局错误处理器中集成 Sentry.captureException()
+- [x] T176 在 Axios 拦截器中集成 Sentry 错误上报
 
 ---
 

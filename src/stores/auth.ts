@@ -4,6 +4,7 @@
 import { defineStore } from 'pinia';
 import type { User, LoginRequest, LoginResponse } from '@/types/api';
 import { authApi } from '@/api';
+import { setSentryUser, clearSentryUser } from '@/utils/sentry';
 
 interface AuthState {
   /** 访问令牌 */
@@ -81,6 +82,14 @@ export const useAuthStore = defineStore('auth', {
 
       localStorage.setItem('access_token', authData.accessToken);
       localStorage.setItem('refresh_token', authData.refreshToken);
+
+      // 设置 Sentry 用户信息
+      setSentryUser({
+        id: authData.user.id,
+        username: authData.user.username,
+        email: authData.user.email,
+        name: authData.user.name,
+      });
     },
 
     /**
@@ -105,6 +114,9 @@ export const useAuthStore = defineStore('auth', {
 
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+
+      // 清除 Sentry 用户信息
+      clearSentryUser();
     },
 
     /**

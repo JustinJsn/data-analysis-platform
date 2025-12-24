@@ -10,6 +10,7 @@ import axios, {
 import { ElMessage } from 'element-plus';
 import NProgress from './nprogress';
 import type { UnifiedResponse } from '@/types';
+import { captureError, addBreadcrumb } from './sentry';
 
 // 请求计数器（用于控制 nprogress）
 let requestCount = 0;
@@ -66,6 +67,19 @@ service.interceptors.response.use(
     if (code !== 0) {
       // 业务失败
       ElMessage.error(message || '请求失败');
+
+      // 记录业务错误到 Sentry（非严重错误，使用 breadcrumb）
+      addBreadcrumb({
+        message: `业务错误: ${message}`,
+        category: 'api.business-error',
+        level: 'warning',
+        data: {
+          code,
+          url: response.config.url,
+          method: response.config.method,
+        },
+      });
+
       return Promise.reject(new Error(message || '请求失败'));
     }
 
@@ -98,6 +112,18 @@ service.interceptors.response.use(
         data?.message || errorMessages[status] || '网络错误，请稍后重试';
       ElMessage.error(errorMessage);
 
+      // 上报严重错误到 Sentry（排除 401 和 404）
+      if (status !== 401 && status !== 404) {
+        captureError(error, {
+          type: 'HTTP Error',
+          status,
+          url: error.config?.url,
+          method: error.config?.method,
+          errorMessage,
+          responseData: data,
+        });
+      }
+
       // 401 跳转登录页
       if (status === 401) {
         localStorage.removeItem('access_token');
@@ -109,9 +135,22 @@ service.interceptors.response.use(
         }
       }
     } else if (error.request) {
+      // 网络连接失败
       ElMessage.error('网络连接失败，请检查网络');
+
+      captureError(error, {
+        type: 'Network Error',
+        url: error.config?.url,
+        method: error.config?.method,
+      });
     } else {
+      // 请求配置错误
       ElMessage.error('请求配置错误');
+
+      captureError(error, {
+        type: 'Request Config Error',
+        config: error.config,
+      });
     }
 
     return Promise.reject(error);
