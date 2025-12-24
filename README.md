@@ -1,5 +1,315 @@
-# Vue 3 + TypeScript + Vite
+# 数据分析平台
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个现代化的企业级数据分析与同步监控平台，基于 Vue 3 + TypeScript + Element Plus 构建。
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+---
+
+## ✨ 特性
+
+- 🚀 **Vue 3 + TypeScript** - 使用最新的 Vue 3 Composition API 和 TypeScript
+- 📦 **Pinia 状态管理** - 轻量级、类型安全的状态管理方案
+- 🎨 **Element Plus** - 企业级 UI 组件库
+- 🎯 **Tailwind CSS** - 实用优先的 CSS 框架
+- 🔐 **权限管理** - 完善的路由守卫和权限控制
+- 🌓 **暗色模式** - 支持亮色/暗色主题切换
+- 📊 **数据可视化** - 丰富的数据展示组件
+- 🧪 **完整测试** - 单元测试 + E2E 测试
+- ⚡ **性能优化** - 路由懒加载、代码分割、构建优化
+
+---
+
+## 📸 功能模块
+
+### 1. 用户认证
+
+- ✅ 登录/登出
+- ✅ 权限验证
+- ✅ Token 管理
+
+### 2. 员工管理
+
+- ✅ 员工列表查询
+- ✅ 关键词搜索
+- ✅ 分页展示
+- ✅ 员工详情查看
+
+### 3. 组织管理
+
+- ✅ 组织树形结构展示
+- ✅ 组织信息查看
+- ✅ 层级关系展示
+
+### 4. 职务管理
+
+- ✅ 职务列表查询
+- ✅ 职务搜索
+- ✅ 分页展示
+
+### 5. 同步监控
+
+- ✅ 监控中心仪表盘
+- ✅ 数据统计卡片
+- ✅ 同步任务触发
+- ✅ 批次列表查询
+- ✅ 批次详情和日志
+
+---
+
+## 🛠️ 技术栈
+
+### 核心框架
+
+- **Vue 3.5** - 渐进式 JavaScript 框架
+- **TypeScript 5.9** - JavaScript 的超集
+- **Vite 7** - 下一代前端构建工具
+
+### UI 和样式
+
+- **Element Plus 2.13** - Vue 3 组件库
+- **Tailwind CSS 4** - 实用优先的 CSS 框架
+- **@element-plus/icons-vue** - Element Plus 图标库
+
+### 状态管理和路由
+
+- **Pinia 3.0** - Vue 状态管理库
+- **Vue Router 4.6** - Vue.js 官方路由
+
+### HTTP 和工具
+
+- **Axios 1.13** - HTTP 客户端
+- **nprogress 0.2** - 页面加载进度条
+
+### 开发工具
+
+- **Vitest 4.0** - 单元测试框架
+- **Playwright** - E2E 测试框架
+- **oxlint 1.34** - 快速的代码检查工具
+- **oxfmt 0.19** - 代码格式化工具
+- **vue-tsc 3.1** - Vue TypeScript 检查工具
+
+---
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js >= 18
+- pnpm >= 10
+
+### 安装依赖
+
+```bash
+pnpm install
+```
+
+### 开发
+
+```bash
+# 启动开发服务器
+pnpm dev
+
+# 默认访问地址: http://localhost:5173
+```
+
+### 构建
+
+```bash
+# 构建生产版本
+pnpm build
+
+# 预览生产构建
+pnpm preview
+```
+
+### 测试
+
+```bash
+# 运行单元测试
+pnpm test
+
+# 运行测试并查看覆盖率
+pnpm test -- --coverage
+
+# 运行 E2E 测试（需先安装 Playwright）
+pnpm add -D @playwright/test
+pnpm exec playwright install
+pnpm exec playwright test
+```
+
+### 代码质量
+
+```bash
+# 代码检查
+pnpm run lint
+
+# 自动修复
+pnpm run lint:fix
+
+# 类型检查
+pnpm exec vue-tsc --noEmit
+
+# 代码格式化
+pnpm run format
+
+# 格式检查
+pnpm run format:check
+```
+
+---
+
+## 📁 项目结构
+
+```
+data-analysis-platform/
+├── docs/                      # 文档
+│   ├── api-reference.md      # API 文档
+│   ├── dark-mode-guide.md    # 暗色模式指南
+│   ├── optimization-summary.md # 优化总结
+│   ├── performance-optimization.md # 性能优化指南
+│   ├── COMPLETION_SUMMARY.md # 完成总结
+│   └── TESTING_GUIDE.md      # 测试指南
+├── public/                    # 静态资源
+├── specs/                     # 规范文档
+│   └── 001-data-analysis-platform/
+│       ├── checklists/       # 检查清单
+│       ├── contracts/        # 接口契约
+│       ├── data-model.md     # 数据模型
+│       ├── plan.md           # 实施计划
+│       ├── spec.md           # 功能规范
+│       └── tasks.md          # 任务列表
+├── src/
+│   ├── api/                  # API 接口
+│   │   ├── auth.ts          # 认证接口
+│   │   ├── employee.ts      # 员工接口
+│   │   ├── organization.ts  # 组织接口
+│   │   ├── position.ts      # 职务接口
+│   │   └── sync.ts          # 同步接口
+│   ├── assets/              # 资源文件
+│   │   └── styles/          # 样式文件
+│   │       ├── theme.css    # 主题变量
+│   │       └── components.css # 组件样式
+│   ├── components/          # 组件
+│   │   ├── business/        # 业务组件
+│   │   │   └── DataCard.vue # 数据卡片
+│   │   ├── common/          # 通用组件
+│   │   │   ├── PageHeader.vue    # 页面头部
+│   │   │   ├── FilterPanel.vue   # 筛选面板
+│   │   │   └── EmptyState.vue    # 空状态
+│   │   └── sync/            # 同步相关组件
+│   ├── composables/         # 组合式函数
+│   │   ├── useTheme.ts     # 主题切换
+│   │   └── usePermission.ts # 权限检查
+│   ├── layouts/             # 布局组件
+│   │   ├── DefaultLayout.vue # 默认布局
+│   │   └── BlankLayout.vue   # 空白布局
+│   ├── router/              # 路由
+│   │   ├── routes.ts       # 路由配置
+│   │   ├── guards.ts       # 路由守卫
+│   │   └── index.ts        # 路由实例
+│   ├── stores/              # 状态管理
+│   │   ├── app.ts          # 应用状态
+│   │   ├── auth.ts         # 认证状态
+│   │   ├── employee.ts     # 员工状态
+│   │   ├── organization.ts # 组织状态
+│   │   ├── position.ts     # 职务状态
+│   │   └── sync.ts         # 同步状态
+│   ├── types/               # 类型定义
+│   ├── utils/               # 工具函数
+│   │   ├── request.ts      # HTTP 请求
+│   │   ├── nprogress.ts    # 进度条
+│   │   ├── validation.ts   # 表单验证
+│   │   └── transform.ts    # 数据转换
+│   └── views/               # 页面
+│       ├── login/           # 登录
+│       ├── dashboard/       # 监控中心
+│       ├── employee/        # 员工管理
+│       ├── organization/    # 组织管理
+│       ├── position/        # 职务管理
+│       ├── sync/            # 同步管理
+│       └── error/           # 错误页面
+├── tests/                   # 测试
+│   ├── setup.ts            # 测试配置
+│   ├── utils/              # 工具测试
+│   ├── stores/             # Store 测试
+│   ├── components/         # 组件测试
+│   └── e2e/                # E2E 测试
+├── vite.config.ts          # Vite 配置
+├── playwright.config.ts    # Playwright 配置
+├── tailwind.config.ts      # Tailwind 配置
+├── tsconfig.json           # TypeScript 配置
+└── package.json            # 项目配置
+```
+
+---
+
+## 📚 文档
+
+- [API 参考文档](./docs/api-reference.md)
+- [暗色模式指南](./docs/dark-mode-guide.md)
+- [性能优化指南](./docs/performance-optimization.md)
+- [测试指南](./docs/TESTING_GUIDE.md)
+- [完成总结](./docs/COMPLETION_SUMMARY.md)
+- [快速开始](./specs/001-data-analysis-platform/quickstart.md)
+- [功能规范](./specs/001-data-analysis-platform/spec.md)
+- [任务列表](./specs/001-data-analysis-platform/tasks.md)
+
+---
+
+## 🎯 项目进度
+
+**总体完成度:** 96.6%
+
+- ✅ Phase 1: 项目初始化 (100%)
+- ✅ Phase 2: 基础架构 (100%)
+- ✅ Phase 3: 用户登录和认证 (100%)
+- ✅ Phase 4: 员工数据查询 (100%)
+- ✅ Phase 5: 组织数据查询 (100%)
+- ✅ Phase 6: 职务数据查询 (100%)
+- ✅ Phase 7: 同步任务监控 (100%)
+- ✅ Phase 8: 业务组件优化 (100%)
+- ✅ Phase 9: 测试与质量保证 (92%)
+- ⚠️ Phase 10: 性能优化 (75%)
+
+详见 [任务列表](./specs/001-data-analysis-platform/tasks.md)
+
+---
+
+## 🤝 开发规范
+
+### Git 提交规范
+
+遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范：
+
+```bash
+feat: 新增功能
+fix: 修复 Bug
+docs: 文档更新
+style: 代码格式调整
+refactor: 代码重构
+perf: 性能优化
+test: 测试相关
+chore: 构建/工具链更新
+```
+
+### 代码风格
+
+- 使用 TypeScript Strict Mode
+- 使用 `<script setup>` 语法
+- 组件文件使用 PascalCase
+- 工具函数使用 camelCase
+
+---
+
+## 📄 许可证
+
+MIT License
+
+---
+
+## 👥 维护者
+
+开发团队
+
+---
+
+**最后更新:** 2025-12-24

@@ -1,10 +1,57 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import ElementPlus from 'element-plus';
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
+import 'element-plus/dist/index.css';
+// 导入 Element Plus 暗黑模式样式
+import 'element-plus/theme-chalk/dark/css-vars.css';
 import App from './App.vue';
+import router from './router';
+
+// 导入全局样式
 import './style.css';
+import './assets/styles/theme.css';
+import './assets/styles/components.css';
 
-const pinia = createPinia();
+// 导入 Sentry 初始化
+import { initSentry } from './utils/sentry';
+
+// 创建应用实例
 const app = createApp(App);
+const pinia = createPinia();
 
+// 初始化 Sentry 错误监控（需要在其他插件之前初始化）
+initSentry(app, router);
+
+// 配置 Element Plus（包含中文语言包）
+app.use(ElementPlus, {
+  size: 'default',
+  zIndex: 3000,
+  locale: zhCn,
+});
+
+// 注册插件
 app.use(pinia);
+app.use(router);
+
+// 初始化主题（在挂载前设置，避免闪烁）
+import { useAppStore } from '@/stores/app';
+const appStore = useAppStore();
+appStore.initTheme();
+
+// 全局错误处理器
+app.config.errorHandler = (err, instance, info) => {
+  // eslint-disable-next-line no-console
+  console.error('[Global Error Handler]', err, info);
+
+  // 上报错误到 Sentry
+  import('./utils/sentry').then(({ captureError }) => {
+    captureError(err as Error, {
+      componentName: instance?.$options?.name || 'Unknown',
+      errorInfo: info,
+    });
+  });
+};
+
+// 挂载应用
 app.mount('#app');
