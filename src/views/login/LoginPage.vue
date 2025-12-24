@@ -41,8 +41,7 @@ const handleSubmit = async () => {
       // 跳转到原来的页面或首页
       const redirect = (route.query.redirect as string) || '/'
       router.push(redirect)
-    } catch (error) {
-      console.error('登录失败:', error)
+    } catch {
       ElMessage.error('登录失败，请检查用户名和密码')
     } finally {
       loading.value = false

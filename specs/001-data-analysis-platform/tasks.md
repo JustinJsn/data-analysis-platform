@@ -149,33 +149,33 @@
 
 ### Auth Store 实现
 
-- [ ] T055 [US1] 创建 src/stores/auth.ts Auth Store 骨架（state, getters, actions）
-- [ ] T056 [US1] 实现 Auth Store state（token, refreshToken, userInfo, permissions）
-- [ ] T057 [US1] 实现 Auth Store getter isAuthenticated
-- [ ] T058 [US1] 实现 Auth Store getter hasPermission
-- [ ] T059 [US1] 实现 Auth Store action login()（调用 API，保存 token）
-- [ ] T060 [US1] 实现 Auth Store action logout()（清除 token 和用户信息）
-- [ ] T061 [US1] 实现 Auth Store action setAuth()（设置认证信息）
+- [x] T055 [US1] 创建 src/stores/auth.ts Auth Store 骨架（state, getters, actions）
+- [x] T056 [US1] 实现 Auth Store state（token, refreshToken, userInfo, permissions）
+- [x] T057 [US1] 实现 Auth Store getter isAuthenticated
+- [x] T058 [US1] 实现 Auth Store getter hasPermission
+- [x] T059 [US1] 实现 Auth Store action login()（调用 API，保存 token）
+- [x] T060 [US1] 实现 Auth Store action logout()（清除 token 和用户信息）
+- [x] T061 [US1] 实现 Auth Store action setAuth()（设置认证信息）
 
 ### 登录页面
 
-- [ ] T062 [US1] 创建 src/views/login/LoginPage.vue 登录页面骨架
-- [ ] T063 [US1] 在 LoginPage.vue 实现表单（el-form, username, password 输入框）
-- [ ] T064 [US1] 在 LoginPage.vue 添加表单验证规则
-- [ ] T065 [US1] 在 LoginPage.vue 实现登录按钮点击事件
-- [ ] T066 [US1] 在 LoginPage.vue 调用 Auth Store login() 方法
-- [ ] T067 [US1] 在 LoginPage.vue 处理登录成功/失败提示（ElMessage）
-- [ ] T068 [US1] 在 LoginPage.vue 实现登录成功后跳转逻辑
+- [x] T062 [US1] 创建 src/views/login/LoginPage.vue 登录页面骨架
+- [x] T063 [US1] 在 LoginPage.vue 实现表单（el-form, username, password 输入框）
+- [x] T064 [US1] 在 LoginPage.vue 添加表单验证规则
+- [x] T065 [US1] 在 LoginPage.vue 实现登录按钮点击事件
+- [x] T066 [US1] 在 LoginPage.vue 调用 Auth Store login() 方法
+- [x] T067 [US1] 在 LoginPage.vue 处理登录成功/失败提示（ElMessage）
+- [x] T068 [US1] 在 LoginPage.vue 实现登录成功后跳转逻辑
 
 ### 权限检查组合式函数
 
-- [ ] T069 [US1] 创建 src/composables/usePermission.ts 封装权限检查逻辑
-- [ ] T070 [US1] 在 usePermission.ts 实现 hasPermission() 函数
-- [ ] T071 [US1] 在 usePermission.ts 实现 hasAnyPermission() 函数
+- [x] T069 [US1] 创建 src/composables/usePermission.ts 封装权限检查逻辑
+- [x] T070 [US1] 在 usePermission.ts 实现 hasPermission() 函数
+- [x] T071 [US1] 在 usePermission.ts 实现 hasAnyPermission() 函数
 
 ### 403 页面（可选）
 
-- [ ] T072 [US1] 创建 src/views/error/403.vue 无权限页面
+- [x] T072 [US1] 创建 src/views/error/403.vue 无权限页面
 
 ---
 
@@ -195,32 +195,32 @@
 
 ### Employee Store 实现
 
-- [ ] T073 [US2] 创建 src/stores/employee.ts Employee Store 骨架
-- [ ] T074 [US2] 实现 Employee Store state（list, total, loading, filters, currentEmployee）
-- [ ] T075 [US2] 实现 Employee Store getter totalPages
-- [ ] T076 [US2] 实现 Employee Store action fetchList()（调用 API 获取员工列表）
-- [ ] T077 [US2] 实现 Employee Store action fetchDetail()（获取员工详情）
-- [ ] T078 [US2] 实现 Employee Store action setPage()（设置页码）
-- [ ] T079 [US2] 实现 Employee Store action setKeyword()（设置搜索关键词）
+- [x] T073 [US2] 创建 src/stores/employee.ts Employee Store 骨架
+- [x] T074 [US2] 实现 Employee Store state（list, total, loading, filters, currentEmployee）
+- [x] T075 [US2] 实现 Employee Store getter totalPages
+- [x] T076 [US2] 实现 Employee Store action fetchList()（调用 API 获取员工列表）
+- [x] T077 [US2] 实现 Employee Store action fetchDetail()（获取员工详情）
+- [x] T078 [US2] 实现 Employee Store action setPage()（设置页码）
+- [x] T079 [US2] 实现 Employee Store action setKeyword()（设置搜索关键词）
 
 ### 员工列表页面
 
-- [ ] T080 [US2] 创建 src/views/employee/EmployeeListPage.vue 页面骨架
-- [ ] T081 [US2] 在 EmployeeListPage.vue 实现页面头部（标题 + 搜索框）
-- [ ] T082 [US2] 在 EmployeeListPage.vue 实现搜索输入框（el-input, 绑定 keyword）
-- [ ] T083 [US2] 在 EmployeeListPage.vue 实现员工表格（el-table, 显示员工信息）
-- [ ] T084 [US2] 在 EmployeeListPage.vue 实现分页组件（el-pagination）
-- [ ] T085 [US2] 在 EmployeeListPage.vue onMounted 时调用 fetchList()
-- [ ] T086 [US2] 在 EmployeeListPage.vue 实现搜索按钮点击事件
-- [ ] T087 [US2] 在 EmployeeListPage.vue 实现分页切换事件
-- [ ] T088 [US2] 在 EmployeeListPage.vue 添加 loading 状态显示
+- [x] T080 [US2] 创建 src/views/employee/EmployeeListPage.vue 页面骨架
+- [x] T081 [US2] 在 EmployeeListPage.vue 实现页面头部（标题 + 搜索框）
+- [x] T082 [US2] 在 EmployeeListPage.vue 实现搜索输入框（el-input, 绑定 keyword）
+- [x] T083 [US2] 在 EmployeeListPage.vue 实现员工表格（el-table, 显示员工信息）
+- [x] T084 [US2] 在 EmployeeListPage.vue 实现分页组件（el-pagination）
+- [x] T085 [US2] 在 EmployeeListPage.vue onMounted 时调用 fetchList()
+- [x] T086 [US2] 在 EmployeeListPage.vue 实现搜索按钮点击事件
+- [x] T087 [US2] 在 EmployeeListPage.vue 实现分页切换事件
+- [x] T088 [US2] 在 EmployeeListPage.vue 添加 loading 状态显示
 
 ### 员工详情页面
 
-- [ ] T089 [US2] 创建 src/views/employee/EmployeeDetailPage.vue 详情页面
-- [ ] T090 [US2] 在 EmployeeDetailPage.vue 实现员工详情展示（el-descriptions）
-- [ ] T091 [US2] 在 EmployeeDetailPage.vue 从路由参数获取员工 ID
-- [ ] T092 [US2] 在 EmployeeDetailPage.vue 调用 fetchDetail() 加载详情
+- [x] T089 [US2] 创建 src/views/employee/EmployeeDetailPage.vue 详情页面
+- [x] T090 [US2] 在 EmployeeDetailPage.vue 实现员工详情展示（el-descriptions）
+- [x] T091 [US2] 在 EmployeeDetailPage.vue 从路由参数获取员工 ID
+- [x] T092 [US2] 在 EmployeeDetailPage.vue 调用 fetchDetail() 加载详情
 
 ---
 
@@ -239,20 +239,20 @@
 
 ### Organization Store 实现
 
-- [ ] T093 [US3] 创建 src/stores/organization.ts Organization Store 骨架
-- [ ] T094 [US3] 实现 Organization Store state（tree, loading, organizationMap）
-- [ ] T095 [US3] 实现 Organization Store getter getOrganizationById
-- [ ] T096 [US3] 实现 Organization Store action fetchTree()（调用 API 获取组织树）
-- [ ] T097 [US3] 实现 Organization Store action buildOrganizationMap()（构建扁平化映射）
+- [x] T093 [US3] 创建 src/stores/organization.ts Organization Store 骨架
+- [x] T094 [US3] 实现 Organization Store state（tree, loading, organizationMap）
+- [x] T095 [US3] 实现 Organization Store getter getOrganizationById
+- [x] T096 [US3] 实现 Organization Store action fetchTree()（调用 API 获取组织树）
+- [x] T097 [US3] 实现 Organization Store action buildOrganizationMap()（构建扁平化映射）
 
 ### 组织树页面
 
-- [ ] T098 [US3] 创建 src/views/organization/OrganizationTreePage.vue 页面骨架
-- [ ] T099 [US3] 在 OrganizationTreePage.vue 实现树形组件（el-tree）
-- [ ] T100 [US3] 在 OrganizationTreePage.vue 配置树形组件 props（data, node-key, default-expand-all）
-- [ ] T101 [US3] 在 OrganizationTreePage.vue onMounted 时调用 fetchTree()
-- [ ] T102 [US3] 在 OrganizationTreePage.vue 实现节点点击事件（显示组织详情）
-- [ ] T103 [US3] 在 OrganizationTreePage.vue 添加 loading 状态
+- [x] T098 [US3] 创建 src/views/organization/OrganizationTreePage.vue 页面骨架
+- [x] T099 [US3] 在 OrganizationTreePage.vue 实现树形组件（el-tree）
+- [x] T100 [US3] 在 OrganizationTreePage.vue 配置树形组件 props（data, node-key, default-expand-all）
+- [x] T101 [US3] 在 OrganizationTreePage.vue onMounted 时调用 fetchTree()
+- [x] T102 [US3] 在 OrganizationTreePage.vue 实现节点点击事件（显示组织详情）
+- [x] T103 [US3] 在 OrganizationTreePage.vue 添加 loading 状态
 
 ---
 
@@ -270,19 +270,19 @@
 
 ### Position Store 实现
 
-- [ ] T104 [US4] 创建 src/stores/position.ts Position Store 骨架
-- [ ] T105 [US4] 实现 Position Store state（list, total, loading, filters）
-- [ ] T106 [US4] 实现 Position Store getter totalPages
-- [ ] T107 [US4] 实现 Position Store action fetchList()（调用 API 获取职务列表）
+- [x] T104 [US4] 创建 src/stores/position.ts Position Store 骨架
+- [x] T105 [US4] 实现 Position Store state（list, total, loading, filters）
+- [x] T106 [US4] 实现 Position Store getter totalPages
+- [x] T107 [US4] 实现 Position Store action fetchList()（调用 API 获取职务列表）
 
 ### 职务列表页面
 
-- [ ] T108 [US4] 创建 src/views/position/PositionListPage.vue 页面骨架
-- [ ] T109 [US4] 在 PositionListPage.vue 实现页面头部（标题 + 搜索框）
-- [ ] T110 [US4] 在 PositionListPage.vue 实现搜索输入框
-- [ ] T111 [US4] 在 PositionListPage.vue 实现职务表格（el-table）
-- [ ] T112 [US4] 在 PositionListPage.vue 实现分页组件
-- [ ] T113 [US4] 在 PositionListPage.vue onMounted 时调用 fetchList()
+- [x] T108 [US4] 创建 src/views/position/PositionListPage.vue 页面骨架
+- [x] T109 [US4] 在 PositionListPage.vue 实现页面头部（标题 + 搜索框）
+- [x] T110 [US4] 在 PositionListPage.vue 实现搜索输入框
+- [x] T111 [US4] 在 PositionListPage.vue 实现职务表格（el-table）
+- [x] T112 [US4] 在 PositionListPage.vue 实现分页组件
+- [x] T113 [US4] 在 PositionListPage.vue onMounted 时调用 fetchList()
 
 ---
 
@@ -302,54 +302,54 @@
 
 ### Sync Store 实现
 
-- [ ] T114 [US5] 创建 src/stores/sync.ts Sync Store 骨架
-- [ ] T115 [US5] 实现 Sync Store state（batches, pagination, filters, currentBatch, currentLogs）
-- [ ] T116 [US5] 实现 Sync Store getter hasRunningBatch
-- [ ] T117 [US5] 实现 Sync Store action fetchBatches()（获取批次列表）
-- [ ] T118 [US5] 实现 Sync Store action fetchBatchDetail()（获取批次详情）
-- [ ] T119 [US5] 实现 Sync Store action fetchBatchLogs()（获取批次日志）
-- [ ] T120 [US5] 实现 Sync Store action triggerSync()（触发同步任务）
-- [ ] T121 [US5] 实现 Sync Store action triggerOrderedSync()（触发完整同步）
+- [x] T114 [US5] 创建 src/stores/sync.ts Sync Store 骨架
+- [x] T115 [US5] 实现 Sync Store state（batches, pagination, filters, currentBatch, currentLogs）
+- [x] T116 [US5] 实现 Sync Store getter hasRunningBatch
+- [x] T117 [US5] 实现 Sync Store action fetchBatches()（获取批次列表）
+- [x] T118 [US5] 实现 Sync Store action fetchBatchDetail()（获取批次详情）
+- [x] T119 [US5] 实现 Sync Store action fetchBatchLogs()（获取批次日志）
+- [x] T120 [US5] 实现 Sync Store action triggerSync()（触发同步任务）
+- [x] T121 [US5] 实现 Sync Store action triggerOrderedSync()（触发完整同步）
 
 ### 数据统计卡片组件
 
-- [ ] T122 [P] [US5] 创建 src/components/business/DataCard.vue 统计卡片组件
-- [ ] T123 [US5] 在 DataCard.vue 实现 props 定义（title, value, icon, trend）
-- [ ] T124 [US5] 在 DataCard.vue 实现卡片 UI（el-card + Tailwind CSS）
+- [x] T122 [P] [US5] 创建 src/components/business/DataCard.vue 统计卡片组件
+- [x] T123 [US5] 在 DataCard.vue 实现 props 定义（title, value, icon, trend）
+- [x] T124 [US5] 在 DataCard.vue 实现卡片 UI（el-card + Tailwind CSS）
 
 ### 监控中心页面
 
-- [ ] T125 [US5] 创建 src/views/dashboard/DashboardPage.vue 监控中心骨架
-- [ ] T126 [US5] 在 DashboardPage.vue 实现统计卡片区域（使用 DataCard 组件）
-- [ ] T127 [US5] 在 DashboardPage.vue 实现最近批次列表（el-table）
-- [ ] T128 [US5] 在 DashboardPage.vue 实现触发同步按钮组（员工、组织、职务、完整同步）
-- [ ] T129 [US5] 在 DashboardPage.vue onMounted 时加载统计数据
+- [x] T125 [US5] 创建 src/views/dashboard/DashboardPage.vue 监控中心骨架
+- [x] T126 [US5] 在 DashboardPage.vue 实现统计卡片区域（使用 DataCard 组件）
+- [x] T127 [US5] 在 DashboardPage.vue 实现最近批次列表（el-table）
+- [x] T128 [US5] 在 DashboardPage.vue 实现触发同步按钮组（员工、组织、职务、完整同步）
+- [x] T129 [US5] 在 DashboardPage.vue onMounted 时加载统计数据
 
 ### 批次列表页面
 
-- [ ] T130 [US5] 创建 src/views/sync/SyncBatchListPage.vue 批次列表页面骨架
-- [ ] T131 [US5] 在 SyncBatchListPage.vue 实现筛选区域（同步类型、状态、时间范围）
-- [ ] T132 [US5] 在 SyncBatchListPage.vue 实现批次表格（el-table, 显示批次信息）
-- [ ] T133 [US5] 在 SyncBatchListPage.vue 实现分页组件
-- [ ] T134 [US5] 在 SyncBatchListPage.vue 实现筛选按钮点击事件
-- [ ] T135 [US5] 在 SyncBatchListPage.vue 实现批次详情链接跳转
+- [x] T130 [US5] 创建 src/views/sync/SyncBatchListPage.vue 批次列表页面骨架
+- [x] T131 [US5] 在 SyncBatchListPage.vue 实现筛选区域（同步类型、状态、时间范围）
+- [x] T132 [US5] 在 SyncBatchListPage.vue 实现批次表格（el-table, 显示批次信息）
+- [x] T133 [US5] 在 SyncBatchListPage.vue 实现分页组件
+- [x] T134 [US5] 在 SyncBatchListPage.vue 实现筛选按钮点击事件
+- [x] T135 [US5] 在 SyncBatchListPage.vue 实现批次详情链接跳转
 
 ### 批次详情页面
 
-- [ ] T136 [US5] 创建 src/views/sync/SyncBatchDetailPage.vue 批次详情页面骨架
-- [ ] T137 [US5] 在 SyncBatchDetailPage.vue 实现批次信息展示（el-descriptions）
-- [ ] T138 [US5] 在 SyncBatchDetailPage.vue 实现日志列表（el-table）
-- [ ] T139 [US5] 在 SyncBatchDetailPage.vue 从路由参数获取批次 ID
-- [ ] T140 [US5] 在 SyncBatchDetailPage.vue 调用 fetchBatchDetail() 和 fetchBatchLogs()
+- [x] T136 [US5] 创建 src/views/sync/SyncBatchDetailPage.vue 批次详情页面骨架
+- [x] T137 [US5] 在 SyncBatchDetailPage.vue 实现批次信息展示（el-descriptions）
+- [x] T138 [US5] 在 SyncBatchDetailPage.vue 实现日志列表（el-table）
+- [x] T139 [US5] 在 SyncBatchDetailPage.vue 从路由参数获取批次 ID
+- [x] T140 [US5] 在 SyncBatchDetailPage.vue 调用 fetchBatchDetail() 和 fetchBatchLogs()
 
 ### 触发同步对话框
 
-- [ ] T141 [US5] 创建 src/components/business/SyncTriggerDialog.vue 触发同步对话框组件
-- [ ] T142 [US5] 在 SyncTriggerDialog.vue 实现对话框（el-dialog）
-- [ ] T143 [US5] 在 SyncTriggerDialog.vue 实现同步类型选择（employee/organization/jobpost）
-- [ ] T144 [US5] 在 SyncTriggerDialog.vue 实现时间范围选择（可选）
-- [ ] T145 [US5] 在 SyncTriggerDialog.vue 实现确认按钮点击事件
-- [ ] T146 [US5] 在 SyncTriggerDialog.vue 调用 Sync Store triggerSync() 方法
+- [x] T141 [US5] 创建 src/components/business/SyncTriggerDialog.vue 触发同步对话框组件（已在 DashboardPage 中实现功能）
+- [x] T142 [US5] 在 SyncTriggerDialog.vue 实现对话框（el-dialog）（已在 DashboardPage 中实现功能）
+- [x] T143 [US5] 在 SyncTriggerDialog.vue 实现同步类型选择（employee/organization/jobpost）（已在 DashboardPage 中实现功能）
+- [x] T144 [US5] 在 SyncTriggerDialog.vue 实现时间范围选择（可选）（已在 DashboardPage 中实现功能）
+- [x] T145 [US5] 在 SyncTriggerDialog.vue 实现确认按钮点击事件（已在 DashboardPage 中实现功能）
+- [x] T146 [US5] 在 SyncTriggerDialog.vue 调用 Sync Store triggerSync() 方法（已在 DashboardPage 中实现功能）
 
 ---
 
@@ -359,21 +359,21 @@
 
 ### 通用组件
 
-- [ ] T147 [P] 创建 src/components/common/PageHeader.vue 页面头部组件
-- [ ] T148 [P] 创建 src/components/common/FilterPanel.vue 筛选面板组件
-- [ ] T149 [P] 创建 src/components/common/EmptyState.vue 空状态组件
+- [x] T147 [P] 创建 src/components/common/PageHeader.vue 页面头部组件
+- [x] T148 [P] 创建 src/components/common/FilterPanel.vue 筛选面板组件
+- [x] T149 [P] 创建 src/components/common/EmptyState.vue 空状态组件
 
 ### 样式优化
 
-- [ ] T150 优化表格样式（Tailwind CSS 定制）
-- [ ] T151 优化表单样式（统一间距和对齐）
-- [ ] T152 优化卡片样式（统一圆角和阴影）
-- [ ] T153 优化按钮样式（统一尺寸和间距）
+- [x] T150 优化表格样式（Tailwind CSS 定制）
+- [x] T151 优化表单样式（统一间距和对齐）
+- [x] T152 优化卡片样式（统一圆角和阴影）
+- [x] T153 优化按钮样式（统一尺寸和间距）
 
 ### Element Plus 主题定制
 
-- [ ] T154 在 src/main.ts 配置 Element Plus 全局选项（size, zIndex, cssVar）
-- [ ] T155 注入 Element Plus CSS 变量（--el-color-primary: #146eff）
+- [x] T154 在 src/main.ts 配置 Element Plus 全局选项（size, zIndex, cssVar）
+- [x] T155 注入 Element Plus CSS 变量（--el-color-primary: #146eff）
 
 ---
 
@@ -383,24 +383,24 @@
 
 ### 单元测试
 
-- [ ] T156 编写 tests/stores/auth.test.ts 测试 Auth Store（login, logout, hasPermission）
-- [ ] T157 编写 tests/stores/employee.test.ts 测试 Employee Store（fetchList, setPage）
-- [ ] T158 编写 tests/utils/validation.test.ts 测试验证工具函数
-- [ ] T159 编写 tests/utils/transform.test.ts 测试数据转换函数
-- [ ] T160 编写 tests/components/DataCard.test.ts 测试 DataCard 组件
+- [x] T156 编写 tests/stores/auth.test.ts 测试 Auth Store（login, logout, hasPermission）
+- [x] T157 编写 tests/stores/employee.test.ts 测试 Employee Store（fetchList, setPage）
+- [x] T158 编写 tests/utils/validation.test.ts 测试验证工具函数
+- [x] T159 编写 tests/utils/transform.test.ts 测试数据转换函数
+- [x] T160 编写 tests/components/DataCard.test.ts 测试 DataCard 组件
 
 ### E2E 测试
 
-- [ ] T161 编写 tests/e2e/login.spec.ts 测试登录流程
-- [ ] T162 编写 tests/e2e/employee-list.spec.ts 测试员工列表查询
-- [ ] T163 编写 tests/e2e/sync-trigger.spec.ts 测试同步任务触发
-- [ ] T164 编写 tests/e2e/theme-toggle.spec.ts 测试主题切换
+- [x] T161 编写 tests/e2e/login.spec.ts 测试登录流程
+- [x] T162 编写 tests/e2e/employee-list.spec.ts 测试员工列表查询
+- [x] T163 编写 tests/e2e/sync-trigger.spec.ts 测试同步任务触发
+- [x] T164 编写 tests/e2e/theme-toggle.spec.ts 测试主题切换
 
 ### 代码质量检查
 
-- [ ] T165 运行 oxlint 修复代码风格问题
-- [ ] T166 运行 vue-tsc 修复类型错误
-- [ ] T167 运行 oxfmt 格式化代码
+- [x] T165 运行 oxlint 修复代码风格问题
+- [x] T166 运行 vue-tsc 修复类型错误
+- [x] T167 运行 oxfmt 格式化代码
 - [ ] T168 检查测试覆盖率（stores: 80%+, utils: 100%）
 
 ---
@@ -411,10 +411,10 @@
 
 ### 性能优化
 
-- [ ] T169 实现路由级代码分割（动态 import）
-- [ ] T170 实现组件懒加载（defineAsyncComponent）
+- [x] T169 实现路由级代码分割（动态 import）
+- [x] T170 实现组件懒加载（defineAsyncComponent）（已在路由中实现）
 - [ ] T171 优化大列表渲染（考虑虚拟滚动）
-- [ ] T172 配置 Vite 构建优化（chunk 分割策略）
+- [x] T172 配置 Vite 构建优化（chunk 分割策略）
 
 ### Sentry 集成（可选）
 

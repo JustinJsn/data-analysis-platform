@@ -2,7 +2,6 @@
  * 路由守卫
  */
 import type { Router } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
 import NProgress from '@/utils/nprogress';
 
 /**
@@ -59,8 +58,7 @@ export function setupRouterGuards(router: Router) {
   });
 
   // 错误处理
-  router.onError((error) => {
-    console.error('路由错误:', error);
+  router.onError(() => {
     NProgress.done();
   });
 }

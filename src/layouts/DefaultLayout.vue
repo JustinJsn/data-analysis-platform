@@ -59,7 +59,7 @@ const handleLogout = async () => {
     router.push('/login')
   } catch (error) {
     if (error !== 'cancel') {
-      console.error('退出失败:', error)
+      ElMessage.error('退出失败，请稍后重试')
     }
   }
 }

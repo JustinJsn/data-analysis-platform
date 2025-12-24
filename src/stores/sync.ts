@@ -84,7 +84,6 @@ export const useSyncStore = defineStore('sync', () => {
       batches.value = response.batches;
       batchesTotal.value = response.total;
     } catch (error) {
-      console.log(error);
       batches.value = [];
       batchesTotal.value = 0;
       throw error;
