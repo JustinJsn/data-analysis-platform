@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import ElementPlus from 'element-plus';
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import 'element-plus/dist/index.css';
 // 导入 Element Plus 暗黑模式样式
 import 'element-plus/theme-chalk/dark/css-vars.css';
@@ -16,10 +17,11 @@ import './assets/styles/components.css';
 const app = createApp(App);
 const pinia = createPinia();
 
-// 配置 Element Plus
+// 配置 Element Plus（包含中文语言包）
 app.use(ElementPlus, {
   size: 'default',
   zIndex: 3000,
+  locale: zhCn,
 });
 
 // 注册插件

@@ -43,17 +43,21 @@
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="employeeNumber" label="员工编号" width="120" />
-        <el-table-column prop="name" label="姓名" width="120" />
-        <el-table-column prop="mobile" label="手机号" width="140" />
+        <el-table-column
+          prop="employeeNumber"
+          label="员工编号"
+          min-width="120"
+        />
+        <el-table-column prop="name" label="姓名" min-width="120" />
+        <el-table-column prop="mobile" label="手机号" min-width="140" />
         <el-table-column prop="email" label="邮箱" min-width="200" />
         <el-table-column
           prop="organizationName"
           label="所属组织"
           min-width="180"
         />
-        <el-table-column prop="positionName" label="职务" width="150" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="positionName" label="职务" min-width="150" />
+        <el-table-column prop="status" label="状态" min-width="100">
           <template #default="{ row }">
             <el-tag v-if="row.status === 'active'" type="success">在职</el-tag>
             <el-tag v-else-if="row.status === 'inactive'" type="info"
@@ -65,7 +69,7 @@
             <el-tag v-else type="info">{{ row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" min-width="100" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleViewDetail(row.id)">
               查看详情
@@ -175,6 +179,8 @@ onMounted(async () => {
 <style scoped>
 .employee-list-page {
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -199,6 +205,8 @@ onMounted(async () => {
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card {
@@ -206,6 +214,9 @@ onMounted(async () => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .pagination-container {

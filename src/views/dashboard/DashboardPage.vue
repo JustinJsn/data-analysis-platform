@@ -78,7 +78,7 @@
     </div>
 
     <!-- 最近批次列表 -->
-    <div class="card">
+    <div class="card batch-list-card">
       <div class="card-header-row">
         <div class="card-title">最近同步批次</div>
         <el-button link type="primary" @click="handleViewAllBatches">
@@ -87,12 +87,14 @@
         </el-button>
       </div>
 
-      <SyncBatchTable
-        :loading="syncStore.batchesLoading"
-        :data="recentBatches"
-        compact
-        @view-detail="handleViewBatchDetail"
-      />
+      <div class="batch-table-wrapper">
+        <SyncBatchTable
+          :loading="syncStore.batchesLoading"
+          :data="recentBatches"
+          compact
+          @view-detail="handleViewBatchDetail"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -263,6 +265,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.batch-list-card {
+  padding: 28px;
+}
+
+.batch-table-wrapper {
+  margin-top: 4px;
 }
 
 .sync-actions {

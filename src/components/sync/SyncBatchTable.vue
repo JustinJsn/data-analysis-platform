@@ -6,15 +6,22 @@
       stripe
       style="width: 100%"
       :size="compact ? 'small' : 'default'"
+      :row-style="{ height: compact ? '54px' : '60px' }"
+      :header-cell-style="{ 
+        background: 'var(--el-fill-color-light)', 
+        color: 'var(--el-text-color-regular)',
+        fontWeight: '600',
+        fontSize: '14px'
+      }"
     >
       <el-table-column
         prop="batch_id"
         label="批次ID"
-        :width="compact ? 180 : 280"
+        :min-width="compact ? 180 : 280"
         show-overflow-tooltip
       />
 
-      <el-table-column prop="sync_type" label="同步类型" width="100">
+      <el-table-column prop="sync_type" label="同步类型" min-width="100">
         <template #default="{ row }">
           <el-tag :type="getSyncTypeTagType(row.sync_type) as any" size="small">
             {{ getSyncTypeLabel(row.sync_type) }}
@@ -22,7 +29,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column prop="status" label="状态" min-width="100">
         <template #default="{ row }">
           <el-tag :type="getStatusType(row.status) as any" size="small">
             {{ getStatusLabel(row.status) }}
@@ -34,7 +41,7 @@
         v-if="!compact"
         prop="trigger_mode"
         label="触发方式"
-        width="100"
+        min-width="100"
       >
         <template #default="{ row }">
           {{ getTriggerModeLabel(row.trigger_mode) }}
@@ -44,13 +51,13 @@
       <el-table-column
         prop="total_records"
         label="总数"
-        width="80"
+        min-width="80"
         align="center"
       />
       <el-table-column
         prop="success_records"
         label="成功"
-        width="80"
+        min-width="80"
         align="center"
       >
         <template #default="{ row }">
@@ -60,7 +67,7 @@
       <el-table-column
         prop="failed_records"
         label="失败"
-        width="80"
+        min-width="80"
         align="center"
       >
         <template #default="{ row }">
@@ -74,7 +81,7 @@
       <el-table-column
         prop="started_at"
         label="开始时间"
-        :width="compact ? 160 : 180"
+        :min-width="compact ? 160 : 180"
       >
         <template #default="{ row }">
           {{ formatDateTime(row.started_at) }}
@@ -85,20 +92,24 @@
         v-if="!compact"
         prop="completed_at"
         label="结束时间"
-        width="180"
+        min-width="180"
       >
         <template #default="{ row }">
           {{ formatDateTime(row.completed_at) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="耗时" width="100">
+      <el-table-column label="耗时" min-width="100">
         <template #default="{ row }">
           {{ formatDurationDesc(calculateDurationSeconds(row.started_at, row.completed_at)) }}
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" :width="compact ? 80 : 100" fixed="right">
+      <el-table-column
+        label="操作"
+        :min-width="compact ? 80 : 100"
+        fixed="right"
+      >
         <template #default="{ row }">
           <el-button
             link
@@ -142,11 +153,60 @@ defineEmits<{
 </script>
 
 <style scoped>
+.sync-batch-table {
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sync-batch-table :deep(.el-table) {
+  border-radius: 8px;
+  width: 100%;
+}
+
+.sync-batch-table :deep(.el-table__header-wrapper) {
+  border-radius: 8px 8px 0 0;
+}
+
+.sync-batch-table :deep(.el-table th.el-table__cell) {
+  padding: 14px 0;
+}
+
+.sync-batch-table :deep(.el-table td.el-table__cell) {
+  padding: 16px 0;
+}
+
+.sync-batch-table :deep(.el-table__body tr) {
+  transition: background-color 0.2s ease;
+}
+
+.sync-batch-table :deep(.el-table__body tr:hover > td) {
+  background-color: var(--el-fill-color-lighter) !important;
+}
+
+.sync-batch-table :deep(.el-tag) {
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.sync-batch-table :deep(.el-button.is-link) {
+  font-weight: 500;
+  padding: 6px 8px;
+}
+
+/* 确保表格列自适应 */
+.sync-batch-table :deep(.el-table__body-wrapper) {
+  overflow-x: auto;
+}
+
 .text-success {
   color: var(--el-color-success);
+  font-weight: 600;
 }
+
 .text-danger {
   color: var(--el-color-danger);
-  font-weight: bold;
+  font-weight: 700;
 }
 </style>

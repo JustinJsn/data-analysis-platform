@@ -43,7 +43,7 @@
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="code" label="职务编码" width="200" />
+        <el-table-column prop="code" label="职务编码" min-width="200" />
         <el-table-column prop="name" label="职务名称" min-width="300" />
         <el-table-column prop="id" label="职务ID" min-width="280" />
       </el-table>
@@ -140,6 +140,8 @@ onMounted(async () => {
 <style scoped>
 .position-list-page {
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -164,6 +166,8 @@ onMounted(async () => {
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card {
@@ -171,6 +175,9 @@ onMounted(async () => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .pagination-container {

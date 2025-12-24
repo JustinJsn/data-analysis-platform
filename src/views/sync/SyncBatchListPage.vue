@@ -199,6 +199,8 @@ onMounted(async () => {
 <style scoped>
 .sync-batch-list-page {
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page-header {
@@ -223,6 +225,8 @@ onMounted(async () => {
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card {
@@ -230,6 +234,9 @@ onMounted(async () => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
 }
 
 .pagination-container {
