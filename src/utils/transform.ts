@@ -71,9 +71,9 @@ export function formatDuration(ms: number | null | undefined): string {
  */
 export function getSyncTypeLabel(type: string): string {
   const labels: Record<string, string> = {
-    employee: '员工同步',
-    organization: '组织同步',
-    jobpost: '职务同步',
+    employee: '员工',
+    organization: '组织',
+    jobpost: '职务',
   };
   return labels[type] || type;
 }
@@ -85,6 +85,7 @@ export function getStatusLabel(status: string): string {
   const labels: Record<string, string> = {
     running: '运行中',
     success: '成功',
+    partial_success: '部分成功',
     failed: '失败',
     pending: '等待中',
     canceled: '已取消',
@@ -97,10 +98,14 @@ export function getStatusLabel(status: string): string {
  */
 export function getStatusType(
   status: string,
-): 'info' | 'success' | 'danger' | 'warning' {
-  const types: Record<string, 'info' | 'success' | 'danger' | 'warning'> = {
-    running: 'info',
+): 'info' | 'success' | 'danger' | 'warning' | 'primary' {
+  const types: Record<
+    string,
+    'info' | 'success' | 'danger' | 'warning' | 'primary'
+  > = {
+    running: 'primary',
     success: 'success',
+    partial_success: 'warning',
     failed: 'danger',
     pending: 'warning',
     canceled: 'info',
@@ -171,7 +176,59 @@ export function hideMobile(mobile: string): string {
  */
 export function hideEmail(email: string): string {
   if (!email || !email.includes('@')) return email;
-  const [username, domain] = email.split('@');
+  const parts = email.split('@');
+  if (parts.length < 2 || !parts[0] || !parts[1]) return email;
+  const username = parts[0];
+  const domain = parts[1];
   if (username.length <= 3) return email;
   return `${username.slice(0, 3)}***@${domain}`;
+}
+
+/**
+ * 获取同步类型标签颜色
+ */
+export function getSyncTypeTagType(type: string): string {
+  const types: Record<string, string> = {
+    employee: 'primary',
+    organization: 'warning',
+    jobpost: 'success',
+  };
+  return types[type] || '';
+}
+
+/**
+ * 计算耗时（秒）
+ */
+export function calculateDurationSeconds(
+  startTime: string | null | undefined,
+  endTime: string | null | undefined,
+): number | null {
+  if (!startTime || !endTime) return null;
+  try {
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+    return Math.floor((end - start) / 1000);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 格式化耗时描述
+ */
+export function formatDurationDesc(seconds: number | null): string {
+  if (seconds === null) return '-';
+  if (seconds < 0) return '-';
+
+  if (seconds < 60) {
+    return `${seconds}秒`;
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}分${remainingSeconds}秒`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}时${minutes}分`;
+  }
 }

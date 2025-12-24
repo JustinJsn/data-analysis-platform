@@ -80,9 +80,11 @@ export const useSyncStore = defineStore('sync', () => {
     try {
       batchesLoading.value = true;
       const response = await syncApi.getBatches(filters.value);
+      // 后端返回结构为 { batches: [...], total: ... }
       batches.value = response.batches;
-      batchesTotal.value = response.pagination.totalCount;
+      batchesTotal.value = response.total;
     } catch (error) {
+      console.log(error);
       batches.value = [];
       batchesTotal.value = 0;
       throw error;

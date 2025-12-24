@@ -63,14 +63,14 @@ service.interceptors.response.use(
 
     const { code, message, data } = response.data;
 
-    // 业务成功
-    if (code === 200) {
-      return data;
+    if (code !== 0) {
+      // 业务失败
+      ElMessage.error(message || '请求失败');
+      return Promise.reject(new Error(message || '请求失败'));
     }
 
-    // 业务失败
-    ElMessage.error(message || '请求失败');
-    return Promise.reject(new Error(message || '请求失败'));
+    // 业务成功
+    return data;
   },
   (error) => {
     requestCount--;

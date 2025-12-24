@@ -11,7 +11,7 @@
       <el-form :inline="true">
         <el-form-item label="同步类型">
           <el-select
-            v-model="localFilters.type"
+            v-model="localFilters.sync_type"
             placeholder="全部"
             clearable
             style="width: 150px"
@@ -31,13 +31,14 @@
           >
             <el-option label="运行中" value="running" />
             <el-option label="成功" value="success" />
+            <el-option label="部分成功" value="partial_success" />
             <el-option label="失败" value="failed" />
           </el-select>
         </el-form-item>
 
         <el-form-item label="触发方式">
           <el-select
-            v-model="localFilters.triggerMode"
+            v-model="localFilters.trigger_mode"
             placeholder="全部"
             clearable
             style="width: 150px"
@@ -74,66 +75,16 @@
 
     <!-- 批次表格 -->
     <div class="card">
-      <el-table
-        v-loading="syncStore.batchesLoading"
+      <SyncBatchTable
+        :loading="syncStore.batchesLoading"
         :data="syncStore.batches"
-        stripe
-        style="width: 100%"
-      >
-        <el-table-column prop="id" label="批次ID" width="280" />
-        <el-table-column prop="type" label="同步类型" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getSyncTypeTagType(row.type)">
-              {{ getSyncTypeLabel(row.type) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag v-if="row.status === 'success'" type="success">成功</el-tag>
-            <el-tag v-else-if="row.status === 'failed'" type="danger"
-              >失败</el-tag
-            >
-            <el-tag v-else type="warning">运行中</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="triggerMode" label="触发方式" width="120">
-          <template #default="{ row }">
-            <span v-if="row.triggerMode === 'manual'">手动触发</span>
-            <span v-else>定时触发</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="totalCount" label="总数" width="100" />
-        <el-table-column prop="successCount" label="成功" width="100" />
-        <el-table-column prop="failedCount" label="失败" width="100" />
-        <el-table-column prop="startTime" label="开始时间" width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.startTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="endTime" label="结束时间" width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.endTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="耗时" width="100">
-          <template #default="{ row }">
-            {{ calculateDuration(row.startTime, row.endTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="handleViewDetail(row.id)">
-              查看详情
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        @view-detail="handleViewDetail"
+      />
 
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="syncStore.filters.pageNum"
+          v-model:current-page="syncStore.filters.page"
           v-model:page-size="syncStore.filters.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           :total="syncStore.batchesTotal"
@@ -152,7 +103,8 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Search, RefreshLeft } from '@element-plus/icons-vue';
 import { useSyncStore } from '@/stores/sync';
-import type { SyncType, SyncBatchQueryParams } from '@/types/api';
+import type { SyncBatchQueryParams } from '@/types/api';
+import SyncBatchTable from '@/components/sync/SyncBatchTable.vue';
 
 const router = useRouter();
 const syncStore = useSyncStore();
@@ -163,81 +115,7 @@ const localFilters = ref<Partial<SyncBatchQueryParams>>({});
 // 日期范围
 const dateRange = ref<[string, string] | null>(null);
 
-/**
- * 获取同步类型标签
- */
-const getSyncTypeLabel = (type: SyncType): string => {
-  const labels: Record<SyncType, string> = {
-    employee: '员工',
-    organization: '组织',
-    jobpost: '职务'
-  };
-  return labels[type] || type;
-};
-
-/**
- * 获取同步类型标签颜色
- */
-const getSyncTypeTagType = (type: SyncType) => {
-  const types: Record<SyncType, any> = {
-    employee: 'primary',
-    organization: 'warning',
-    jobpost: 'success'
-  };
-  return types[type] || '';
-};
-
-/**
- * 格式化日期时间
- */
-const formatDateTime = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return '-';
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-  } catch {
-    return dateStr;
-  }
-};
-
-/**
- * 计算耗时
- */
-const calculateDuration = (
-  startTime: string | null,
-  endTime: string | null
-): string => {
-  if (!startTime) return '-';
-  if (!endTime) return '进行中';
-
-  try {
-    const start = new Date(startTime).getTime();
-    const end = new Date(endTime).getTime();
-    const duration = Math.floor((end - start) / 1000); // 秒
-
-    if (duration < 60) {
-      return `${duration}秒`;
-    } else if (duration < 3600) {
-      const minutes = Math.floor(duration / 60);
-      const seconds = duration % 60;
-      return `${minutes}分${seconds}秒`;
-    } else {
-      const hours = Math.floor(duration / 3600);
-      const minutes = Math.floor((duration % 3600) / 60);
-      return `${hours}时${minutes}分`;
-    }
-  } catch {
-    return '-';
-  }
-};
+// (Helper functions removed as they are now handled by SyncBatchTable and transform.ts)
 
 /**
  * 搜索
@@ -249,8 +127,8 @@ const handleSearch = async () => {
 
     // 处理时间范围
     if (dateRange.value && dateRange.value.length === 2) {
-      filters.startTimeFrom = dateRange.value[0];
-      filters.startTimeTo = dateRange.value[1];
+      filters.start_time_from = dateRange.value[0];
+      filters.start_time_to = dateRange.value[1];
     }
 
     syncStore.setBatchesFilters(filters);
@@ -291,7 +169,7 @@ const handlePageChange = async (page: number) => {
  */
 const handleSizeChange = async (size: number) => {
   syncStore.filters.pageSize = size;
-  syncStore.filters.pageNum = 1;
+  syncStore.filters.page = 1;
   try {
     await syncStore.fetchBatches();
   } catch (error) {

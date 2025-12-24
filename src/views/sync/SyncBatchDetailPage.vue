@@ -16,12 +16,14 @@
       <template v-if="syncStore.currentBatch">
         <el-descriptions :column="2" border>
           <el-descriptions-item label="批次ID" :span="2">
-            {{ syncStore.currentBatch.id }}
+            {{ syncStore.currentBatch.batch_id }}
           </el-descriptions-item>
 
           <el-descriptions-item label="同步类型">
-            <el-tag :type="getSyncTypeTagType(syncStore.currentBatch.type)">
-              {{ getSyncTypeLabel(syncStore.currentBatch.type) }}
+            <el-tag
+              :type="getSyncTypeTagType(syncStore.currentBatch.sync_type)"
+            >
+              {{ getSyncTypeLabel(syncStore.currentBatch.sync_type) }}
             </el-tag>
           </el-descriptions-item>
 
@@ -33,69 +35,59 @@
               成功
             </el-tag>
             <el-tag
+              v-else-if="syncStore.currentBatch.status === 'partial_success'"
+              type="warning"
+            >
+              部分成功
+            </el-tag>
+            <el-tag
               v-else-if="syncStore.currentBatch.status === 'failed'"
               type="danger"
             >
               失败
             </el-tag>
-            <el-tag v-else type="warning">运行中</el-tag>
+            <el-tag v-else type="info">运行中</el-tag>
           </el-descriptions-item>
 
           <el-descriptions-item label="触发方式">
-            <span v-if="syncStore.currentBatch.triggerMode === 'manual'"
+            <span v-if="syncStore.currentBatch.trigger_mode === 'manual'"
               >手动触发</span
             >
             <span v-else>定时触发</span>
           </el-descriptions-item>
 
-          <el-descriptions-item label="触发人">
-            {{ syncStore.currentBatch.triggeredBy || '-' }}
-          </el-descriptions-item>
-
           <el-descriptions-item label="开始时间">
-            {{ formatDateTime(syncStore.currentBatch.startTime) }}
+            {{ formatDateTime(syncStore.currentBatch.started_at) }}
           </el-descriptions-item>
 
           <el-descriptions-item label="结束时间">
-            {{ formatDateTime(syncStore.currentBatch.endTime) }}
+            {{ formatDateTime(syncStore.currentBatch.completed_at) }}
           </el-descriptions-item>
 
-          <el-descriptions-item label="总数">
-            {{ syncStore.currentBatch.totalCount }}
+          <el-descriptions-item label="总记录数">
+            {{ syncStore.currentBatch.total_records }}
           </el-descriptions-item>
 
-          <el-descriptions-item label="成功数">
+          <el-descriptions-item label="成功记录数">
             <span
               class="success-count"
-              >{{ syncStore.currentBatch.successCount }}</span
+              >{{ syncStore.currentBatch.success_records }}</span
             >
           </el-descriptions-item>
 
-          <el-descriptions-item label="失败数">
+          <el-descriptions-item label="失败记录数">
             <span
               class="failed-count"
-              >{{ syncStore.currentBatch.failedCount }}</span
+              >{{ syncStore.currentBatch.failed_records }}</span
             >
-          </el-descriptions-item>
-
-          <el-descriptions-item label="跳过数">
-            {{ syncStore.currentBatch.skippedCount }}
-          </el-descriptions-item>
-
-          <el-descriptions-item label="时间范围起始" :span="2">
-            {{ syncStore.currentBatch.timeRangeStart || '全量同步' }}
-          </el-descriptions-item>
-
-          <el-descriptions-item label="时间范围结束" :span="2">
-            {{ syncStore.currentBatch.timeRangeEnd || '全量同步' }}
           </el-descriptions-item>
 
           <el-descriptions-item label="错误信息" :span="2">
             <span
-              v-if="syncStore.currentBatch.errorMessage"
+              v-if="syncStore.currentBatch.error_message"
               class="error-message"
             >
-              {{ syncStore.currentBatch.errorMessage }}
+              {{ syncStore.currentBatch.error_message }}
             </span>
             <span v-else>-</span>
           </el-descriptions-item>

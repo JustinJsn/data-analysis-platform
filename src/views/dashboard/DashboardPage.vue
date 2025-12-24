@@ -87,55 +87,12 @@
         </el-button>
       </div>
 
-      <el-table
-        v-loading="syncStore.batchesLoading"
+      <SyncBatchTable
+        :loading="syncStore.batchesLoading"
         :data="recentBatches"
-        stripe
-        style="width: 100%; margin-top: 16px"
-      >
-        <el-table-column prop="id" label="批次ID" width="280" />
-        <el-table-column prop="type" label="同步类型" width="120">
-          <template #default="{ row }">
-            <el-tag :type="getSyncTypeTagType(row.type)">
-              {{ getSyncTypeLabel(row.type) }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="{ row }">
-            <el-tag v-if="row.status === 'success'" type="success">成功</el-tag>
-            <el-tag v-else-if="row.status === 'failed'" type="danger"
-              >失败</el-tag
-            >
-            <el-tag v-else type="warning">运行中</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="triggerMode" label="触发方式" width="120">
-          <template #default="{ row }">
-            <span v-if="row.triggerMode === 'manual'">手动触发</span>
-            <span v-else>定时触发</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="totalCount" label="总数" width="100" />
-        <el-table-column prop="successCount" label="成功" width="100" />
-        <el-table-column prop="failedCount" label="失败" width="100" />
-        <el-table-column prop="startTime" label="开始时间" width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.startTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
-          <template #default="{ row }">
-            <el-button
-              link
-              type="primary"
-              @click="handleViewBatchDetail(row.id)"
-            >
-              查看详情
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+        compact
+        @view-detail="handleViewBatchDetail"
+      />
     </div>
   </div>
 </template>
@@ -154,6 +111,8 @@ import {
 import DataCard from '@/components/business/DataCard.vue';
 import { useSyncStore } from '@/stores/sync';
 import type { SyncType } from '@/types/api';
+import SyncBatchTable from '@/components/sync/SyncBatchTable.vue';
+import { getSyncTypeLabel } from '@/utils/transform';
 
 const router = useRouter();
 const syncStore = useSyncStore();
@@ -177,50 +136,7 @@ const recentBatches = computed(() => {
   return syncStore.batches.slice(0, 5);
 });
 
-/**
- * 获取同步类型标签
- */
-const getSyncTypeLabel = (type: SyncType): string => {
-  const labels: Record<SyncType, string> = {
-    employee: '员工',
-    organization: '组织',
-    jobpost: '职务'
-  };
-  return labels[type] || type;
-};
-
-/**
- * 获取同步类型标签颜色
- */
-const getSyncTypeTagType = (type: SyncType) => {
-  const types: Record<SyncType, any> = {
-    employee: 'primary',
-    organization: 'warning',
-    jobpost: 'success'
-  };
-  return types[type] || '';
-};
-
-/**
- * 格式化日期时间
- */
-const formatDateTime = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return '-';
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-  } catch {
-    return dateStr;
-  }
-};
+// (Helper functions removed as they are now handled by SyncBatchTable and transform.ts)
 
 /**
  * 触发同步任务

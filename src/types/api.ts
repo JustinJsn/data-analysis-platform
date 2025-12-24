@@ -208,7 +208,7 @@ export type SyncType = 'employee' | 'organization' | 'jobpost';
 /**
  * 同步状态
  */
-export type SyncStatus = 'running' | 'success' | 'failed';
+export type SyncStatus = 'running' | 'success' | 'failed' | 'partial_success';
 
 /**
  * 触发模式
@@ -230,39 +230,37 @@ export interface SyncTriggerRequest {
  */
 export interface SyncBatch {
   /** 批次ID */
-  id: string;
-  /** 批次ID（兼容字段） */
-  batchId: string;
+  batch_id: string;
   /** 同步类型 */
-  syncType: SyncType;
-  /** 触发模式 */
-  triggerMode: TriggerMode;
+  sync_type: SyncType;
   /** 状态 */
   status: SyncStatus;
+  /** 触发模式 */
+  trigger_mode: TriggerMode;
+  /** 触发用户ID */
+  triggered_by_id?: string;
+  /** 触发用户姓名 */
+  triggered_by_name?: string;
   /** 开始时间 */
-  startTime: string;
+  started_at: string;
   /** 结束时间 */
-  endTime: string | null;
+  completed_at: string | null;
   /** 持续时间（毫秒） */
-  durationMs: number | null;
+  duration_ms: number | null;
   /** 总记录数 */
-  totalCount: number;
+  total_records: number;
   /** 成功记录数 */
-  successCount: number;
+  success_records: number;
   /** 失败记录数 */
-  failedCount: number;
-  /** 错误摘要 */
-  errorSummary: string;
+  failed_records: number;
+  /** 跳过记录数 */
+  skipped_records?: number;
+  /** 错误消息 */
+  error_message: string | null;
   /** 时间范围开始 */
-  timeRangeStart: string | null;
+  time_range_start?: string | null;
   /** 时间范围结束 */
-  timeRangeEnd: string | null;
-  /** 父批次ID */
-  parentBatchId: string | null;
-  /** 创建时间 */
-  createdAt: string;
-  /** 更新时间 */
-  updatedAt: string;
+  time_range_end?: string | null;
 }
 
 /**
@@ -274,13 +272,15 @@ export interface SyncBatchQueryParams {
   /** 每页数量（最大100） */
   pageSize?: number;
   /** 同步类型 */
-  syncType?: SyncType;
+  sync_type?: SyncType;
   /** 状态 */
   status?: SyncStatus;
-  /** 开始时间（ISO 8601格式） */
-  startTime?: string;
-  /** 结束时间（ISO 8601格式） */
-  endTime?: string;
+  /** 触发模式 */
+  trigger_mode?: TriggerMode;
+  /** 开始时间范围-起 */
+  start_time_from?: string;
+  /** 开始时间范围-止 */
+  start_time_to?: string;
 }
 
 /**
@@ -290,12 +290,9 @@ export interface SyncBatchListResponse {
   /** 批次列表 */
   batches: SyncBatch[];
   /** 分页信息 */
-  pagination: {
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-  };
+  page: number;
+  size: number;
+  total: number;
 }
 
 /**

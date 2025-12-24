@@ -7,39 +7,27 @@
  */
 export interface SyncBatch {
   /** 批次ID */
-  id: string;
-  /** 批次ID（与id相同，兼容字段） */
-  batchId: string;
+  batch_id: string;
   /** 同步类型 */
-  syncType: 'employee' | 'organization' | 'jobpost';
-  /** 触发模式 */
-  triggerMode: 'manual' | 'scheduled';
+  sync_type: 'employee' | 'organization' | 'jobpost';
   /** 状态 */
-  status: 'running' | 'success' | 'failed';
+  status: 'running' | 'success' | 'failed' | 'partial_success';
+  /** 触发模式 */
+  trigger_mode: 'manual' | 'scheduled';
   /** 开始时间 */
-  startTime: string;
-  /** 结束时间（running状态时为null） */
-  endTime: string | null;
+  started_at: string;
+  /** 结束时间 */
+  completed_at: string | null;
   /** 持续时间（毫秒） */
-  durationMs: number | null;
+  duration_ms: number | null;
   /** 总记录数 */
-  totalCount: number;
+  total_records: number;
   /** 成功记录数 */
-  successCount: number;
+  success_records: number;
   /** 失败记录数 */
-  failedCount: number;
-  /** 错误摘要 */
-  errorSummary: string;
-  /** 时间范围开始 */
-  timeRangeStart: string | null;
-  /** 时间范围结束 */
-  timeRangeEnd: string | null;
-  /** 父批次ID（用于关联顺序同步） */
-  parentBatchId: string | null;
-  /** 创建时间 */
-  createdAt: string;
-  /** 更新时间 */
-  updatedAt: string;
+  failed_records: number;
+  /** 错误信息 */
+  error_message: string | null;
 }
 
 /**
