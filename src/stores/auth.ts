@@ -89,8 +89,6 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       try {
         await authApi.logout();
-      } catch (error) {
-        console.error('登出失败:', error);
       } finally {
         this.clearAuth();
       }
@@ -119,8 +117,8 @@ export const useAuthStore = defineStore('auth', {
         const userInfo = await authApi.getUserInfo();
         this.userInfo = userInfo;
         this.permissions = userInfo.permissions;
-      } catch (error) {
-        console.error('刷新用户信息失败:', error);
+      } catch {
+        // 静默处理错误
       }
     },
   },
