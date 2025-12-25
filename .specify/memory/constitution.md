@@ -29,8 +29,10 @@ This constitution establishes the non-negotiable technical and governance princi
 
 **Name:** TypeScript Strict Mode Enforcement
 
-**Rule:**  
-All TypeScript code MUST be written with strict mode enabled (`strict: true` in tsconfig.json). No implicit `any`, no type assertions without justification, no unchecked index access. Type safety is non-negotiable.
+**Rule:**
+
+- All TypeScript code MUST be written with strict mode enabled (`strict: true` in tsconfig.json). No implicit `any`, no type assertions without justification, no unchecked index access. Type safety is non-negotiable.
+- Don't generate summary documents every time,is important!
 
 **Rationale:**  
 Strict typing catches runtime errors at compile time, improves code maintainability, enables safe refactoring, and serves as living documentation. In a data analysis platform where data transformations are critical, type safety prevents data corruption and processing errors.

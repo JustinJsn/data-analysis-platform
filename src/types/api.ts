@@ -220,9 +220,9 @@ export type TriggerMode = 'manual' | 'scheduled';
  */
 export interface SyncTriggerRequest {
   /** 开始时间（可选，ISO 8601格式） */
-  timeRangeStart?: string;
+  time_range_start?: string;
   /** 结束时间（可选，ISO 8601格式） */
-  timeRangeEnd?: string;
+  time_range_end?: string;
 }
 
 /**
@@ -305,22 +305,73 @@ export interface SyncLog {
   batchId: string;
   /** 记录类型 */
   recordType: string;
-  /** 记录标识符 */
-  recordIdentifier: string;
+  /** 记录ID */
+  recordId: string;
   /** 操作类型 */
-  operation: 'insert' | 'update' | 'delete';
+  operation?: 'insert' | 'update' | 'delete' | 'skip';
   /** 状态 */
   status: 'success' | 'failed';
+  /** 级别 */
+  level?: string;
+  /** 消息 */
+  message: string;
   /** 错误信息 */
-  errorMessage: string;
+  errorMessage?: string;
   /** 错误代码 */
-  errorCode: string;
+  errorCode?: string;
+  /** 详情（JSON字符串或对象） */
+  details?: string | Record<string, any>;
   /** 记录详情 */
-  recordDetails: Record<string, any>;
+  recordDetails?: Record<string, any>;
   /** 处理时间 */
-  processedAt: string;
+  processedAt?: string;
   /** 创建时间 */
-  createdAt: string;
+  createdAt?: string;
+  /** 时间戳 */
+  timestamp?: string;
+}
+
+/**
+ * 批次详情响应（包含批次信息和日志）
+ */
+export interface SyncBatchDetailResponse {
+  /** 批次信息 */
+  batch: SyncBatch;
+  /** 日志分页数据 */
+  logs: {
+    /** 总记录数 */
+    total: number;
+    /** 当前页码 */
+    page: number;
+    /** 每页数量 */
+    size: number;
+    /** 日志列表 */
+    logs: SyncLogRaw[];
+  };
+}
+
+/**
+ * 原始同步日志（后端返回格式）
+ */
+export interface SyncLogRaw {
+  /** 日志ID */
+  log_id: string;
+  /** 批次ID */
+  batch_id: string;
+  /** 记录类型 */
+  record_type: string;
+  /** 记录ID */
+  record_id: string;
+  /** 状态 */
+  status: 'success' | 'failed';
+  /** 级别 */
+  level: string;
+  /** 消息 */
+  message: string;
+  /** 详情（JSON字符串） */
+  details: string;
+  /** 创建时间 */
+  created_at: string;
 }
 
 /**

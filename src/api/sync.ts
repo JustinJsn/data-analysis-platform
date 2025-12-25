@@ -3,9 +3,9 @@
  */
 import { request } from '@/utils/request';
 import type {
-  SyncBatch,
   SyncBatchQueryParams,
   SyncBatchListResponse,
+  SyncBatchDetailResponse,
   SyncBatchLogsResponse,
   SyncTriggerRequest,
   OrderedFlowStatus,
@@ -23,14 +23,25 @@ export const syncApi = {
   },
 
   /**
-   * 获取批次详情
+   * 获取批次详情（包含日志）
+   * @param batchId 批次ID
+   * @param logPage 日志页码（可选，默认1）
+   * @param logPageSize 日志每页数量（可选，默认20）
    */
-  getBatchDetail(batchId: string) {
-    return request.get<SyncBatch>(`/api/v1/sync/batches/${batchId}`);
+  getBatchDetail(batchId: string, logPage = 1, logPageSize = 20) {
+    return request.get<SyncBatchDetailResponse>(
+      `/api/v1/sync/batches/${batchId}`,
+      {
+        params: {
+          log_page: logPage,
+          log_page_size: logPageSize,
+        },
+      },
+    );
   },
 
   /**
-   * 获取批次日志
+   * 获取批次日志（独立接口，如果有的话）
    */
   getBatchLogs(batchId: string) {
     return request.get<SyncBatchLogsResponse>(
@@ -62,8 +73,8 @@ export const syncApi = {
   /**
    * 触发完整同步
    */
-  triggerOrderedSync() {
-    return request.post<SimpleResponse>('/api/v1/sync/ordered-flow');
+  triggerOrderedSync(data?: SyncTriggerRequest) {
+    return request.post<SimpleResponse>('/api/v1/sync/ordered', data);
   },
 
   /**

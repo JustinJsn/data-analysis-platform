@@ -3,7 +3,9 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <el-button @click="handleBack">
-        <el-icon><ArrowLeft /></el-icon>
+        <el-icon>
+          <ArrowLeft />
+        </el-icon>
         返回列表
       </el-button>
       <h2 class="page-title">批次详情</h2>
@@ -109,31 +111,10 @@
         max-height="600"
       >
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column prop="recordId" label="记录ID" width="280" />
-        <el-table-column prop="operation" label="操作" width="100">
+        <el-table-column prop="recordId" label="记录ID" width="200" />
+        <el-table-column prop="recordType" label="记录类型" width="120">
           <template #default="{ row }">
-            <el-tag
-              v-if="row.operation === 'create'"
-              type="success"
-              size="small"
-            >
-              新增
-            </el-tag>
-            <el-tag
-              v-else-if="row.operation === 'update'"
-              type="primary"
-              size="small"
-            >
-              更新
-            </el-tag>
-            <el-tag
-              v-else-if="row.operation === 'skip'"
-              type="info"
-              size="small"
-            >
-              跳过
-            </el-tag>
-            <el-tag v-else size="small">{{ row.operation }}</el-tag>
+            <el-tag size="small">{{ row.recordType }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -144,12 +125,47 @@
             <el-tag v-else type="danger" size="small">失败</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="level" label="级别" width="100">
+          <template #default="{ row }">
+            <el-tag v-if="row.level === 'success'" type="success" size="small">
+              {{ row.level }}
+            </el-tag>
+            <el-tag
+              v-else-if="row.level === 'error'"
+              type="danger"
+              size="small"
+            >
+              {{ row.level }}
+            </el-tag>
+            <el-tag
+              v-else-if="row.level === 'warning'"
+              type="warning"
+              size="small"
+            >
+              {{ row.level }}
+            </el-tag>
+            <el-tag v-else type="info" size="small">
+              {{ row.level || '-' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="message"
           label="消息"
-          min-width="300"
+          min-width="200"
           show-overflow-tooltip
         />
+        <el-table-column
+          prop="details"
+          label="详情"
+          min-width="300"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <span v-if="row.details">{{ formatDetails(row.details) }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="timestamp" label="时间" width="180">
           <template #default="{ row }">
             {{ formatDateTime(row.timestamp) }}
@@ -158,7 +174,7 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="pagination-container">
+      <div v-if="syncStore.logsTotal > 0" class="pagination-container">
         <el-pagination
           v-model:current-page="syncStore.logsFilters.pageNum"
           v-model:page-size="syncStore.logsFilters.pageSize"
@@ -174,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
@@ -231,13 +247,33 @@ const formatDateTime = (dateStr: string | null | undefined): string => {
 };
 
 /**
+ * 格式化详情信息
+ */
+const formatDetails = (details: string | Record<string, any> | undefined): string => {
+  if (!details) return '-';
+
+  // 如果是字符串，尝试解析JSON
+  if (typeof details === 'string') {
+    try {
+      const parsed = JSON.parse(details);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return details;
+    }
+  }
+
+  // 如果是对象，直接格式化
+  return JSON.stringify(details, null, 2);
+};
+
+/**
  * 日志分页切换
  */
 const handleLogsPageChange = async (page: number) => {
   const batchId = route.params.id as string;
   syncStore.setLogsPage(page);
   try {
-    await syncStore.fetchBatchLogs(batchId);
+    await syncStore.fetchBatchDetail(batchId, page, syncStore.logsFilters.pageSize);
   } catch (error) {
     ElMessage.error('加载日志失败，请稍后重试');
   }
@@ -251,7 +287,7 @@ const handleLogsSizeChange = async (size: number) => {
   syncStore.logsFilters.pageSize = size;
   syncStore.logsFilters.pageNum = 1;
   try {
-    await syncStore.fetchBatchLogs(batchId);
+    await syncStore.fetchBatchDetail(batchId, 1, size);
   } catch (error) {
     ElMessage.error('加载日志失败，请稍后重试');
   }
@@ -265,25 +301,45 @@ const handleBack = () => {
 };
 
 /**
- * 初始化：加载批次详情和日志
+ * 加载批次详情（重置分页）
  */
-onMounted(async () => {
-  const batchId = route.params.id as string;
+const loadBatchDetail = async (batchId: string) => {
   if (!batchId) {
     ElMessage.error('批次ID不存在');
     router.push('/sync/batches');
     return;
   }
 
+  // 重置日志分页为第1页
+  syncStore.logsFilters.pageNum = 1;
+
   try {
-    await Promise.all([
-      syncStore.fetchBatchDetail(batchId),
-      syncStore.fetchBatchLogs(batchId)
-    ]);
+    // 批次详情接口已经包含日志数据，不需要单独调用日志接口
+    await syncStore.fetchBatchDetail(batchId, 1, syncStore.logsFilters.pageSize);
   } catch (error) {
     ElMessage.error('加载批次详情失败');
   }
+};
+
+/**
+ * 初始化：加载批次详情和日志
+ */
+onMounted(async () => {
+  const batchId = route.params.id as string;
+  await loadBatchDetail(batchId);
 });
+
+/**
+ * 监听路由参数变化，当批次ID改变时重新加载并重置分页
+ */
+watch(
+  () => route.params.id,
+  async (newBatchId) => {
+    if (newBatchId) {
+      await loadBatchDetail(newBatchId as string);
+    }
+  }
+);
 </script>
 
 <style scoped>
