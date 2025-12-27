@@ -16,7 +16,7 @@
 
     <!-- 筛选区域 -->
     <FilterPanel @search="handleSearch" @reset="handleReset">
-      <el-form :model="filters" inline>
+      <el-form :model="filters" inline class="filter-form">
         <el-form-item label="年份">
           <el-input-number
             v-model="filters.year"
@@ -92,33 +92,54 @@
         :data="performanceStore.reports"
         stripe
         style="width: 100%"
+        :header-cell-style="{
+          background: 'var(--el-fill-color-light)',
+          color: 'var(--el-text-color-regular)',
+          fontWeight: '600',
+          fontSize: '14px',
+        }"
+        :row-style="{ height: '60px' }"
       >
         <el-table-column
           prop="employee_name"
           label="员工姓名"
           min-width="120"
+          align="left"
         />
         <el-table-column
           prop="employee_user_id"
           label="员工ID"
           min-width="120"
+          align="left"
         />
-        <el-table-column prop="year" label="年份" min-width="80" />
-        <el-table-column prop="quarter" label="季度" min-width="80" />
+        <el-table-column
+          prop="year"
+          label="年份"
+          min-width="80"
+          align="center"
+        />
+        <el-table-column
+          prop="quarter"
+          label="季度"
+          min-width="80"
+          align="center"
+        />
         <el-table-column
           prop="organization_full_name"
           label="组织"
           min-width="250"
+          align="left"
           show-overflow-tooltip
         />
         <el-table-column
           prop="performance_rating"
           label="绩效评级"
           min-width="100"
+          align="center"
         >
           <template #default="{ row }">
             <el-tag
-              :type="getRatingTagType(row.performance_rating)"
+              :type="getRatingTagType(row.performance_rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info'"
               size="small"
             >
               {{ row.performance_rating }}
@@ -129,6 +150,7 @@
           prop="last_synced_at"
           label="最后同步时间"
           min-width="180"
+          align="center"
         >
           <template #default="{ row }">
             {{ formatDateTime(row.last_synced_at) }}
@@ -138,6 +160,7 @@
           prop="batch_id"
           label="批次ID"
           min-width="280"
+          align="left"
           show-overflow-tooltip
         />
       </el-table>
@@ -175,6 +198,7 @@ import PageHeader from '@/components/common/PageHeader.vue';
 import FilterPanel from '@/components/common/FilterPanel.vue';
 import PerformanceSyncTrigger from '@/components/performance/PerformanceSyncTrigger.vue';
 import { formatDateTime } from '@/utils/transform';
+import { captureError } from '@/utils/sentry';
 
 const performanceStore = usePerformanceStore();
 
@@ -191,6 +215,9 @@ const filters = ref<PerformanceReportFilters>({
 /** 同步对话框显示状态 */
 const showSyncDialog = ref(false);
 
+/** 防抖定时器 */
+let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
 /**
  * 获取绩效评级标签类型
  */
@@ -205,15 +232,32 @@ function getRatingTagType(rating: string): string {
 }
 
 /**
- * 搜索
+ * 搜索（带防抖）
  */
 const handleSearch = async () => {
-  try {
-    performanceStore.updateFilters(filters.value);
-    await performanceStore.fetchReports();
-  } catch (error) {
-    ElMessage.error('搜索失败，请稍后重试');
+  // 清除之前的定时器
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer);
   }
+
+  // 设置防抖定时器（500ms）
+  searchDebounceTimer = setTimeout(async () => {
+    try {
+      performanceStore.updateFilters(filters.value);
+      await performanceStore.fetchReports();
+    } catch (error) {
+      ElMessage.error('搜索失败，请稍后重试');
+      // 上报错误到 Sentry
+      const err = error instanceof Error ? error : new Error(String(error));
+      captureError(err, {
+        type: 'Performance Search Error',
+        filters: filters.value,
+        fingerprint: ['performance-search-error'],
+      });
+    } finally {
+      searchDebounceTimer = null;
+    }
+  }, 500);
 };
 
 /**
@@ -272,7 +316,11 @@ const handleSyncSuccess = () => {
  * 同步失败回调
  */
 const handleSyncError = (error: string) => {
-  console.error('同步失败:', error);
+  // 错误已通过 ElMessage 显示，这里记录到 Sentry
+  captureError(new Error(error), {
+    type: 'Performance Sync UI Error',
+    fingerprint: ['performance-sync-ui-error'],
+  });
 };
 
 /**
@@ -308,5 +356,16 @@ onMounted(async () => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+.filter-form :deep(.el-form-item) {
+  margin-bottom: 16px;
+}
+
+.filter-form :deep(.el-form-item__label) {
+  font-weight: 500;
+  color: var(--el-text-color-regular);
 }
 </style>

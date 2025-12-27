@@ -55,6 +55,13 @@ export const useAppStore = defineStore('app', {
         icon: 'Refresh',
         permission: 'sync:view',
       },
+      {
+        id: 'performance',
+        name: '绩效数据',
+        path: '/performance/reports',
+        icon: 'DataAnalysis',
+        permission: 'performance:view',
+      },
     ],
     breadcrumbs: [],
   }),

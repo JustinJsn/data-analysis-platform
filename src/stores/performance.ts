@@ -14,7 +14,7 @@ import type {
 } from '@/types/performance';
 import { performanceApi } from '@/api';
 import { syncApi } from '@/api';
-import type { SyncBatch } from '@/types/api';
+import { captureError, addBreadcrumb } from '@/utils/sentry';
 
 export const usePerformanceStore = defineStore('performance', () => {
   // ==================== State ====================
@@ -92,9 +92,32 @@ export const usePerformanceStore = defineStore('performance', () => {
       const response = await performanceApi.getReports(queryParams);
       reports.value = response.list;
       total.value = response.total;
+
+      // 记录成功操作
+      addBreadcrumb({
+        message: '获取绩效数据列表成功',
+        category: 'performance.fetchReports',
+        level: 'info',
+        data: {
+          page: currentPage.value,
+          pageSize: pageSize.value,
+          total: response.total,
+        },
+      });
     } catch (error) {
       reports.value = [];
       total.value = 0;
+
+      // 上报错误到 Sentry
+      const err = error instanceof Error ? error : new Error(String(error));
+      captureError(err, {
+        type: 'Performance Fetch Error',
+        filters: filters.value,
+        page: currentPage.value,
+        pageSize: pageSize.value,
+        fingerprint: ['performance-fetch-error'],
+      });
+
       throw error;
     } finally {
       loading.value = false;
@@ -131,6 +154,15 @@ export const usePerformanceStore = defineStore('performance', () => {
       syncError.value = error instanceof Error ? error.message : '同步失败';
       syncing.value = false;
       syncProgress.value = null;
+
+      // 上报错误到 Sentry
+      const err = error instanceof Error ? error : new Error(String(error));
+      captureError(err, {
+        type: 'Performance Sync Error',
+        syncRequest: data,
+        fingerprint: ['performance-sync-error'],
+      });
+
       throw error;
     }
   };
@@ -180,9 +212,9 @@ export const usePerformanceStore = defineStore('performance', () => {
         // 刷新数据列表
         await fetchReports();
       }
-    } catch (error) {
+    } catch {
       // 检查状态失败，但不影响主流程
-      console.error('检查同步状态失败:', error);
+      // 错误会被 Sentry 捕获（如果已集成）
     }
   };
 

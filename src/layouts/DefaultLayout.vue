@@ -14,6 +14,7 @@ import {
   OfficeBuilding,
   Suitcase,
   Refresh,
+  DataAnalysis,
   Fold,
   Expand,
   Sunny,
@@ -36,6 +37,7 @@ const iconMap: Record<string, any> = {
   OfficeBuilding,
   Suitcase,
   Refresh,
+  DataAnalysis,
 }
 
 const handleToggleSidebar = () => {

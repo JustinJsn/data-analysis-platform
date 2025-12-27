@@ -155,9 +155,9 @@
 
 ### 样式优化
 
-- [ ] T049 优化绩效数据表格样式（列宽、对齐、溢出处理）
-- [ ] T050 优化筛选面板样式（间距、对齐）
-- [ ] T051 优化同步触发对话框样式
+- [x] T049 优化绩效数据表格样式（列宽、对齐、溢出处理）
+- [x] T050 优化筛选面板样式（间距、对齐）
+- [x] T051 优化同步触发对话框样式
 
 ---
 
@@ -167,19 +167,19 @@
 
 ### 单元测试
 
-- [ ] T052 编写 tests/stores/performance.test.ts 测试 Performance Store（fetchReports, triggerSync, updateFilters）
-- [ ] T053 编写 tests/utils/transform.test.ts 测试绩效数据转换函数
+- [x] T052 编写 tests/stores/performance.test.ts 测试 Performance Store（fetchReports, triggerSync, updateFilters）
+- [x] T053 编写 tests/utils/transform.test.ts 测试绩效数据转换函数
 
 ### E2E 测试
 
-- [ ] T054 编写 tests/e2e/performance-sync.spec.ts 测试手动同步触发流程
-- [ ] T055 编写 tests/e2e/performance-list.spec.ts 测试绩效数据列表查询和筛选流程
+- [x] T054 编写 tests/e2e/performance-sync.spec.ts 测试手动同步触发流程
+- [x] T055 编写 tests/e2e/performance-list.spec.ts 测试绩效数据列表查询和筛选流程
 
 ### 代码质量检查
 
-- [ ] T056 运行 oxlint 修复代码风格问题
+- [x] T056 运行 oxlint 修复代码风格问题
 - [ ] T057 运行 vue-tsc 修复类型错误
-- [ ] T058 运行 oxfmt 格式化代码
+- [x] T058 运行 oxfmt 格式化代码
 - [ ] T059 检查测试覆盖率（stores: 80%+, utils: 100%）
 
 ---
@@ -190,13 +190,13 @@
 
 ### 性能优化
 
-- [ ] T060 实现搜索输入框防抖处理（避免频繁请求）
-- [ ] T061 优化筛选条件变更时的请求频率（防抖）
+- [x] T060 实现搜索输入框防抖处理（避免频繁请求）
+- [x] T061 优化筛选条件变更时的请求频率（防抖）
 
 ### Sentry 集成
 
-- [ ] T062 在 Performance Store 中集成 Sentry 错误上报（fetchReports, triggerSync）
-- [ ] T063 在 PerformanceReportListPage.vue 中集成 Sentry 错误边界
+- [x] T062 在 Performance Store 中集成 Sentry 错误上报（fetchReports, triggerSync）
+- [x] T063 在 PerformanceReportListPage.vue 中集成 Sentry 错误边界
 
 ---
 

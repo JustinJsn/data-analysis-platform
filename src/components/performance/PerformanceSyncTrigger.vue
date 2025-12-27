@@ -193,7 +193,7 @@ const handleConfirm = async () => {
     await performanceStore.triggerSync(params);
   } catch (error) {
     // 错误已在 Store 中处理，这里不需要额外处理
-    console.error('触发同步失败:', error);
+    // 错误会通过 ElMessage 显示给用户
   }
 };
 
@@ -226,19 +226,40 @@ const handleClose = () => {
 
 .sync-progress {
   width: 100%;
+  padding: 8px 0;
 }
 
 .sync-status-text {
   margin-top: 8px;
   font-size: 14px;
   color: var(--el-text-color-regular);
+  line-height: 1.5;
 }
 
 .sync-status-text.success {
   color: var(--el-color-success);
+  font-weight: 500;
 }
 
 .sync-status-text.error {
   color: var(--el-color-danger);
+  font-weight: 500;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 20px;
+}
+
+:deep(.el-alert) {
+  margin-top: 8px;
+}
+
+:deep(.el-alert__content) {
+  padding-left: 8px;
+}
+
+:deep(.el-alert__content p) {
+  margin: 4px 0;
+  line-height: 1.6;
 }
 </style>

@@ -2,6 +2,9 @@
  * 类型定义统一导出
  */
 
+// API 相关类型（包含 PaginatedResponse 等通用类型）
+export type * from './api';
+
 // 通用类型
 export type * from './common';
 
