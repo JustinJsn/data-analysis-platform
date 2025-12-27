@@ -232,3 +232,66 @@ export function formatDurationDesc(seconds: number | null): string {
     return `${hours}时${minutes}分`;
   }
 }
+
+/**
+ * 转换后端响应到前端模型（绩效数据）
+ * 后端返回 snake_case，前端使用 snake_case（与后端保持一致）
+ */
+export function transformPerformanceReport(
+  data: Record<string, any>,
+): Record<string, any> {
+  // 后端返回的字段已经是 snake_case，直接返回
+  // 如果需要转换为 camelCase，可以在这里进行转换
+  return {
+    id: data.id,
+    batch_id: data.batch_id,
+    external_system_id: data.external_system_id,
+    year: data.year,
+    quarter: data.quarter,
+    employee_name: data.employee_name,
+    employee_user_id: data.employee_user_id,
+    organization_full_name: data.organization_full_name,
+    organization_path_ids: data.organization_path_ids,
+    performance_rating: data.performance_rating,
+    last_synced_at: data.last_synced_at,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+  };
+}
+
+/**
+ * 转换前端请求参数到后端格式（绩效数据查询参数）
+ * 前端使用 camelCase，后端需要 snake_case
+ */
+export function transformPerformanceQueryParams(
+  params: Record<string, any>,
+): Record<string, any> {
+  const result: Record<string, any> = {};
+
+  if (params.page !== undefined) {
+    result.page = params.page;
+  }
+  if (params.pageSize !== undefined) {
+    result.page_size = params.pageSize;
+  }
+  if (params.year !== undefined) {
+    result.year = params.year;
+  }
+  if (params.quarter !== undefined) {
+    result.quarter = params.quarter;
+  }
+  if (params.employee_name !== undefined) {
+    result.employee_name = params.employee_name;
+  }
+  if (params.employee_user_id !== undefined) {
+    result.employee_user_id = params.employee_user_id;
+  }
+  if (params.organization_path_ids !== undefined) {
+    result.organization_path_ids = params.organization_path_ids;
+  }
+  if (params.performance_rating !== undefined) {
+    result.performance_rating = params.performance_rating;
+  }
+
+  return result;
+}

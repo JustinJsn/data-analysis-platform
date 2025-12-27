@@ -93,6 +93,17 @@ const routes: RouteRecordRaw[] = [
           permission: 'sync:view',
         },
       },
+      {
+        path: 'performance/reports',
+        name: 'PerformanceReports',
+        component: () =>
+          import('@/views/performance/PerformanceReportListPage.vue'),
+        meta: {
+          title: '绩效数据列表',
+          icon: 'DataAnalysis',
+          permission: 'performance:view',
+        },
+      },
     ],
   },
   {

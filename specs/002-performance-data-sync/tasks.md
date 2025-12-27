@@ -25,7 +25,7 @@
 
 ### 目录结构创建
 
-- [ ] T001 创建 src/views/performance 目录（绩效数据页面）
+- [x] T001 创建 src/views/performance 目录（绩效数据页面）
 
 ---
 
@@ -41,18 +41,18 @@
 
 ### TypeScript 类型定义
 
-- [ ] T002 [P] 创建 src/types/performance.ts 定义绩效数据相关类型（PerformanceReport, PerformanceReportQueryParams, PerformanceReportFilters, PerformanceSyncRequest, PerformanceSyncResponse）
-- [ ] T003 在 src/types/index.ts 中导出绩效数据相关类型
+- [x] T002 [P] 创建 src/types/performance.ts 定义绩效数据相关类型（PerformanceReport, PerformanceReportQueryParams, PerformanceReportFilters, PerformanceSyncRequest, PerformanceSyncResponse）
+- [x] T003 在 src/types/index.ts 中导出绩效数据相关类型
 
 ### API 接口定义
 
-- [ ] T004 在 src/api/index.ts 中实现 getPerformanceReports() 方法（调用 GET /api/v1/performance-reports）
-- [ ] T005 在 src/api/index.ts 中实现 triggerPerformanceSync() 方法（调用 POST /api/v1/sync/performance-reports）
+- [x] T004 在 src/api/index.ts 中实现 getPerformanceReports() 方法（调用 GET /api/v1/performance-reports）
+- [x] T005 在 src/api/index.ts 中实现 triggerPerformanceSync() 方法（调用 POST /api/v1/sync/performance-reports）
 
 ### 数据转换函数
 
-- [ ] T006 [P] 在 src/utils/transform.ts 中添加 transformPerformanceReport() 函数（snake_case 转 camelCase）
-- [ ] T007 [P] 在 src/utils/transform.ts 中添加 transformPerformanceQueryParams() 函数（camelCase 转 snake_case）
+- [x] T006 [P] 在 src/utils/transform.ts 中添加 transformPerformanceReport() 函数（snake_case 转 camelCase）
+- [x] T007 [P] 在 src/utils/transform.ts 中添加 transformPerformanceQueryParams() 函数（camelCase 转 snake_case）
 
 ---
 
@@ -73,27 +73,27 @@
 
 ### Performance Store 实现
 
-- [ ] T008 [US1] 创建 src/stores/performance.ts Performance Store 骨架（state, getters, actions）
-- [ ] T009 [US1] 实现 Performance Store state（reports, total, loading, filters, currentPage, pageSize, syncing, syncProgress, lastSyncTime, syncStatus, syncError, currentBatchId）
-- [ ] T010 [US1] 实现 Performance Store getter totalPages
-- [ ] T011 [US1] 实现 Performance Store getter hasReports
-- [ ] T012 [US1] 实现 Performance Store getter canSync
-- [ ] T013 [US1] 实现 Performance Store action triggerSync()（调用 API，更新同步状态）
-- [ ] T014 [US1] 实现 Performance Store action checkSyncStatus()（轮询检查同步状态）
-- [ ] T015 [US1] 在 triggerSync() 中处理同步成功/失败状态
-- [ ] T016 [US1] 在 triggerSync() 中实现同步状态轮询逻辑
+- [x] T008 [US1] 创建 src/stores/performance.ts Performance Store 骨架（state, getters, actions）
+- [x] T009 [US1] 实现 Performance Store state（reports, total, loading, filters, currentPage, pageSize, syncing, syncProgress, lastSyncTime, syncStatus, syncError, currentBatchId）
+- [x] T010 [US1] 实现 Performance Store getter totalPages
+- [x] T011 [US1] 实现 Performance Store getter hasReports
+- [x] T012 [US1] 实现 Performance Store getter canSync
+- [x] T013 [US1] 实现 Performance Store action triggerSync()（调用 API，更新同步状态）
+- [x] T014 [US1] 实现 Performance Store action checkSyncStatus()（轮询检查同步状态）
+- [x] T015 [US1] 在 triggerSync() 中处理同步成功/失败状态
+- [x] T016 [US1] 在 triggerSync() 中实现同步状态轮询逻辑
 
 ### 同步触发组件
 
-- [ ] T017 [US1] 创建 src/components/performance/PerformanceSyncTrigger.vue 同步触发组件骨架
-- [ ] T018 [US1] 在 PerformanceSyncTrigger.vue 实现对话框（el-dialog）
-- [ ] T019 [US1] 在 PerformanceSyncTrigger.vue 实现同步类型选择（el-radio-group: incremental/full）
-- [ ] T020 [US1] 在 PerformanceSyncTrigger.vue 实现数据源选择（el-select，可选）
-- [ ] T021 [US1] 在 PerformanceSyncTrigger.vue 实现时间范围选择（el-date-picker，可选）
-- [ ] T022 [US1] 在 PerformanceSyncTrigger.vue 实现确认按钮点击事件
-- [ ] T023 [US1] 在 PerformanceSyncTrigger.vue 调用 Performance Store triggerSync() 方法
-- [ ] T024 [US1] 在 PerformanceSyncTrigger.vue 显示同步进度和状态
-- [ ] T025 [US1] 在 PerformanceSyncTrigger.vue 处理同步成功/失败提示（ElMessage）
+- [x] T017 [US1] 创建 src/components/performance/PerformanceSyncTrigger.vue 同步触发组件骨架
+- [x] T018 [US1] 在 PerformanceSyncTrigger.vue 实现对话框（el-dialog）
+- [x] T019 [US1] 在 PerformanceSyncTrigger.vue 实现同步类型选择（el-radio-group: incremental/full）
+- [x] T020 [US1] 在 PerformanceSyncTrigger.vue 实现数据源选择（el-select，可选）
+- [x] T021 [US1] 在 PerformanceSyncTrigger.vue 实现时间范围选择（el-date-picker，可选）
+- [x] T022 [US1] 在 PerformanceSyncTrigger.vue 实现确认按钮点击事件
+- [x] T023 [US1] 在 PerformanceSyncTrigger.vue 调用 Performance Store triggerSync() 方法
+- [x] T024 [US1] 在 PerformanceSyncTrigger.vue 显示同步进度和状态
+- [x] T025 [US1] 在 PerformanceSyncTrigger.vue 处理同步成功/失败提示（ElMessage）
 
 ---
 
@@ -117,35 +117,35 @@
 
 ### Performance Store 扩展
 
-- [ ] T026 [US2] 实现 Performance Store action fetchReports()（调用 API 获取绩效数据列表）
-- [ ] T027 [US2] 实现 Performance Store action updateFilters()（更新筛选条件）
-- [ ] T028 [US2] 实现 Performance Store action resetFilters()（重置筛选条件）
-- [ ] T029 [US2] 实现 Performance Store action updatePagination()（更新分页信息）
+- [x] T026 [US2] 实现 Performance Store action fetchReports()（调用 API 获取绩效数据列表）
+- [x] T027 [US2] 实现 Performance Store action updateFilters()（更新筛选条件）
+- [x] T028 [US2] 实现 Performance Store action resetFilters()（重置筛选条件）
+- [x] T029 [US2] 实现 Performance Store action updatePagination()（更新分页信息）
 
 ### 绩效数据列表页面
 
-- [ ] T030 [US2] 创建 src/views/performance/PerformanceReportListPage.vue 页面骨架
-- [ ] T031 [US2] 在 PerformanceReportListPage.vue 实现页面头部（PageHeader 组件，标题 + 同步按钮）
-- [ ] T032 [US2] 在 PerformanceReportListPage.vue 实现筛选区域（FilterPanel 组件）
-- [ ] T033 [US2] 在 PerformanceReportListPage.vue 实现年份筛选（el-input-number）
-- [ ] T034 [US2] 在 PerformanceReportListPage.vue 实现季度筛选（el-select: Q1/Q2/Q3/Q4）
-- [ ] T035 [US2] 在 PerformanceReportListPage.vue 实现员工姓名搜索（el-input）
-- [ ] T036 [US2] 在 PerformanceReportListPage.vue 实现员工用户ID搜索（el-input）
-- [ ] T037 [US2] 在 PerformanceReportListPage.vue 实现组织路径ID筛选（el-input）
-- [ ] T038 [US2] 在 PerformanceReportListPage.vue 实现绩效评级筛选（el-select）
-- [ ] T039 [US2] 在 PerformanceReportListPage.vue 实现搜索和重置按钮
-- [ ] T040 [US2] 在 PerformanceReportListPage.vue 实现绩效数据表格（el-table，显示所有字段）
-- [ ] T041 [US2] 在 PerformanceReportListPage.vue 实现分页组件（el-pagination）
-- [ ] T042 [US2] 在 PerformanceReportListPage.vue onMounted 时调用 fetchReports()
-- [ ] T043 [US2] 在 PerformanceReportListPage.vue 实现搜索按钮点击事件
-- [ ] T044 [US2] 在 PerformanceReportListPage.vue 实现重置按钮点击事件
-- [ ] T045 [US2] 在 PerformanceReportListPage.vue 实现分页切换事件
-- [ ] T046 [US2] 在 PerformanceReportListPage.vue 添加 loading 状态显示
-- [ ] T047 [US2] 在 PerformanceReportListPage.vue 集成 PerformanceSyncTrigger 组件
+- [x] T030 [US2] 创建 src/views/performance/PerformanceReportListPage.vue 页面骨架
+- [x] T031 [US2] 在 PerformanceReportListPage.vue 实现页面头部（PageHeader 组件，标题 + 同步按钮）
+- [x] T032 [US2] 在 PerformanceReportListPage.vue 实现筛选区域（FilterPanel 组件）
+- [x] T033 [US2] 在 PerformanceReportListPage.vue 实现年份筛选（el-input-number）
+- [x] T034 [US2] 在 PerformanceReportListPage.vue 实现季度筛选（el-select: Q1/Q2/Q3/Q4）
+- [x] T035 [US2] 在 PerformanceReportListPage.vue 实现员工姓名搜索（el-input）
+- [x] T036 [US2] 在 PerformanceReportListPage.vue 实现员工用户ID搜索（el-input）
+- [x] T037 [US2] 在 PerformanceReportListPage.vue 实现组织路径ID筛选（el-input）
+- [x] T038 [US2] 在 PerformanceReportListPage.vue 实现绩效评级筛选（el-select）
+- [x] T039 [US2] 在 PerformanceReportListPage.vue 实现搜索和重置按钮
+- [x] T040 [US2] 在 PerformanceReportListPage.vue 实现绩效数据表格（el-table，显示所有字段）
+- [x] T041 [US2] 在 PerformanceReportListPage.vue 实现分页组件（el-pagination）
+- [x] T042 [US2] 在 PerformanceReportListPage.vue onMounted 时调用 fetchReports()
+- [x] T043 [US2] 在 PerformanceReportListPage.vue 实现搜索按钮点击事件
+- [x] T044 [US2] 在 PerformanceReportListPage.vue 实现重置按钮点击事件
+- [x] T045 [US2] 在 PerformanceReportListPage.vue 实现分页切换事件
+- [x] T046 [US2] 在 PerformanceReportListPage.vue 添加 loading 状态显示
+- [x] T047 [US2] 在 PerformanceReportListPage.vue 集成 PerformanceSyncTrigger 组件
 
 ### 路由配置
 
-- [ ] T048 [US2] 在 src/router/routes.ts 中添加绩效数据路由（/performance/reports）
+- [x] T048 [US2] 在 src/router/routes.ts 中添加绩效数据路由（/performance/reports）
 
 ---
 

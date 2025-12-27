@@ -19,3 +19,6 @@ export type * from './position';
 
 // 同步任务相关
 export type * from './sync';
+
+// 绩效数据相关
+export type * from './performance';

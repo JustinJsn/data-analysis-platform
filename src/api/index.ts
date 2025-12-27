@@ -8,6 +8,7 @@ export { employeeApi } from './employee';
 export { organizationApi } from './organization';
 export { positionApi } from './position';
 export { syncApi } from './sync';
+export { performanceApi } from './performance';
 
 // 默认导出（保持向后兼容）
 import { authApi } from './auth';
@@ -15,6 +16,7 @@ import { employeeApi } from './employee';
 import { organizationApi } from './organization';
 import { positionApi } from './position';
 import { syncApi } from './sync';
+import { performanceApi } from './performance';
 
 export default {
   auth: authApi,
@@ -22,4 +24,5 @@ export default {
   organization: organizationApi,
   position: positionApi,
   sync: syncApi,
+  performance: performanceApi,
 };
