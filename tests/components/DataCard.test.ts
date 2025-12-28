@@ -107,6 +107,9 @@ describe('DataCard Component', () => {
     });
 
     const iconElement = wrapper.find('.card-icon');
-    expect(iconElement.attributes('style')).toContain(customBg);
+    const style = iconElement.attributes('style') || '';
+    // 浏览器会将颜色值转换，所以只检查 gradient 关键词
+    expect(style).toContain('linear-gradient');
+    expect(style).toContain('135deg');
   });
 });

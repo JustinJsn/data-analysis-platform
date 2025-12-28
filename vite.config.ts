@@ -43,6 +43,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.css'],
   },
   server: {
     port: 15173,
@@ -59,6 +60,17 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './tests/setup.ts',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/tests/e2e/**'],
+    css: {
+      modules: {
+        classNameStrategy: 'non-scoped',
+      },
+    },
+    server: {
+      deps: {
+        inline: ['element-plus'],
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

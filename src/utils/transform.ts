@@ -8,7 +8,12 @@
 export function formatDateTime(isoString: string | null | undefined): string {
   if (!isoString) return '-';
   try {
-    return new Date(isoString).toLocaleString('zh-CN', {
+    const date = new Date(isoString);
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) {
+      return '-';
+    }
+    return date.toLocaleString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
