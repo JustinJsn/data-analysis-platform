@@ -101,7 +101,7 @@ export interface PositionQueryParams {
  */
 export interface SyncBatchQueryParams {
   /** 页码 */
-  page?: number;
+  pageNum?: number;
   /** 每页数量（最大100） */
   pageSize?: number;
   /** 同步类型 */

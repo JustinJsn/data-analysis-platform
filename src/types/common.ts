@@ -33,7 +33,7 @@ export interface ApiError {
  */
 export interface PaginationInfo {
   /** 当前页码 */
-  page: number;
+  pageNum: number;
   /** 每页数量 */
   pageSize: number;
   /** 总记录数 */

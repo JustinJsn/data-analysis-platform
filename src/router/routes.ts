@@ -104,6 +104,17 @@ const routes: RouteRecordRaw[] = [
           permission: 'performance:view',
         },
       },
+      {
+        path: 'performance/reports/query',
+        name: 'PerformanceReportQuery',
+        component: () =>
+          import('@/views/performance/PerformanceReportQueryPage.vue'),
+        meta: {
+          title: '绩效数据报表',
+          hidden: true,
+          permission: 'performance:view',
+        },
+      },
     ],
   },
   {

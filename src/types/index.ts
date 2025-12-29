@@ -23,6 +23,9 @@ export type * from './sync';
 // 绩效数据相关
 export type * from './performance';
 
+// 绩效数据报表相关
+export type * from './performance-report';
+
 // API 相关类型（最后导出，包含 API 客户端接口和专用类型）
 // 注意：这里只导出 API 特有的类型，避免与上面的类型冲突
 export type {

@@ -29,7 +29,7 @@ export const useSyncStore = defineStore('sync', () => {
 
   /** 批次筛选条件 */
   const filters = ref<SyncBatchQueryParams>({
-    page: 1,
+    pageNum: 1,
     pageSize: 20,
   });
 
@@ -202,7 +202,7 @@ export const useSyncStore = defineStore('sync', () => {
    * 设置批次列表页码
    */
   const setBatchesPage = (page: number) => {
-    filters.value.page = page;
+    filters.value.pageNum = page;
   };
 
   /**
@@ -218,7 +218,7 @@ export const useSyncStore = defineStore('sync', () => {
   const setBatchesFilters = (newFilters: Partial<SyncBatchQueryParams>) => {
     filters.value = { ...filters.value, ...newFilters };
     // 重置到第一页
-    filters.value.page = 1;
+    filters.value.pageNum = 1;
   };
 
   /**
@@ -226,7 +226,7 @@ export const useSyncStore = defineStore('sync', () => {
    */
   const resetBatchesFilters = () => {
     filters.value = {
-      page: 1,
+      pageNum: 1,
       pageSize: 20,
     };
   };

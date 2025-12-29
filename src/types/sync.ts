@@ -35,7 +35,7 @@ export interface SyncBatch {
  */
 export interface SyncBatchFilters {
   /** 页码 */
-  page: number;
+  pageNum: number;
   /** 每页数量（最大100） */
   pageSize: number;
   /** 同步类型 */
@@ -56,7 +56,7 @@ export interface SyncBatchListResponse {
   batches: SyncBatch[];
   /** 分页信息 */
   pagination: {
-    page: number;
+    pageNum: number;
     pageSize: number;
     totalCount: number;
     totalPages: number;

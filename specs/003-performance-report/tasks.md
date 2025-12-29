@@ -11,22 +11,22 @@
 
 **目标:** 安装依赖和初始化项目结构
 
-- [ ] T001 安装 xlsx 库用于 Excel 导出功能
-- [ ] T002 创建绩效报表类型定义文件 `src/types/performance-report.ts`
-- [ ] T003 创建绩效报表 API 客户端文件 `src/api/performance-report.ts`
-- [ ] T004 创建绩效报表路由配置在 `src/router/routes.ts`
-- [ ] T005 创建绩效报表 Store 文件 `src/stores/performance-report.ts`
+- [x] T001 安装 xlsx 库用于 Excel 导出功能
+- [x] T002 创建绩效报表类型定义文件 `src/types/performance-report.ts`
+- [x] T003 创建绩效报表 API 客户端文件 `src/api/performance-report.ts`
+- [x] T004 创建绩效报表路由配置在 `src/router/routes.ts`
+- [x] T005 创建绩效报表 Store 文件 `src/stores/performance-report.ts`
 
 ### Phase 2: Foundational Components & Utilities
 
 **目标:** 创建基础组件和工具函数，为所有用户故事提供支持
 
-- [ ] T006 [P] 创建季度时间工具函数 `src/utils/quarter-calculator.ts` 包含季度智能推算算法
-- [ ] T007 [P] 创建时间范围转换工具函数 `src/utils/date-range.ts` 包含年份段和季度到日期范围的转换
-- [ ] T008 [P] 创建查询参数验证函数 `src/utils/validation.ts` 扩展验证规则支持绩效报表查询参数
-- [ ] T009 [P] 创建导出工具函数 `src/utils/export.ts` 包含批量导出和文件下载功能
-- [ ] T010 创建绩效数据表格组件 `src/components/performance/PerformanceReportTable.vue` 支持分页展示
-- [ ] T011 创建主查询页面组件 `src/views/performance/PerformanceReportQueryPage.vue` 整合所有查询条件
+- [x] T006 [P] 创建季度时间工具函数 `src/utils/quarter-calculator.ts` 包含季度智能推算算法
+- [x] T007 [P] 创建时间范围转换工具函数 `src/utils/date-range.ts` 包含年份段和季度到日期范围的转换
+- [x] T008 [P] 创建查询参数验证函数 `src/utils/validation.ts` 扩展验证规则支持绩效报表查询参数
+- [x] T009 [P] 创建导出工具函数 `src/utils/export.ts` 包含批量导出和文件下载功能
+- [x] T010 创建绩效数据表格组件 `src/components/performance/PerformanceReportTable.vue` 支持分页展示
+- [x] T011 创建主查询页面组件 `src/views/performance/PerformanceReportQueryPage.vue` 整合所有查询条件
 
 ### Phase 3: User Story 1 - 年份段查询
 

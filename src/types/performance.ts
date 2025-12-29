@@ -35,11 +35,11 @@ export interface PerformanceReport {
 }
 
 /**
- * 绩效数据查询参数
+ * 绩效数据查询参数（列表查询）
  */
-export interface PerformanceReportQueryParams {
+export interface PerformanceQueryParams {
   /** 页码（从1开始） */
-  page?: number;
+  pageNum?: number;
   /** 每页条数 */
   pageSize?: number;
   /** 年份筛选 */
@@ -54,6 +54,32 @@ export interface PerformanceReportQueryParams {
   organization_path_ids?: string;
   /** 绩效评级筛选 */
   performance_rating?: string;
+}
+
+/**
+ * 绩效数据业务查询参数（business-query 接口）
+ */
+export interface PerformanceReportBusinessQueryParams {
+  /** 页码（从1开始），最小值：1，默认：1 */
+  pageNum?: number;
+  /** 每页条数，范围：1-100，默认：20 */
+  pageSize?: number;
+  /** 开始年份（2000-2100） */
+  start_year?: number;
+  /** 结束年份（2000-2100） */
+  end_year?: number;
+  /** 开始季度，枚举值：Q1、Q2、Q3、Q4 */
+  start_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 结束季度，枚举值：Q1、Q2、Q3、Q4 */
+  end_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 员工UserId列表，逗号分隔，最多100个，每个ID最长50字符，总长度不超过5000字符 */
+  employee_user_ids?: string;
+  /** 部门ID（UUID格式） */
+  organization_id?: string;
+  /** 是否包含下级部门，默认：false */
+  include_children?: boolean;
+  /** 批次ID（UUID格式），不指定时使用最新批次 */
+  batch_id?: string;
 }
 
 /**

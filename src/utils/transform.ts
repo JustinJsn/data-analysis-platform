@@ -273,8 +273,8 @@ export function transformPerformanceQueryParams(
 ): Record<string, any> {
   const result: Record<string, any> = {};
 
-  if (params.page !== undefined) {
-    result.page = params.page;
+  if (params.pageNum !== undefined) {
+    result.page = params.pageNum;
   }
   if (params.pageSize !== undefined) {
     result.page_size = params.pageSize;

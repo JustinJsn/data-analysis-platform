@@ -5,6 +5,7 @@ import { request } from '@/utils/request';
 import type {
   PerformanceReport,
   PerformanceReportQueryParams,
+  PerformanceReportBusinessQueryParams,
   PerformanceSyncRequest,
   PerformanceSyncResponse,
   PaginatedResponse,
@@ -14,9 +15,25 @@ export const performanceApi = {
   /**
    * 获取绩效数据列表
    */
-  getReports(params?: PerformanceReportQueryParams) {
+  getReports(params?: PerformanceQueryParams) {
     return request.get<PaginatedResponse<PerformanceReport>>(
       '/api/v1/performance-reports',
+      {
+        params,
+      },
+    );
+  },
+
+  /**
+   * 绩效数据业务查询
+   * 支持多种查询条件的绩效数据查询接口
+   *
+   * @param params 业务查询参数
+   * @returns 分页响应数据
+   */
+  businessQuery(params?: PerformanceReportBusinessQueryParams) {
+    return request.get<PaginatedResponse<PerformanceReport>>(
+      '/api/v1/performance-reports/business-query',
       {
         params,
       },

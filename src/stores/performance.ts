@@ -8,7 +8,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type {
   PerformanceReport,
-  PerformanceReportQueryParams,
+  PerformanceQueryParams,
   PerformanceReportFilters,
   PerformanceSyncRequest,
 } from '@/types/performance';
@@ -80,11 +80,11 @@ export const usePerformanceStore = defineStore('performance', () => {
   /**
    * 获取绩效数据列表
    */
-  const fetchReports = async (params?: PerformanceReportQueryParams) => {
+  const fetchReports = async (params?: PerformanceQueryParams) => {
     try {
       loading.value = true;
-      const queryParams: PerformanceReportQueryParams = {
-        page: currentPage.value,
+      const queryParams: PerformanceQueryParams = {
+        pageNum: currentPage.value,
         pageSize: pageSize.value,
         ...filters.value,
         ...params,
@@ -99,7 +99,7 @@ export const usePerformanceStore = defineStore('performance', () => {
         category: 'performance.fetchReports',
         level: 'info',
         data: {
-          page: currentPage.value,
+          pageNum: currentPage.value,
           pageSize: pageSize.value,
           total: response.total,
         },
@@ -113,7 +113,7 @@ export const usePerformanceStore = defineStore('performance', () => {
       captureError(err, {
         type: 'Performance Fetch Error',
         filters: filters.value,
-        page: currentPage.value,
+        pageNum: currentPage.value,
         pageSize: pageSize.value,
         fingerprint: ['performance-fetch-error'],
       });
