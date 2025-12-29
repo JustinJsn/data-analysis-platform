@@ -37,6 +37,7 @@
       <PerformanceReportTable
         :data="reportStore.records"
         :loading="reportStore.loading"
+        :query-params="reportStore.queryParams"
       />
 
       <!-- 分页 -->
@@ -121,8 +122,13 @@ const handleSizeChange = async (size: number) => {
 };
 
 // 初始化
-onMounted(() => {
-  // 可以在这里加载初始数据
+onMounted(async () => {
+  // 页面加载时自动查询数据
+  try {
+    await reportStore.fetchRecords();
+  } catch (error) {
+    // 静默失败，不显示错误提示（用户可以通过点击查询按钮重试）
+  }
 });
 </script>
 

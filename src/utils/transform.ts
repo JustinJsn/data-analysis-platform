@@ -300,3 +300,36 @@ export function transformPerformanceQueryParams(
 
   return result;
 }
+
+/**
+ * 解析部门路径，提取一级到四级部门
+ * @param departmentPath 部门路径，如："A部门/B部门/C部门/D部门"
+ * @returns 包含一级到四级部门的对象
+ */
+export function parseDepartmentPath(
+  departmentPath: string | null | undefined,
+): {
+  level1: string;
+  level2: string;
+  level3: string;
+  level4: string;
+} {
+  const defaultResult = {
+    level1: '',
+    level2: '',
+    level3: '',
+    level4: '',
+  };
+
+  if (!departmentPath) {
+    return defaultResult;
+  }
+
+  const parts = departmentPath.split('/').filter((part) => part.trim());
+  return {
+    level1: parts[0] || '',
+    level2: parts[1] || '',
+    level3: parts[2] || '',
+    level4: parts[3] || '',
+  };
+}
