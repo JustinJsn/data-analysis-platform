@@ -2,7 +2,10 @@
  * 绩效表格数据转换工具
  */
 
-import type { PerformanceRecord } from '@/types/performance-report';
+import type {
+  PerformanceRecord,
+  BusinessQueryRecord,
+} from '@/types/performance-report';
 import { parseDepartmentPath } from './transform';
 
 /**
@@ -178,4 +181,122 @@ export function extractYearRange(
  */
 export function getQuarterKeys(year: number): string[] {
   return [`${year}-Q4`, `${year}-Q3`, `${year}-Q2`, `${year}-Q1`];
+}
+
+/**
+ * 将 Business Query 响应数据转换为表格行数据
+ *
+ * @param records Business Query 响应记录列表
+ * @returns 表格行数据列表
+ */
+export function transformBusinessQueryToTableRows(
+  records: BusinessQueryRecord[],
+): PerformanceTableRow[] {
+  return records.map((record) => {
+    // 提取季度数据（格式：2025Q3 -> 2025-Q3）
+    const performanceData: Record<string, string> = {};
+
+    // 遍历所有键，查找季度评级（格式：2025Q3, 2025Q2 等）
+    for (const key in record) {
+      const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
+      if (quarterMatch) {
+        const year = quarterMatch[1];
+        const quarter = `Q${quarterMatch[2]}`;
+        const rating = record[key as `${number}Q${1 | 2 | 3 | 4}`];
+        if (rating && typeof rating === 'string') {
+          performanceData[`${year}-${quarter}`] = rating;
+        }
+      }
+    }
+
+    return {
+      employee_id: record.employeeNo || '',
+      employee_number: record.employeeNo || '',
+      employee_name: record.name || '',
+      department_level1: record.level1Department ?? '',
+      department_level2: record.level2Department ?? '',
+      department_level3: record.level3Department ?? '',
+      department_level4: record.level4Department ?? '',
+      employment_date: record.employmentDate ?? '',
+      position: record.position ?? '',
+      performance_data: performanceData,
+      rating_counts: {
+        S: record.ratingCountS ?? 0,
+        A: record.ratingCountA ?? 0,
+        B: record.ratingCountB ?? 0,
+        C: record.ratingCountC ?? 0,
+        D: record.ratingCountD ?? 0,
+      },
+    };
+  });
+}
+
+/**
+ * 从 Business Query 记录中提取年份范围
+ * 优先从查询参数中提取，如果没有查询参数则从数据中提取
+ *
+ * @param queryParams 查询参数
+ * @param records Business Query 记录列表（可选）
+ * @returns 年份数组（降序，如：[2025, 2024, 2023]）
+ */
+export function extractYearRangeFromBusinessQuery(
+  queryParams?: { start_year?: number; end_year?: number },
+  records?: BusinessQueryRecord[],
+): number[] {
+  let startYear: number | undefined;
+  let endYear: number | undefined;
+
+  // 优先从查询参数中提取年份范围
+  if (queryParams?.start_year && queryParams?.end_year) {
+    startYear = queryParams.start_year;
+    endYear = queryParams.end_year;
+  }
+
+  // 如果查询参数中没有年份范围，尝试从数据中提取
+  if ((!startYear || !endYear) && records && records.length > 0) {
+    const yearSet = new Set<number>();
+
+    // 从季度键中提取年份（格式：2025Q3）
+    for (const record of records) {
+      for (const key in record) {
+        const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
+        if (quarterMatch) {
+          const year = parseInt(quarterMatch[1], 10);
+          yearSet.add(year);
+        }
+      }
+    }
+
+    // 从年度对象键中提取年份（格式：year2025）
+    for (const record of records) {
+      for (const key in record) {
+        const yearMatch = key.match(/^year(\d{4})$/);
+        if (yearMatch) {
+          const year = parseInt(yearMatch[1], 10);
+          yearSet.add(year);
+        }
+      }
+    }
+
+    const years = Array.from(yearSet).sort((a, b) => a - b);
+    if (years.length > 0) {
+      startYear = years[0];
+      endYear = years[years.length - 1];
+    }
+  }
+
+  // 如果还是没有指定范围，使用默认范围（当前年份往前3年）
+  if (!startYear || !endYear) {
+    const currentYear = new Date().getFullYear();
+    startYear = currentYear - 2;
+    endYear = currentYear;
+  }
+
+  // 生成年份数组（降序）
+  const years: number[] = [];
+  for (let year = endYear; year >= startYear; year--) {
+    years.push(year);
+  }
+
+  return years;
 }

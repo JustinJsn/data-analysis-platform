@@ -8,6 +8,8 @@ import type {
   ExportRequest,
   ExportResponse,
   ExportTaskStatus,
+  BusinessQueryResponse,
+  PerformanceReportBusinessQueryParams,
 } from '@/types/performance-report';
 
 export const performanceReportApi = {
@@ -20,6 +22,21 @@ export const performanceReportApi = {
   getReports(params?: PerformanceReportQueryParams) {
     return request.get<PerformanceRecordListResponse>(
       '/api/v1/performance-reports',
+      {
+        params,
+      },
+    );
+  },
+
+  /**
+   * 业务查询绩效数据（business-query 接口）
+   *
+   * @param params 业务查询参数
+   * @returns 分页的绩效数据列表
+   */
+  businessQuery(params?: PerformanceReportBusinessQueryParams) {
+    return request.get<BusinessQueryResponse>(
+      '/api/v1/performance-reports/business-query',
       {
         params,
       },

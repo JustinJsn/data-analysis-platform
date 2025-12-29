@@ -35,9 +35,9 @@
     <!-- 查询结果表格 -->
     <div class="card">
       <PerformanceReportTable
-        :data="reportStore.records"
+        :business-query-data="reportStore.businessQueryRecords"
         :loading="reportStore.loading"
-        :query-params="reportStore.queryParams"
+        :query-params="reportStore.businessQueryParams"
       />
 
       <!-- 分页 -->

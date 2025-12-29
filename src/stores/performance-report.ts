@@ -9,6 +9,8 @@ import { ref, computed } from 'vue';
 import type {
   PerformanceRecord,
   PerformanceReportQueryParams,
+  PerformanceReportBusinessQueryParams,
+  BusinessQueryRecord,
   ExportRequest,
 } from '@/types/performance-report';
 import { performanceReportApi } from '@/api/performance-report';
@@ -19,8 +21,11 @@ export const usePerformanceReportStore = defineStore(
   () => {
     // ==================== State ====================
 
-    /** 绩效数据列表 */
+    /** 绩效数据列表（兼容旧格式） */
     const records = ref<PerformanceRecord[]>([]);
+
+    /** Business Query 数据列表（新格式） */
+    const businessQueryRecords = ref<BusinessQueryRecord[]>([]);
 
     /** 总记录数 */
     const total = ref(0);
@@ -30,6 +35,12 @@ export const usePerformanceReportStore = defineStore(
 
     /** 查询参数 */
     const queryParams = ref<PerformanceReportQueryParams>({
+      pageNum: 1,
+      pageSize: 20,
+    });
+
+    /** Business Query 查询参数 */
+    const businessQueryParams = ref<PerformanceReportBusinessQueryParams>({
       pageNum: 1,
       pageSize: 20,
     });
@@ -66,28 +77,28 @@ export const usePerformanceReportStore = defineStore(
     // ==================== Actions ====================
 
     /**
-     * 查询绩效数据
+     * 查询绩效数据（使用 business-query 接口）
      */
     const fetchRecords = async (
-      params?: Partial<PerformanceReportQueryParams>,
+      params?: Partial<PerformanceReportBusinessQueryParams>,
     ) => {
       try {
         loading.value = true;
 
         // 合并查询参数
-        const mergedParams: PerformanceReportQueryParams = {
-          ...queryParams.value,
+        const mergedParams: PerformanceReportBusinessQueryParams = {
+          ...businessQueryParams.value,
           ...params,
           pageNum: currentPage.value,
           pageSize: pageSize.value,
         };
 
-        const response = await performanceReportApi.getReports(mergedParams);
-        records.value = response.list;
+        const response = await performanceReportApi.businessQuery(mergedParams);
+        businessQueryRecords.value = response.list;
         total.value = response.total;
 
         // 更新查询参数
-        queryParams.value = mergedParams;
+        businessQueryParams.value = mergedParams;
 
         // 记录成功操作
         addBreadcrumb({
@@ -101,14 +112,14 @@ export const usePerformanceReportStore = defineStore(
           },
         });
       } catch (error) {
-        records.value = [];
+        businessQueryRecords.value = [];
         total.value = 0;
 
         // 上报错误到 Sentry
         const err = error instanceof Error ? error : new Error(String(error));
         captureError(err, {
           type: 'Performance Report Fetch Error',
-          queryParams: queryParams.value,
+          queryParams: businessQueryParams.value,
           fingerprint: ['performance-report-fetch-error'],
         });
 
@@ -122,9 +133,9 @@ export const usePerformanceReportStore = defineStore(
      * 更新查询参数
      */
     const updateQueryParams = (
-      params: Partial<PerformanceReportQueryParams>,
+      params: Partial<PerformanceReportBusinessQueryParams>,
     ) => {
-      queryParams.value = { ...queryParams.value, ...params };
+      businessQueryParams.value = { ...businessQueryParams.value, ...params };
       currentPage.value = 1; // 重置到第一页
     };
 
@@ -132,7 +143,7 @@ export const usePerformanceReportStore = defineStore(
      * 重置查询参数
      */
     const resetQueryParams = () => {
-      queryParams.value = {
+      businessQueryParams.value = {
         pageNum: 1,
         pageSize: 20,
       };
@@ -188,7 +199,7 @@ export const usePerformanceReportStore = defineStore(
 
         // 提交导出任务
         const request: ExportRequest = {
-          query_params: queryParams.value,
+          query_params: businessQueryParams.value as any,
           export_type: 'all',
           format,
         };
@@ -250,9 +261,11 @@ export const usePerformanceReportStore = defineStore(
     return {
       // State
       records,
+      businessQueryRecords,
       total,
       loading,
       queryParams,
+      businessQueryParams,
       currentPage,
       pageSize,
       exporting,

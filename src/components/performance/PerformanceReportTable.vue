@@ -1,182 +1,56 @@
 <template>
-  <div class="performance-report-table">
-    <el-table
-      v-loading="loading"
+  <div class="performance-report-table" v-loading="loading">
+    <el-table-v2
+      :columns="columns"
       :data="tableRows"
-      stripe
-      style="width: 100%"
-      :header-cell-style="getHeaderCellStyle"
-      border
-    >
-      <!-- 员工信息列 -->
-      <el-table-column
-        prop="employee_number"
-        label="工号"
-        min-width="100"
-        align="center"
-        fixed="left"
-      />
-      <el-table-column
-        prop="employee_name"
-        label="姓名"
-        min-width="100"
-        align="center"
-        fixed="left"
-      />
-      <el-table-column
-        prop="department_level1"
-        label="一级部门"
-        min-width="120"
-        align="center"
-        fixed="left"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="department_level2"
-        label="二级部门"
-        min-width="120"
-        align="center"
-        fixed="left"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="department_level3"
-        label="三级部门"
-        min-width="120"
-        align="center"
-        fixed="left"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="department_level4"
-        label="四级部门"
-        min-width="120"
-        align="center"
-        fixed="left"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="employment_date"
-        label="入职日期"
-        min-width="110"
-        align="center"
-        fixed="left"
-      >
-        <template #default="{ row }">
-          {{ formatDate(row.employment_date) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="position"
-        label="职务"
-        min-width="100"
-        align="center"
-        fixed="left"
-        show-overflow-tooltip
-      />
-
-      <!-- 年度和季度列（动态生成） -->
-      <template v-for="year in yearRange" :key="year">
-        <!-- 年度列 -->
-        <el-table-column
-          :label="`${year}年度`"
-          align="center"
-          :header-cell-style="{ background: '#E3F2FD' }"
-        >
-          <!-- 季度列 -->
-          <el-table-column
-            v-for="quarter in ['Q4', 'Q3', 'Q2', 'Q1']"
-            :key="quarter"
-            :label="`${year}${quarter}`"
-            :prop="`${year}-${quarter}`"
-            min-width="80"
-            align="center"
-          >
-            <template #default="{ row }">
-              <el-tag
-                v-if="row.performance_data[`${year}-${quarter}`]"
-                :type="getRatingTagType(row.performance_data[`${year}-${quarter}`])"
-                size="small"
-              >
-                {{ row.performance_data[`${year}-${quarter}`] }}
-              </el-tag>
-              <span v-else>-</span>
-            </template>
-          </el-table-column>
-        </el-table-column>
-      </template>
-
-      <!-- 绩效评级计数列 -->
-      <el-table-column
-        label="获得S次数"
-        prop="rating_counts.S"
-        min-width="100"
-        align="center"
-      >
-        <template #default="{ row }">
-          {{ row.rating_counts.S || 0 }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="获得A次数"
-        prop="rating_counts.A"
-        min-width="100"
-        align="center"
-      >
-        <template #default="{ row }">
-          {{ row.rating_counts.A || 0 }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="获得B次数"
-        prop="rating_counts.B"
-        min-width="100"
-        align="center"
-      >
-        <template #default="{ row }">
-          {{ row.rating_counts.B || 0 }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="获得C次数"
-        prop="rating_counts.C"
-        min-width="100"
-        align="center"
-      >
-        <template #default="{ row }">
-          {{ row.rating_counts.C || 0 }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="获得D次数"
-        prop="rating_counts.D"
-        min-width="100"
-        align="center"
-      >
-        <template #default="{ row }">
-          {{ row.rating_counts.D || 0 }}
-        </template>
-      </el-table-column>
-    </el-table>
+      :width="tableWidth"
+      :height="tableHeight"
+      fixed
+      :row-height="56"
+      :header-height="48"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { PerformanceRecord, PerformanceReportQueryParams } from '@/types/performance-report';
+import { computed, h, ref, onMounted, onUnmounted } from 'vue';
+import { ElTag } from 'element-plus';
+import type {
+  PerformanceRecord,
+  BusinessQueryRecord,
+  PerformanceReportQueryParams,
+  PerformanceReportBusinessQueryParams,
+} from '@/types/performance-report';
 import { formatDate } from '@/utils/transform';
 import {
   transformToTableRows,
+  transformBusinessQueryToTableRows,
   extractYearRange,
+  extractYearRangeFromBusinessQuery,
 } from '@/utils/performance-table';
 
+// el-table-v2 的列类型
+interface TableColumn {
+  key: string;
+  title: string;
+  dataKey: string;
+  width: number;
+  fixed?: any; // el-table-v2 的 fixed 类型
+  align?: 'left' | 'center' | 'right';
+  headerClass?: string;
+  headerRenderer?: (props: { column: any }) => any;
+  cellRenderer?: (props: { rowData: any; cellData: any }) => any;
+}
+
 interface Props {
-  /** 数据列表 */
-  data: PerformanceRecord[];
+  /** 数据列表（旧格式） */
+  data?: PerformanceRecord[];
+  /** Business Query 数据列表（新格式） */
+  businessQueryData?: BusinessQueryRecord[];
   /** 加载状态 */
   loading?: boolean;
   /** 查询参数（用于提取年份范围） */
-  queryParams?: PerformanceReportQueryParams;
+  queryParams?: PerformanceReportQueryParams | PerformanceReportBusinessQueryParams;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -188,37 +62,53 @@ const props = withDefaults(defineProps<Props>(), {
  * 转换为表格行数据
  */
 const tableRows = computed(() => {
-  return transformToTableRows(props.data);
+  // 优先使用 Business Query 数据
+  if (props.businessQueryData && props.businessQueryData.length > 0) {
+    return transformBusinessQueryToTableRows(props.businessQueryData);
+  }
+  // 兼容旧格式
+  if (props.data && props.data.length > 0) {
+    return transformToTableRows(props.data);
+  }
+  return [];
 });
 
 /**
  * 提取年份范围
+ * 优先从查询参数中提取，确保即使没有数据也显示所有年份
  */
 const yearRange = computed(() => {
-  return extractYearRange(props.queryParams, props.data);
-});
-
-/**
- * 获取表头单元格样式
- */
-function getHeaderCellStyle({ column }: { column: any }) {
-  const baseStyle = {
-    background: 'var(--el-fill-color-light)',
-    color: 'var(--el-text-color-regular)',
-    fontWeight: '600',
-    fontSize: '14px',
-  };
-
-  // 年度列使用浅蓝色背景
-  if (column.label && typeof column.label === 'string' && column.label.includes('年度')) {
-    return {
-      ...baseStyle,
-      background: '#E3F2FD', // 浅蓝色
-    };
+  // 优先使用 Business Query 查询参数
+  if (props.queryParams && 'start_year' in props.queryParams) {
+    return extractYearRangeFromBusinessQuery(
+      props.queryParams as PerformanceReportBusinessQueryParams,
+      props.businessQueryData,
+    );
   }
-
-  return baseStyle;
-}
+  // 兼容旧格式
+  if (props.queryParams && 'start_year' in props.queryParams) {
+    return extractYearRange(
+      props.queryParams as PerformanceReportQueryParams,
+      props.data,
+    );
+  }
+  // 如果查询参数中没有年份范围，尝试从数据中提取
+  if (props.businessQueryData && props.businessQueryData.length > 0) {
+    return extractYearRangeFromBusinessQuery(
+      undefined,
+      props.businessQueryData,
+    );
+  }
+  if (props.data && props.data.length > 0) {
+    return extractYearRange(
+      props.queryParams as PerformanceReportQueryParams,
+      props.data,
+    );
+  }
+  // 默认范围
+  const currentYear = new Date().getFullYear();
+  return [currentYear, currentYear - 1, currentYear - 2];
+});
 
 /**
  * 获取绩效评级标签类型
@@ -233,6 +123,216 @@ function getRatingTagType(rating: string): string {
   };
   return typeMap[rating] || 'info';
 }
+
+/**
+ * 表格宽度（响应式）
+ */
+const tableWidth = ref(1200);
+
+/**
+ * 表格高度（固定表头）
+ */
+const tableHeight = ref(600);
+
+/**
+ * 更新表格尺寸
+ */
+function updateTableSize() {
+  const container = document.querySelector('.performance-report-table');
+  if (container) {
+    const rect = container.getBoundingClientRect();
+    tableWidth.value = rect.width || 1200;
+    // 高度设置为容器高度，如果容器没有高度则使用视口高度减去其他元素的高度
+    if (rect.height > 0) {
+      tableHeight.value = rect.height;
+    } else {
+      // 高度设置为视口高度减去其他元素的高度，留出空间
+      tableHeight.value = Math.max(400, window.innerHeight - 300);
+    }
+  } else {
+    // 如果找不到容器，使用默认值
+    tableWidth.value = 1200;
+    tableHeight.value = Math.max(400, window.innerHeight - 300);
+  }
+}
+
+onMounted(() => {
+  updateTableSize();
+  window.addEventListener('resize', updateTableSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateTableSize);
+});
+
+/**
+ * 生成列定义
+ */
+const columns = computed<TableColumn[]>(() => {
+  const cols: TableColumn[] = [];
+
+  // 固定列：员工信息
+  cols.push(
+    {
+      key: 'employee_number',
+      title: '工号',
+      dataKey: 'employee_number',
+      width: 100,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.employee_number || '',
+    },
+    {
+      key: 'employee_name',
+      title: '姓名',
+      dataKey: 'employee_name',
+      width: 100,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.employee_name || '',
+    },
+    {
+      key: 'department_level1',
+      title: '一级部门',
+      dataKey: 'department_level1',
+      width: 120,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.department_level1 || '',
+    },
+    {
+      key: 'department_level2',
+      title: '二级部门',
+      dataKey: 'department_level2',
+      width: 120,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.department_level2 || '',
+    },
+    {
+      key: 'department_level3',
+      title: '三级部门',
+      dataKey: 'department_level3',
+      width: 120,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.department_level3 || '',
+    },
+    {
+      key: 'department_level4',
+      title: '四级部门',
+      dataKey: 'department_level4',
+      width: 120,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.department_level4 || '',
+    },
+    {
+      key: 'employment_date',
+      title: '入职日期',
+      dataKey: 'employment_date',
+      width: 110,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => formatDate(rowData.employment_date),
+    },
+    {
+      key: 'position',
+      title: '职务',
+      dataKey: 'position',
+      width: 100,
+      fixed: 'left',
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.position || '',
+    }
+  );
+
+  // 动态生成年度和季度列
+  yearRange.value.forEach((year) => {
+    ['Q4', 'Q3', 'Q2', 'Q1'].forEach((quarter) => {
+      const key = `${year}-${quarter}`;
+      cols.push({
+        key,
+        title: `${year}${quarter}`,
+        dataKey: key,
+        width: 80,
+        align: 'center',
+        headerClass: 'year-header',
+        headerRenderer: ({ column }) => {
+          return h('div', {
+            class: 'year-header-cell',
+            style: {
+              backgroundColor: '#E3F2FD',
+              color: 'var(--el-text-color-regular)',
+              fontWeight: '600',
+              fontSize: '14px',
+              padding: '14px 0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }
+          }, column.title);
+        },
+        cellRenderer: ({ rowData }) => {
+          const rating = rowData.performance_data?.[key];
+          if (rating) {
+            return h(ElTag, {
+              type: getRatingTagType(rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info',
+              size: 'small',
+            }, () => rating);
+          }
+          return h('span', '-');
+        },
+      });
+    });
+  });
+
+  // 绩效评级计数列
+  cols.push(
+    {
+      key: 'rating_counts.S',
+      title: '获得S次数',
+      dataKey: 'rating_counts.S',
+      width: 100,
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.rating_counts?.S || 0,
+    },
+    {
+      key: 'rating_counts.A',
+      title: '获得A次数',
+      dataKey: 'rating_counts.A',
+      width: 100,
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.rating_counts?.A || 0,
+    },
+    {
+      key: 'rating_counts.B',
+      title: '获得B次数',
+      dataKey: 'rating_counts.B',
+      width: 100,
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.rating_counts?.B || 0,
+    },
+    {
+      key: 'rating_counts.C',
+      title: '获得C次数',
+      dataKey: 'rating_counts.C',
+      width: 100,
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.rating_counts?.C || 0,
+    },
+    {
+      key: 'rating_counts.D',
+      title: '获得D次数',
+      dataKey: 'rating_counts.D',
+      width: 100,
+      align: 'center',
+      cellRenderer: ({ rowData }) => rowData.rating_counts?.D || 0,
+    }
+  );
+
+  return cols;
+});
 </script>
 
 <style scoped>
@@ -240,31 +340,49 @@ function getRatingTagType(rating: string): string {
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
+  height: 100%;
 }
 
-.performance-report-table :deep(.el-table) {
+/* 虚拟表格样式 */
+.performance-report-table :deep(.el-table-v2) {
   border-radius: 8px;
-  width: 100%;
 }
 
-.performance-report-table :deep(.el-table__header-wrapper) {
-  border-radius: 8px 8px 0 0;
+.performance-report-table :deep(.el-table-v2__header) {
+  background-color: var(--el-fill-color-light);
 }
 
-.performance-report-table :deep(.el-table th.el-table__cell) {
+.performance-report-table :deep(.el-table-v2__header-cell) {
+  background-color: var(--el-fill-color-light);
+  color: var(--el-text-color-regular);
+  font-weight: 600;
+  font-size: 14px;
   padding: 14px 0;
 }
 
-.performance-report-table :deep(.el-table td.el-table__cell) {
+/* 年度列表头背景色 */
+.performance-report-table :deep(.el-table-v2__header-cell.year-header) {
+  background-color: #E3F2FD;
+}
+
+.performance-report-table :deep(.el-table-v2__row) {
+  border-bottom: 1px solid var(--el-border-color);
+}
+
+.performance-report-table :deep(.el-table-v2__row:hover) {
+  background-color: var(--el-fill-color-lighter);
+}
+
+.performance-report-table :deep(.el-table-v2__cell) {
   padding: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.performance-report-table :deep(.el-table__body tr:hover > td) {
-  background-color: var(--el-fill-color-lighter) !important;
-}
-
-/* 年度列背景色（备用样式，如果 header-cell-style 不生效） */
-.performance-report-table :deep(.el-table__header th) {
-  /* 年度列的背景色通过 header-cell-style 动态设置 */
+/* 固定列样式 */
+.performance-report-table :deep(.el-table-v2__fixed-left) {
+  background-color: var(--el-bg-color);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
 }
 </style>

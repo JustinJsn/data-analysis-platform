@@ -42,6 +42,32 @@ export interface PerformanceReportQueryParams {
 }
 
 /**
+ * 绩效数据业务查询参数（business-query 接口）
+ */
+export interface PerformanceReportBusinessQueryParams {
+  /** 页码（从1开始），最小值：1，默认：1 */
+  pageNum?: number;
+  /** 每页条数，范围：1-100，默认：20 */
+  pageSize?: number;
+  /** 开始年份（2000-2100） */
+  start_year?: number;
+  /** 结束年份（2000-2100） */
+  end_year?: number;
+  /** 开始季度，枚举值：Q1、Q2、Q3、Q4 */
+  start_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 结束季度，枚举值：Q1、Q2、Q3、Q4 */
+  end_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 员工UserId列表，逗号分隔，最多100个，每个ID最长50字符，总长度不超过5000字符 */
+  employee_user_ids?: string;
+  /** 部门ID（UUID格式） */
+  organization_id?: string;
+  /** 是否包含下级部门，默认：false */
+  include_children?: boolean;
+  /** 批次ID（UUID格式），不指定时使用最新批次 */
+  batch_id?: string;
+}
+
+/**
  * 绩效数据记录
  */
 export interface PerformanceRecord {
@@ -240,3 +266,51 @@ export type PerformanceRecordListResponse =
  */
 export type EmployeeListForSelectorResponse =
   PaginatedResponse<EmployeeForSelector>;
+
+/* ==================== Business Query 响应类型 ==================== */
+
+/**
+ * Business Query 接口的响应数据结构
+ */
+export interface BusinessQueryRecord {
+  /** 员工工号 */
+  employeeNo: string;
+  /** 员工姓名 */
+  name: string;
+  /** 一级部门 */
+  level1Department: string | null;
+  /** 二级部门 */
+  level2Department: string | null;
+  /** 三级部门 */
+  level3Department: string | null;
+  /** 四级部门 */
+  level4Department: string | null;
+  /** 入职日期 */
+  employmentDate: string | null;
+  /** 职务 */
+  position: string | null;
+  /** 年度数据对象（如 year2025, year2024 等） */
+  [key: `year${number}`]: Record<string, any> | undefined;
+  /** 季度评级（如 2025Q3, 2025Q2 等） */
+  [key: `${number}Q${1 | 2 | 3 | 4}`]: string | undefined;
+  /** S级评级次数 */
+  ratingCountS: number;
+  /** A级评级次数 */
+  ratingCountA: number;
+  /** B级评级次数 */
+  ratingCountB: number;
+  /** C级评级次数 */
+  ratingCountC: number;
+  /** D级评级次数 */
+  ratingCountD: number;
+}
+
+/**
+ * Business Query 接口的响应类型
+ */
+export interface BusinessQueryResponse {
+  /** 数据列表 */
+  list: BusinessQueryRecord[];
+  /** 总记录数 */
+  total: number;
+}
