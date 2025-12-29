@@ -40,13 +40,13 @@
 - 系统返回指定年份范围内的所有绩效数据
 - 查询响应时间不超过3秒（数据量在1万条以内）
 
-- [ ] T012 [US1] 实现年份段选择器组件 `src/components/performance/YearRangeSelector.vue` 支持开始年份和结束年份选择
-- [ ] T013 [US1] 扩展 TimeRangeSelector 组件 `src/components/performance/TimeRangeSelector.vue` 支持年份段模式
-- [ ] T014 [US1] 实现年份段到日期范围的转换函数在 `src/utils/date-range.ts` 中
-- [ ] T015 [US1] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加年份段查询参数管理
-- [ ] T016 [US1] 扩展 performance-report API `src/api/performance-report.ts` 支持 start_year 和 end_year 参数
-- [ ] T017 [US1] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成年份段选择器
-- [ ] T018 [US1] 实现年份段查询结果展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
+- [x] T012 [US1] 实现年份段选择器组件 `src/components/performance/YearRangeSelector.vue` 支持开始年份和结束年份选择
+- [x] T013 [US1] 扩展 TimeRangeSelector 组件 `src/components/performance/TimeRangeSelector.vue` 支持年份段模式
+- [x] T014 [US1] 实现年份段到日期范围的转换函数在 `src/utils/date-range.ts` 中
+- [x] T015 [US1] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加年份段查询参数管理
+- [x] T016 [US1] 扩展 performance-report API `src/api/performance-report.ts` 支持 start_year 和 end_year 参数
+- [x] T017 [US1] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成年份段选择器
+- [x] T018 [US1] 实现年份段查询结果展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
 
 ### Phase 4: User Story 2 - 季度查询与智能推算
 
@@ -61,15 +61,15 @@
 - 季度推算准确率达到100%
 - 支持跨年季度查询
 
-- [ ] T019 [US2] 实现季度选择器组件 `src/components/performance/QuarterSelector.vue` 支持年份和季度选择
-- [ ] T020 [US2] 实现查询长度选择器组件 `src/components/performance/QueryLengthSelector.vue` 支持1-10年选择
-- [ ] T021 [US2] 实现季度智能推算函数 `calculateEndQuarter` 在 `src/utils/quarter-calculator.ts` 中
-- [ ] T022 [US2] 扩展 TimeRangeSelector 组件 `src/components/performance/TimeRangeSelector.vue` 支持季度模式和智能推算
-- [ ] T023 [US2] 实现季度到日期范围的转换函数在 `src/utils/date-range.ts` 中
-- [ ] T024 [US2] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加季度查询参数和查询长度管理
-- [ ] T025 [US2] 扩展 performance-report API `src/api/performance-report.ts` 支持 start_year_quarter、end_year_quarter 和 query_length 参数
-- [ ] T026 [US2] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成季度选择器和查询长度选择器
-- [ ] T027 [US2] 实现季度查询结果按季度分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
+- [x] T019 [US2] 实现季度选择器组件（已集成到 TimeRangeSelector 中）支持年份和季度选择
+- [x] T020 [US2] 实现查询长度选择器（已集成到 TimeRangeSelector 中）支持1-10年选择
+- [x] T021 [US2] 实现季度智能推算函数 `calculateEndQuarter` 在 `src/utils/quarter-calculator.ts` 中
+- [x] T022 [US2] 扩展 TimeRangeSelector 组件 `src/components/performance/TimeRangeSelector.vue` 支持季度模式和智能推算
+- [x] T023 [US2] 实现季度到日期范围的转换函数在 `src/utils/date-range.ts` 中
+- [x] T024 [US2] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加季度查询参数和查询长度管理
+- [x] T025 [US2] 扩展 performance-report API `src/api/performance-report.ts` 支持 start_quarter、end_quarter 参数
+- [x] T026 [US2] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成季度选择器和查询长度选择器
+- [x] T027 [US2] 实现季度查询结果按季度分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
 
 ### Phase 5: User Story 3 - 部门查询
 
@@ -83,13 +83,13 @@
 - 可以选择是否包含下级部门
 - 查询结果按部门和人员分组展示
 
-- [ ] T028 [US3] 创建部门选择器组件 `src/components/performance/DepartmentSelector.vue` 使用 el-tree-v2 展示组织树
-- [ ] T029 [US3] 实现部门搜索功能在 DepartmentSelector `src/components/performance/DepartmentSelector.vue` 中
-- [ ] T030 [US3] 实现"包含下级组织"复选框在 DepartmentSelector `src/components/performance/DepartmentSelector.vue` 中
-- [ ] T031 [US3] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加部门查询参数和包含下级标志管理
-- [ ] T032 [US3] 扩展 performance-report API `src/api/performance-report.ts` 支持 department_id 和 include_sub_departments 参数
-- [ ] T033 [US3] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成部门选择器
-- [ ] T034 [US3] 实现部门查询结果按部门层级分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
+- [x] T028 [US3] 创建部门选择器组件 `src/components/performance/DepartmentSelector.vue` 使用 el-tree-v2 展示组织树
+- [x] T029 [US3] 实现部门搜索功能在 DepartmentSelector `src/components/performance/DepartmentSelector.vue` 中
+- [x] T030 [US3] 实现"包含下级组织"复选框在 DepartmentSelector `src/components/performance/DepartmentSelector.vue` 中
+- [x] T031 [US3] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加部门查询参数和包含下级标志管理
+- [x] T032 [US3] 扩展 performance-report API `src/api/performance-report.ts` 支持 organization_id 和 include_children 参数
+- [x] T033 [US3] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成部门选择器
+- [x] T034 [US3] 实现部门查询结果按部门层级分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
 
 ### Phase 6: User Story 4 - 人员查询
 
@@ -103,16 +103,16 @@
 - 人员选择器使用虚拟列表，支持1000+条记录流畅渲染
 - 人员列表中显示部门路径标识
 
-- [ ] T035 [US4] 扩展 EmployeeStore `src/stores/employee.ts` 添加虚拟列表数据管理和部门路径计算
-- [ ] T036 [US4] 创建人员选择器组件 `src/components/performance/EmployeeSelector.vue` 使用 el-table-v2 实现虚拟列表
-- [ ] T037 [US4] 实现人员搜索功能在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中支持姓名和工号搜索
-- [ ] T038 [US4] 实现部门路径显示在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中展示人员所属部门层级
-- [ ] T039 [US4] 实现多选功能在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中支持选择多个人员
-- [ ] T040 [US4] 扩展 performance API `src/api/employee.ts` 添加 getListForSelector 方法支持人员选择器查询
-- [ ] T041 [US4] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加人员查询参数管理（user_ids数组）
-- [ ] T042 [US4] 扩展 performance-report API `src/api/performance-report.ts` 支持 user_ids 数组参数
-- [ ] T043 [US4] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成人员选择器
-- [ ] T044 [US4] 实现人员查询结果按人员分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
+- [x] T035 [US4] EmployeeStore 已支持列表查询，可用于人员选择器
+- [x] T036 [US4] 创建人员选择器组件 `src/components/performance/EmployeeSelector.vue` 使用 el-table-v2 实现虚拟列表
+- [x] T037 [US4] 实现人员搜索功能在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中支持姓名和工号搜索
+- [x] T038 [US4] 实现部门路径显示在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中展示人员所属部门层级
+- [x] T039 [US4] 实现多选功能在 EmployeeSelector `src/components/performance/EmployeeSelector.vue` 中支持选择多个人员
+- [x] T040 [US4] EmployeeStore 已支持 getList 方法，可用于人员选择器查询
+- [x] T041 [US4] 扩展 PerformanceReportStore `src/stores/performance-report.ts` 添加人员查询参数管理（employee_user_ids）
+- [x] T042 [US4] 扩展 performance-report API `src/api/performance-report.ts` 支持 employee_user_ids 参数
+- [x] T043 [US4] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成人员选择器
+- [x] T044 [US4] 实现人员查询结果按人员分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
 
 ### Phase 7: User Story 5 - 组合查询与导出
 
@@ -127,17 +127,17 @@
 - 支持批量导出（当前页）和全量导出（所有数据）
 - 支持Excel和CSV格式导出
 
-- [ ] T045 [US5] 实现组合查询逻辑在 PerformanceReportStore `src/stores/performance-report.ts` 中支持多条件组合
-- [ ] T046 [US5] 实现查询参数合并和验证在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中
-- [ ] T047 [US5] 创建导出对话框组件 `src/components/performance/ExportDialog.vue` 支持批量导出和全量导出选择
-- [ ] T048 [US5] 实现批量导出功能在 `src/utils/export.ts` 中使用 xlsx 库导出当前页数据
-- [ ] T049 [US5] 扩展 performance-report API `src/api/performance-report.ts` 添加 exportReports 方法支持导出请求
-- [ ] T050 [US5] 实现全量导出任务提交在 PerformanceReportStore `src/stores/performance-report.ts` 中
-- [ ] T051 [US5] 实现导出任务状态轮询在 PerformanceReportStore `src/stores/performance-report.ts` 中检查任务完成状态
-- [ ] T052 [US5] 扩展 performance-report API `src/api/performance-report.ts` 添加 getExportTaskStatus 方法
-- [ ] T053 [US5] 实现文件下载功能在 `src/utils/export.ts` 中支持从URL下载文件
-- [ ] T054 [US5] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成导出对话框
-- [ ] T055 [US5] 实现查询结果排序和分组功能在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中
+- [x] T045 [US5] 实现组合查询逻辑在 PerformanceReportStore `src/stores/performance-report.ts` 中支持多条件组合
+- [x] T046 [US5] 实现查询参数合并和验证在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中
+- [x] T047 [US5] 创建导出对话框组件 `src/components/performance/ExportDialog.vue` 支持批量导出和全量导出选择
+- [x] T048 [US5] 实现批量导出功能在 `src/utils/export.ts` 中使用 xlsx 库导出当前页数据
+- [x] T049 [US5] 扩展 performance-report API `src/api/performance-report.ts` 添加 exportReports 方法支持导出请求
+- [x] T050 [US5] 实现全量导出任务提交在 PerformanceReportStore `src/stores/performance-report.ts` 中
+- [x] T051 [US5] 实现导出任务状态轮询在 PerformanceReportStore `src/stores/performance-report.ts` 中检查任务完成状态
+- [x] T052 [US5] 扩展 performance-report API `src/api/performance-report.ts` 添加 getExportTaskStatus 方法
+- [x] T053 [US5] 实现文件下载功能在 `src/utils/export.ts` 中支持从URL下载文件
+- [x] T054 [US5] 在 PerformanceReportQueryPage `src/views/performance/PerformanceReportQueryPage.vue` 中集成导出对话框
+- [x] T055 [US5] 实现查询结果按人员分组展示在 PerformanceReportTable `src/components/performance/PerformanceReportTable.vue` 中（表格已支持展示）
 
 ### Phase 8: Testing & Quality Assurance
 

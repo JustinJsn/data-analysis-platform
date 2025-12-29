@@ -3,7 +3,10 @@
  */
 
 import * as XLSX from 'xlsx';
-import type { PerformanceRecord } from '@/types/performance-report';
+import type {
+  PerformanceRecord,
+  BusinessQueryRecord,
+} from '@/types/performance-report';
 
 /**
  * 导出数据到 Excel 文件
@@ -84,28 +87,67 @@ export async function exportToCSV<T extends Record<string, unknown>>(
 /**
  * 导出绩效数据
  *
- * @param records 绩效数据记录数组
+ * @param records 绩效数据记录数组（可以是 PerformanceRecord 或 BusinessQueryRecord）
  * @param format 导出格式 ('xlsx' | 'csv')
  * @param filename 文件名（不含扩展名）
  */
 export async function exportPerformanceRecords(
-  records: PerformanceRecord[],
+  records: PerformanceRecord[] | BusinessQueryRecord[],
   format: 'xlsx' | 'csv' = 'xlsx',
   filename: string = '绩效数据',
 ): Promise<void> {
-  // 转换数据格式（可以根据需要调整字段）
-  const exportData = records.map((record) => ({
-    年份: record.year,
-    季度: record.quarter,
-    员工姓名: record.employee_name,
-    员工工号: record.employee_number,
-    部门名称: record.department_name,
-    部门路径: record.department_path,
-    绩效评级: record.performance_rating,
-    最后同步时间: record.last_synced_at,
-    创建时间: record.created_at,
-    更新时间: record.updated_at,
-  }));
+  // 判断是否为 BusinessQueryRecord 格式（检查是否有 employeeNo 字段）
+  const isBusinessQueryRecord =
+    records.length > 0 && 'employeeNo' in records[0];
+
+  let exportData: Record<string, any>[];
+
+  if (isBusinessQueryRecord) {
+    // BusinessQueryRecord 格式
+    exportData = records.map((record: any) => {
+      const row: Record<string, any> = {
+        员工工号: record.employeeNo || '',
+        员工姓名: record.name || '',
+        一级部门: record.level1Department || '',
+        二级部门: record.level2Department || '',
+        三级部门: record.level3Department || '',
+        四级部门: record.level4Department || '',
+        入职日期: record.employmentDate || '',
+        职务: record.position || '',
+        S级次数: record.ratingCountS ?? 0,
+        A级次数: record.ratingCountA ?? 0,
+        B级次数: record.ratingCountB ?? 0,
+        C级次数: record.ratingCountC ?? 0,
+        D级次数: record.ratingCountD ?? 0,
+      };
+
+      // 添加季度评级列（格式：2025Q3）
+      for (const key in record) {
+        const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
+        if (quarterMatch) {
+          const year = quarterMatch[1];
+          const quarter = `Q${quarterMatch[2]}`;
+          row[`${year}${quarter}`] = record[key] || '';
+        }
+      }
+
+      return row;
+    });
+  } else {
+    // PerformanceRecord 格式
+    exportData = (records as PerformanceRecord[]).map((record) => ({
+      年份: record.year,
+      季度: record.quarter,
+      员工姓名: record.employee_name,
+      员工工号: record.employee_number,
+      部门名称: record.department_name,
+      部门路径: record.department_path,
+      绩效评级: record.performance_rating,
+      最后同步时间: record.last_synced_at,
+      创建时间: record.created_at,
+      更新时间: record.updated_at,
+    }));
+  }
 
   if (format === 'xlsx') {
     await exportToExcel(exportData, filename);

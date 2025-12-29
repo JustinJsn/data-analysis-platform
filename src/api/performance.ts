@@ -4,18 +4,18 @@
 import { request } from '@/utils/request';
 import type {
   PerformanceReport,
-  PerformanceReportQueryParams,
   PerformanceReportBusinessQueryParams,
   PerformanceSyncRequest,
   PerformanceSyncResponse,
   PaginatedResponse,
 } from '@/types';
+import type { PerformanceReportFilters } from '@/types/performance';
 
 export const performanceApi = {
   /**
    * 获取绩效数据列表
    */
-  getReports(params?: PerformanceQueryParams) {
+  getReports(params?: PerformanceReportFilters) {
     return request.get<PaginatedResponse<PerformanceReport>>(
       '/api/v1/performance-reports',
       {

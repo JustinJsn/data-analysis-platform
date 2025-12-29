@@ -66,7 +66,7 @@ export const usePerformanceReportStore = defineStore(
 
     /** 是否有数据 */
     const hasRecords = computed(() => {
-      return records.value.length > 0;
+      return businessQueryRecords.value.length > 0 || records.value.length > 0;
     });
 
     /** 是否可以导出 */
@@ -166,11 +166,15 @@ export const usePerformanceReportStore = defineStore(
       try {
         exporting.value = true;
 
-        // 使用当前页数据
-        const data = records.value;
+        // 使用当前页数据（优先使用 businessQueryRecords）
+        const data =
+          businessQueryRecords.value.length > 0
+            ? businessQueryRecords.value
+            : records.value;
 
-        // TODO: 调用导出工具函数
-        // await exportToFile(data, format, '绩效数据');
+        // 调用导出工具函数
+        const { exportPerformanceRecords } = await import('@/utils/export');
+        await exportPerformanceRecords(data as any, format, '绩效数据');
 
         addBreadcrumb({
           message: '批量导出成功',
@@ -198,8 +202,26 @@ export const usePerformanceReportStore = defineStore(
         exporting.value = true;
 
         // 提交导出任务
+        // 注意：ExportRequest 的 query_params 类型是 PerformanceReportQueryParams
+        // 但我们需要传递 PerformanceReportBusinessQueryParams，需要进行类型转换
         const request: ExportRequest = {
-          query_params: businessQueryParams.value as any,
+          query_params: {
+            start_year: businessQueryParams.value.start_year,
+            end_year: businessQueryParams.value.end_year,
+            start_year_quarter: businessQueryParams.value.start_quarter
+              ? `2025-${businessQueryParams.value.start_quarter}`
+              : undefined,
+            end_year_quarter: businessQueryParams.value.end_quarter
+              ? `2025-${businessQueryParams.value.end_quarter}`
+              : undefined,
+            user_ids: businessQueryParams.value.employee_user_ids
+              ? businessQueryParams.value.employee_user_ids.split(',')
+              : undefined,
+            department_id: businessQueryParams.value.organization_id,
+            include_sub_departments: businessQueryParams.value.include_children,
+            page: businessQueryParams.value.pageNum,
+            page_size: businessQueryParams.value.pageSize,
+          },
           export_type: 'all',
           format,
         };
@@ -237,8 +259,9 @@ export const usePerformanceReportStore = defineStore(
         const status = await performanceReportApi.getExportTaskStatus(taskId);
 
         if (status.status === 'completed' && status.file_url) {
-          // TODO: 下载文件
-          // downloadFile(status.file_url, '绩效数据.xlsx');
+          // 下载文件
+          const { downloadFile } = await import('@/utils/export');
+          await downloadFile(status.file_url, '绩效数据.xlsx');
           exporting.value = false;
           exportTaskId.value = null;
         } else if (status.status === 'failed') {
