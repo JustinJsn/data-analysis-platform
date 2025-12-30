@@ -163,10 +163,9 @@ export const usePerformanceReportStore = defineStore(
     /**
      * 批量导出（前端处理当前页数据）
      *
-     * 注意：批量导出由前端处理，可以使用xlsx或csv格式
-     * 全量导出由后端处理，目前仅支持CSV格式（根据API文档）
+     * 注意：批量导出由前端处理，支持 xlsx 或 xls 格式
      */
-    const exportBatch = async (format: 'xlsx' | 'csv' = 'csv') => {
+    const exportBatch = async (format: 'xlsx' | 'xls' = 'xlsx') => {
       try {
         exporting.value = true;
 
@@ -199,17 +198,17 @@ export const usePerformanceReportStore = defineStore(
     };
 
     /**
-     * 全量导出（后端处理，根据API文档直接返回CSV文件流）
+     * 全量导出（后端处理）
      *
-     * 注意：根据API文档，导出接口目前仅支持CSV格式
+     * 注意：如果后端返回 CSV 格式，会在前端自动转换为 XLSX/XLS
      */
-    const exportAll = async (format: 'xlsx' | 'csv' = 'csv') => {
+    const exportAll = async (format: 'xlsx' | 'xls' = 'xlsx') => {
       try {
         exporting.value = true;
 
-        // 构建导出请求（根据API文档格式）
+        // 构建导出请求，尝试请求 XLSX 格式
         const exportRequest: ExportRequest = {
-          format: 'csv', // API文档说明目前仅支持csv
+          format: format === 'xls' ? 'xlsx' : format, // 如果后端不支持 xls，使用 xlsx
           start_year: businessQueryParams.value.start_year,
           end_year: businessQueryParams.value.end_year,
           start_quarter: businessQueryParams.value.start_quarter,
@@ -220,16 +219,29 @@ export const usePerformanceReportStore = defineStore(
           batch_id: businessQueryParams.value.batch_id,
         };
 
+        // 请求导出（后端可能返回 CSV 或 XLSX）
         const response =
           await performanceReportApi.exportReports(exportRequest);
 
+        // 检查返回的文件类型
+        let finalBlob = response.blob;
+        let finalFilename = response.filename;
+
+        // 如果返回的是 CSV 文件，转换为 Excel
+        if (
+          response.blob.type === 'text/csv' ||
+          response.filename.endsWith('.csv')
+        ) {
+          const { convertCsvToExcel } = await import('@/utils/export');
+          finalBlob = await convertCsvToExcel(response.blob, format);
+          finalFilename = response.filename.replace(/\.csv$/i, `.${format}`);
+        }
+
         // 下载文件
-        // const { downloadBlob } = await import('@/utils/export');
-        // downloadBlob是内部函数，我们需要使用downloadFile或直接下载
-        const url = URL.createObjectURL(response.blob);
+        const url = URL.createObjectURL(finalBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = response.filename;
+        link.download = finalFilename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -239,11 +251,11 @@ export const usePerformanceReportStore = defineStore(
           message: '全量导出成功',
           category: 'performance-report.exportAll',
           level: 'info',
-          data: { filename: response.filename, format },
+          data: { filename: finalFilename, format },
         });
 
         exporting.value = false;
-        return response;
+        return { blob: finalBlob, filename: finalFilename };
       } catch (error) {
         exporting.value = false;
         exportTaskId.value = null;

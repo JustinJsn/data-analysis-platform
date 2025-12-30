@@ -12,6 +12,7 @@ const pathSrc = path.resolve(__dirname, 'src');
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/italent-report/',
   plugins: [
     vue(),
     AutoImport({
@@ -50,7 +51,7 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://192.168.0.132:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
       },

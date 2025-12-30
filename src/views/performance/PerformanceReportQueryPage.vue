@@ -9,7 +9,9 @@
           :disabled="!reportStore.canExport"
           @click="showExportDialog = true"
         >
-          <el-icon><Download /></el-icon>
+          <el-icon>
+            <Download />
+          </el-icon>
           导出数据
         </el-button>
       </template>
@@ -44,11 +46,15 @@
 
         <el-form-item>
           <el-button type="primary" native-type="button" @click="handleSearch">
-            <el-icon><Search /></el-icon>
+            <el-icon>
+              <Search />
+            </el-icon>
             查询
           </el-button>
           <el-button native-type="button" @click="handleReset">
-            <el-icon><RefreshLeft /></el-icon>
+            <el-icon>
+              <RefreshLeft />
+            </el-icon>
             重置
           </el-button>
         </el-form-item>
@@ -236,7 +242,7 @@ const handleReset = async () => {
  */
 const handleExport = async (
   type: 'batch' | 'all',
-  format: 'csv',
+  format: 'xlsx' | 'xls',
 ) => {
   try {
     if (type === 'batch') {

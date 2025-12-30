@@ -218,8 +218,8 @@ export interface DepartmentForSelector {
  * 批量导出由前端处理当前页数据，全量导出由后端处理所有数据
  */
 export interface ExportRequest {
-  /** 导出格式，目前仅支持 csv */
-  format: 'csv';
+  /** 导出格式，支持 xlsx 或 xls */
+  format: 'xlsx' | 'xls';
   /** 开始年份（2000-2100） */
   start_year?: number;
   /** 结束年份（2000-2100） */

@@ -13,11 +13,13 @@ import type {
  *
  * @param data 要导出的数据数组
  * @param filename 文件名（不含扩展名）
+ * @param format 导出格式 ('xlsx' | 'xls')，默认为 'xlsx'
  * @returns Promise<void>
  */
 export async function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   filename: string = '导出数据',
+  format: 'xlsx' | 'xls' = 'xlsx',
 ): Promise<void> {
   try {
     // 创建工作簿
@@ -31,16 +33,22 @@ export async function exportToExcel<T extends Record<string, unknown>>(
 
     // 生成 Excel 文件并下载
     const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
+      bookType: format,
       type: 'array',
     });
 
+    // 根据格式设置 MIME 类型
+    const mimeType =
+      format === 'xls'
+        ? 'application/vnd.ms-excel'
+        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
     // 创建 Blob 并下载
     const blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      type: mimeType,
     });
 
-    downloadBlob(blob, `${filename}.xlsx`);
+    downloadBlob(blob, `${filename}.${format}`);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     throw new Error(`导出 Excel 失败: ${err.message}`);
@@ -85,15 +93,95 @@ export async function exportToCSV<T extends Record<string, unknown>>(
 }
 
 /**
+ * 将 CSV Blob 转换为 Excel Blob
+ *
+ * @param csvBlob CSV 文件的 Blob 对象
+ * @param format 目标格式 ('xlsx' | 'xls')，默认为 'xlsx'
+ * @returns Excel 文件的 Blob 对象
+ */
+export async function convertCsvToExcel(
+  csvBlob: Blob,
+  format: 'xlsx' | 'xls' = 'xlsx',
+): Promise<Blob> {
+  try {
+    // 读取 CSV 文本
+    const csvText = await csvBlob.text();
+
+    // 使用 XLSX 库直接读取 CSV（自动处理 BOM、引号、转义等）
+    let workbook = XLSX.read(csvText, {
+      type: 'string',
+      codepage: 65001, // UTF-8
+    });
+
+    // 如果工作簿为空，尝试手动解析
+    if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+      // 使用 sheet_to_json 和 json_to_sheet 的方式
+      const lines = csvText.split('\n').filter((line) => line.trim());
+      if (lines.length === 0) {
+        throw new Error('CSV 文件为空');
+      }
+
+      // 解析 CSV 行
+      const rows = lines.map((line) => {
+        const result: string[] = [];
+        let current = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+              current += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        result.push(current);
+        return result;
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(rows);
+      const newWorkbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(newWorkbook, worksheet, 'Sheet1');
+      workbook = newWorkbook;
+    }
+
+    // 生成 Excel 文件
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: format,
+      type: 'array',
+    });
+
+    // 根据格式设置 MIME 类型
+    const mimeType =
+      format === 'xls'
+        ? 'application/vnd.ms-excel'
+        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    return new Blob([excelBuffer], { type: mimeType });
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    throw new Error(`CSV 转 Excel 失败: ${err.message}`);
+  }
+}
+
+/**
  * 导出绩效数据
  *
  * @param records 绩效数据记录数组（可以是 PerformanceRecord 或 BusinessQueryRecord）
- * @param format 导出格式 ('xlsx' | 'csv')
+ * @param format 导出格式 ('xlsx' | 'xls')
  * @param filename 文件名（不含扩展名）
  */
 export async function exportPerformanceRecords(
   records: PerformanceRecord[] | BusinessQueryRecord[],
-  format: 'xlsx' | 'csv' = 'xlsx',
+  format: 'xlsx' | 'xls' = 'xlsx',
   filename: string = '绩效数据',
 ): Promise<void> {
   // 判断是否为 BusinessQueryRecord 格式（检查是否有 employeeNo 字段）
@@ -149,11 +237,7 @@ export async function exportPerformanceRecords(
     }));
   }
 
-  if (format === 'xlsx') {
-    await exportToExcel(exportData, filename);
-  } else {
-    await exportToCSV(exportData, filename);
-  }
+  await exportToExcel(exportData, filename, format);
 }
 
 /**
