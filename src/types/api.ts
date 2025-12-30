@@ -8,24 +8,23 @@
  * @date 2025-12-23
  */
 
-/* ==================== 通用类型 ==================== */
+// 从其他类型文件导入所需类型
+import type { User, LoginRequest, LoginResponse } from './auth';
+import type { Employee } from './employee';
+import type { Organization } from './organization';
+import type { Position } from './position';
+import type {
+  SyncBatch,
+  SyncBatchListResponse,
+  SyncLog,
+  SyncTriggerRequest,
+  OrderedFlowStatus,
+} from './sync';
+
+/* ==================== API 专用类型 ==================== */
 
 /**
- * 统一响应结构（核心数据查询接口）
- */
-export interface UnifiedResponse<T = any> {
-  /** 业务状态码（200=成功） */
-  code: number;
-  /** 响应消息 */
-  message: string;
-  /** 请求追踪ID */
-  requestId: string;
-  /** 实际数据 */
-  data: T;
-}
-
-/**
- * 分页响应
+ * 分页响应（API 接口使用）
  */
 export interface PaginatedResponse<T> {
   /** 数据列表 */
@@ -58,148 +57,6 @@ export interface ErrorResponse {
   error: string;
 }
 
-/* ==================== 认证相关 ==================== */
-
-/**
- * 登录请求
- */
-export interface LoginRequest {
-  /** 用户名 */
-  username: string;
-  /** 密码 */
-  password: string;
-}
-
-/**
- * 登录响应
- */
-export interface LoginResponse {
-  /** 访问令牌 */
-  accessToken: string;
-  /** 刷新令牌 */
-  refreshToken: string;
-  /** 过期时间（秒） */
-  expiresIn: number;
-  /** 令牌类型 */
-  tokenType: 'Bearer';
-  /** 用户信息 */
-  user: User;
-}
-
-/**
- * 用户信息
- */
-export interface User {
-  /** 用户ID */
-  id: string;
-  /** 用户名 */
-  username: string;
-  /** 姓名 */
-  name: string;
-  /** 邮箱 */
-  email: string;
-  /** 手机号 */
-  phone?: string;
-  /** 角色列表 */
-  roles: string[];
-  /** 权限码列表 */
-  permissions: string[];
-  /** 头像URL */
-  avatar?: string;
-}
-
-/* ==================== 员工相关 ==================== */
-
-/**
- * 员工信息
- */
-export interface Employee {
-  /** 员工内部ID */
-  id: string;
-  /** 员工工号 */
-  employeeNo: string;
-  /** 员工姓名 */
-  name: string;
-  /** 邮箱地址 */
-  email: string;
-  /** 手机号码 */
-  phone: string;
-  /** 入职日期（ISO 8601格式） */
-  employmentDate: string;
-  /** 在职状态 */
-  employmentStatus: string;
-  /** 职务（字符串） */
-  position: string;
-  /** 所属组织ID */
-  organizationId: string | null;
-  /** 所属组织名称 */
-  organizationName: string | null;
-  /** 职务ID */
-  jobPostId: string | null;
-  /** 职务名称 */
-  jobPostName: string | null;
-}
-
-/**
- * 员工查询参数
- */
-export interface EmployeeQueryParams {
-  /** 页码（从1开始） */
-  pageNum: number;
-  /** 每页数量（1-100） */
-  pageSize: number;
-  /** 搜索关键词（姓名模糊匹配） */
-  keyword?: string;
-}
-
-/* ==================== 组织相关 ==================== */
-
-/**
- * 组织树节点
- */
-export interface Organization {
-  /** 组织ID */
-  id: string;
-  /** 组织名称 */
-  name: string;
-  /** 组织编码 */
-  code: string;
-  /** 父组织ID */
-  parentId: string | null;
-  /** 组织层级 */
-  level: number;
-  /** 子组织列表 */
-  children: Organization[];
-}
-
-/* ==================== 职务相关 ==================== */
-
-/**
- * 职务信息
- */
-export interface Position {
-  /** 职务ID */
-  id: string;
-  /** 职务名称 */
-  name: string;
-  /** 职务编码 */
-  code: string;
-}
-
-/**
- * 职务查询参数
- */
-export interface PositionQueryParams {
-  /** 页码（从1开始） */
-  pageNum: number;
-  /** 每页数量（1-100） */
-  pageSize: number;
-  /** 搜索关键词（职务名称模糊匹配） */
-  keyword?: string;
-}
-
-/* ==================== 同步任务相关 ==================== */
-
 /**
  * 同步类型
  */
@@ -216,59 +73,35 @@ export type SyncStatus = 'running' | 'success' | 'failed' | 'partial_success';
 export type TriggerMode = 'manual' | 'scheduled';
 
 /**
- * 同步触发请求
+ * 员工查询参数（API 使用）
  */
-export interface SyncTriggerRequest {
-  /** 开始时间（可选，ISO 8601格式） */
-  timeRangeStart?: string;
-  /** 结束时间（可选，ISO 8601格式） */
-  timeRangeEnd?: string;
+export interface EmployeeQueryParams {
+  /** 页码（从1开始） */
+  pageNum: number;
+  /** 每页数量（1-100） */
+  pageSize: number;
+  /** 搜索关键词（姓名模糊匹配） */
+  keyword?: string;
 }
 
 /**
- * 同步批次信息
+ * 职务查询参数（API 使用）
  */
-export interface SyncBatch {
-  /** 批次ID */
-  batch_id: string;
-  /** 同步类型 */
-  sync_type: SyncType;
-  /** 状态 */
-  status: SyncStatus;
-  /** 触发模式 */
-  trigger_mode: TriggerMode;
-  /** 触发用户ID */
-  triggered_by_id?: string;
-  /** 触发用户姓名 */
-  triggered_by_name?: string;
-  /** 开始时间 */
-  started_at: string;
-  /** 结束时间 */
-  completed_at: string | null;
-  /** 持续时间（毫秒） */
-  duration_ms: number | null;
-  /** 总记录数 */
-  total_records: number;
-  /** 成功记录数 */
-  success_records: number;
-  /** 失败记录数 */
-  failed_records: number;
-  /** 跳过记录数 */
-  skipped_records?: number;
-  /** 错误消息 */
-  error_message: string | null;
-  /** 时间范围开始 */
-  time_range_start?: string | null;
-  /** 时间范围结束 */
-  time_range_end?: string | null;
+export interface PositionQueryParams {
+  /** 页码（从1开始） */
+  pageNum: number;
+  /** 每页数量（1-100） */
+  pageSize: number;
+  /** 搜索关键词（职务名称模糊匹配） */
+  keyword?: string;
 }
 
 /**
- * 同步批次查询参数
+ * 同步批次查询参数（API 使用）
  */
 export interface SyncBatchQueryParams {
   /** 页码 */
-  page?: number;
+  pageNum?: number;
   /** 每页数量（最大100） */
   pageSize?: number;
   /** 同步类型 */
@@ -284,43 +117,46 @@ export interface SyncBatchQueryParams {
 }
 
 /**
- * 同步批次列表响应
+ * 批次详情响应（包含批次信息和日志）
  */
-export interface SyncBatchListResponse {
-  /** 批次列表 */
-  batches: SyncBatch[];
-  /** 分页信息 */
-  page: number;
-  size: number;
-  total: number;
+export interface SyncBatchDetailResponse {
+  /** 批次信息 */
+  batch: SyncBatch;
+  /** 日志分页数据 */
+  logs: {
+    /** 总记录数 */
+    total: number;
+    /** 当前页码 */
+    page: number;
+    /** 每页数量 */
+    size: number;
+    /** 日志列表 */
+    logs: SyncLogRaw[];
+  };
 }
 
 /**
- * 同步日志
+ * 原始同步日志（后端返回格式）
  */
-export interface SyncLog {
+export interface SyncLogRaw {
   /** 日志ID */
-  id: string;
+  log_id: string;
   /** 批次ID */
-  batchId: string;
+  batch_id: string;
   /** 记录类型 */
-  recordType: string;
-  /** 记录标识符 */
-  recordIdentifier: string;
-  /** 操作类型 */
-  operation: 'insert' | 'update' | 'delete';
+  record_type: string;
+  /** 记录ID */
+  record_id: string;
   /** 状态 */
   status: 'success' | 'failed';
-  /** 错误信息 */
-  errorMessage: string;
-  /** 错误代码 */
-  errorCode: string;
-  /** 记录详情 */
-  recordDetails: Record<string, any>;
-  /** 处理时间 */
-  processedAt: string;
+  /** 级别 */
+  level: string;
+  /** 消息 */
+  message: string;
+  /** 详情（JSON字符串） */
+  details: string;
   /** 创建时间 */
-  createdAt: string;
+  created_at: string;
 }
 
 /**
@@ -331,51 +167,6 @@ export interface SyncBatchLogsResponse {
   logs: SyncLog[];
   /** 总记录数 */
   totalCount: number;
-}
-
-/**
- * 完整同步流程状态
- */
-export interface OrderedFlowStatus {
-  latestOrderedSync: {
-    /** 组织同步批次 */
-    orgBatch: {
-      batchId: string;
-      status: SyncStatus;
-      startTime: string;
-      endTime: string | null;
-      durationMs: number | null;
-      totalCount: number;
-      successCount: number;
-      failedCount: number;
-    };
-    /** 职务同步批次 */
-    jobpostBatch: {
-      batchId: string;
-      status: SyncStatus;
-      startTime: string;
-      endTime: string | null;
-      durationMs: number | null;
-      totalCount: number;
-      successCount: number;
-      failedCount: number;
-    };
-    /** 员工同步批次 */
-    employeeBatch: {
-      batchId: string;
-      status: SyncStatus;
-      startTime: string;
-      endTime: string | null;
-      durationMs: number | null;
-      totalCount: number;
-      successCount: number;
-      failedCount: number;
-    };
-    /** 总持续时间（毫秒） */
-    totalDurationMs: number;
-    /** 整体状态 */
-    overallStatus: SyncStatus;
-  };
 }
 
 /**
@@ -609,3 +400,29 @@ export const BUSINESS_CODE = {
   NOT_FOUND: 404,
   DATABASE_ERROR: 500,
 } as const;
+
+/* ==================== 重新导出（供其他模块使用） ==================== */
+
+// 重新导出通用类型
+export type { UnifiedResponse } from './common';
+
+// 重新导出认证相关类型
+export type { User, LoginRequest, LoginResponse } from './auth';
+
+// 重新导出员工相关类型
+export type { Employee, EmployeeFilters } from './employee';
+
+// 重新导出组织相关类型
+export type { Organization } from './organization';
+
+// 重新导出职务相关类型
+export type { Position, PositionFilters } from './position';
+
+// 重新导出同步相关类型
+export type {
+  SyncBatch,
+  SyncBatchListResponse,
+  SyncLog,
+  SyncTriggerRequest,
+  OrderedFlowStatus,
+} from './sync';

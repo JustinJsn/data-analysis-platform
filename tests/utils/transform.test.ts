@@ -6,7 +6,9 @@ import { describe, it, expect } from 'vitest';
 import {
   formatDateTime,
   getSyncTypeLabel,
-  getSyncStatusLabel,
+  getStatusLabel,
+  transformPerformanceReport,
+  transformPerformanceQueryParams,
 } from '@/utils/transform';
 
 describe('transform utils', () => {
@@ -33,7 +35,7 @@ describe('transform utils', () => {
 
     it('应该处理无效日期', () => {
       const result = formatDateTime('invalid-date');
-      expect(result).toBe('invalid-date');
+      expect(result).toBe('-');
     });
   });
 
@@ -55,25 +57,96 @@ describe('transform utils', () => {
     });
   });
 
-  describe('getSyncStatusLabel', () => {
+  describe('getStatusLabel', () => {
     it('应该返回运行中标签', () => {
-      expect(getSyncStatusLabel('running')).toBe('运行中');
+      expect(getStatusLabel('running')).toBe('运行中');
     });
 
     it('应该返回成功标签', () => {
-      expect(getSyncStatusLabel('success')).toBe('成功');
+      expect(getStatusLabel('success')).toBe('成功');
     });
 
     it('应该返回部分成功标签', () => {
-      expect(getSyncStatusLabel('partial_success')).toBe('部分成功');
+      expect(getStatusLabel('partial_success')).toBe('部分成功');
     });
 
     it('应该返回失败标签', () => {
-      expect(getSyncStatusLabel('failed')).toBe('失败');
+      expect(getStatusLabel('failed')).toBe('失败');
     });
 
     it('应该处理未知状态', () => {
-      expect(getSyncStatusLabel('unknown' as any)).toBe('unknown');
+      expect(getStatusLabel('unknown' as any)).toBe('unknown');
+    });
+  });
+
+  describe('transformPerformanceReport', () => {
+    it('应该正确转换绩效数据', () => {
+      const input = {
+        id: '1',
+        batch_id: 'batch1',
+        external_system_id: 'sys1',
+        year: 2024,
+        quarter: 'Q1',
+        employee_name: '张三',
+        employee_user_id: 'user1',
+        organization_full_name: '技术部',
+        organization_path_ids: '1/2',
+        performance_rating: 'A',
+        last_synced_at: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+      };
+
+      const result = transformPerformanceReport(input);
+
+      expect(result).toEqual(input);
+    });
+  });
+
+  describe('transformPerformanceQueryParams', () => {
+    it('应该正确转换查询参数', () => {
+      const input = {
+        page: 1,
+        pageSize: 10,
+        year: 2024,
+        quarter: 'Q1',
+        employee_name: '张三',
+        employee_user_id: 'user1',
+        organization_path_ids: '1/2',
+        performance_rating: 'A',
+      };
+
+      const result = transformPerformanceQueryParams(input);
+
+      expect(result).toEqual({
+        page: 1,
+        page_size: 10,
+        year: 2024,
+        quarter: 'Q1',
+        employee_name: '张三',
+        employee_user_id: 'user1',
+        organization_path_ids: '1/2',
+        performance_rating: 'A',
+      });
+    });
+
+    it('应该只转换存在的参数', () => {
+      const input = {
+        page: 1,
+        pageSize: 10,
+      };
+
+      const result = transformPerformanceQueryParams(input);
+
+      expect(result).toEqual({
+        page: 1,
+        page_size: 10,
+      });
+    });
+
+    it('应该处理空对象', () => {
+      const result = transformPerformanceQueryParams({});
+      expect(result).toEqual({});
     });
   });
 });

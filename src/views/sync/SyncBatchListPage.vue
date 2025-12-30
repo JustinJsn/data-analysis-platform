@@ -19,6 +19,7 @@
             <el-option label="员工" value="employee" />
             <el-option label="组织" value="organization" />
             <el-option label="职务" value="jobpost" />
+            <el-option label="北森绩效" value="performance_report" />
           </el-select>
         </el-form-item>
 
@@ -84,7 +85,7 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="syncStore.filters.page"
+          v-model:current-page="syncStore.filters.pageNum"
           v-model:page-size="syncStore.filters.pageSize"
           :page-sizes="[10, 20, 50, 100]"
           :total="syncStore.batchesTotal"
@@ -169,7 +170,7 @@ const handlePageChange = async (page: number) => {
  */
 const handleSizeChange = async (size: number) => {
   syncStore.filters.pageSize = size;
-  syncStore.filters.page = 1;
+  syncStore.filters.pageNum = 1;
   try {
     await syncStore.fetchBatches();
   } catch (error) {

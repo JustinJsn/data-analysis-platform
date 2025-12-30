@@ -29,7 +29,7 @@ export const useSyncStore = defineStore('sync', () => {
 
   /** 批次筛选条件 */
   const filters = ref<SyncBatchQueryParams>({
-    page: 1,
+    pageNum: 1,
     pageSize: 20,
   });
 
@@ -95,15 +95,52 @@ export const useSyncStore = defineStore('sync', () => {
   /**
    * 获取批次详情
    * @param id 批次ID
+   * @param logPage 日志页码（可选，默认使用 logsFilters.pageNum）
+   * @param logPageSize 日志每页数量（可选，默认使用 logsFilters.pageSize）
    */
-  const fetchBatchDetail = async (id: string) => {
+  const fetchBatchDetail = async (
+    id: string,
+    logPage?: number,
+    logPageSize?: number,
+  ) => {
     try {
       batchDetailLoading.value = true;
-      const response = await syncApi.getBatchDetail(id);
-      currentBatch.value = response;
-      return response;
+      const page = logPage ?? logsFilters.value.pageNum;
+      const pageSize = logPageSize ?? logsFilters.value.pageSize;
+      const response = await syncApi.getBatchDetail(id, page, pageSize);
+      // 从响应中提取批次信息
+      currentBatch.value = response.batch;
+      // 处理分页的日志数据
+      if (
+        response.logs &&
+        response.logs.logs &&
+        response.logs.logs.length > 0
+      ) {
+        // 转换日志格式
+        currentLogs.value = response.logs.logs.map((log) => ({
+          id: log.log_id,
+          batchId: log.batch_id,
+          recordType: log.record_type,
+          recordId: log.record_id,
+          status: log.status,
+          level: log.level,
+          message: log.message,
+          details: log.details,
+          timestamp: log.created_at,
+        }));
+        logsTotal.value = response.logs.total;
+        // 同步分页信息
+        logsFilters.value.pageNum = response.logs.page;
+        logsFilters.value.pageSize = response.logs.size;
+      } else {
+        currentLogs.value = [];
+        logsTotal.value = 0;
+      }
+      return response.batch;
     } catch (error) {
       currentBatch.value = null;
+      currentLogs.value = [];
+      logsTotal.value = 0;
       throw error;
     } finally {
       batchDetailLoading.value = false;
@@ -156,8 +193,8 @@ export const useSyncStore = defineStore('sync', () => {
    * 触发完整有序同步
    * @param params 同步参数（可选时间范围）
    */
-  const triggerFullSync = async () => {
-    const response = await syncApi.triggerOrderedSync();
+  const triggerFullSync = async (params?: SyncTriggerRequest) => {
+    const response = await syncApi.triggerOrderedSync(params);
     return response;
   };
 
@@ -165,7 +202,7 @@ export const useSyncStore = defineStore('sync', () => {
    * 设置批次列表页码
    */
   const setBatchesPage = (page: number) => {
-    filters.value.page = page;
+    filters.value.pageNum = page;
   };
 
   /**
@@ -181,7 +218,7 @@ export const useSyncStore = defineStore('sync', () => {
   const setBatchesFilters = (newFilters: Partial<SyncBatchQueryParams>) => {
     filters.value = { ...filters.value, ...newFilters };
     // 重置到第一页
-    filters.value.page = 1;
+    filters.value.pageNum = 1;
   };
 
   /**
@@ -189,7 +226,7 @@ export const useSyncStore = defineStore('sync', () => {
    */
   const resetBatchesFilters = () => {
     filters.value = {
-      page: 1,
+      pageNum: 1,
       pageSize: 20,
     };
   };

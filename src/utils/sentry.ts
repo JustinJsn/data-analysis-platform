@@ -118,10 +118,33 @@ export function captureError(
   error: Error,
   context?: Record<string, any>,
 ): void {
-  if (context) {
-    Sentry.setContext('custom', context);
-  }
-  Sentry.captureException(error);
+  Sentry.withScope((scope) => {
+    if (context) {
+      // 设置自定义上下文
+      scope.setContext('custom', context);
+
+      // 如果有 fingerprint，设置以便正确分组
+      if (context.fingerprint) {
+        scope.setFingerprint(context.fingerprint);
+      }
+
+      // 设置标签便于过滤
+      if (context.type) {
+        scope.setTag('error_type', context.type);
+      }
+      if (context.status) {
+        scope.setTag('http_status', context.status);
+      }
+      if (context.url) {
+        scope.setTag('api_url', context.url);
+      }
+      if (context.method) {
+        scope.setTag('http_method', context.method);
+      }
+    }
+
+    Sentry.captureException(error);
+  });
 }
 
 /**

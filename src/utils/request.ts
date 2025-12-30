@@ -56,13 +56,28 @@ service.interceptors.request.use(
  * 响应拦截器
  */
 service.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse>) => {
+  (response: AxiosResponse<UnifiedResponse | Blob>) => {
     requestCount--;
     if (requestCount === 0) {
       NProgress.done();
     }
 
-    const { code, message, data } = response.data;
+    // 检查是否为文件流响应（如CSV导出）
+    const contentType =
+      response.headers['content-type'] ||
+      response.headers['Content-Type'] ||
+      '';
+    if (
+      contentType.includes('text/csv') ||
+      contentType.includes('application/octet-stream') ||
+      response.data instanceof Blob
+    ) {
+      // 文件流响应，直接返回整个response对象（包含headers）
+      return response;
+    }
+
+    // JSON响应，按统一格式处理
+    const { code, message, data } = response.data as UnifiedResponse;
 
     if (code !== 0) {
       // 业务失败
@@ -112,15 +127,33 @@ service.interceptors.response.use(
         data?.message || errorMessages[status] || '网络错误，请稍后重试';
       ElMessage.error(errorMessage);
 
-      // 上报严重错误到 Sentry（排除 401 和 404）
-      if (status !== 401 && status !== 404) {
-        captureError(error, {
+      // 上报严重错误到 Sentry（排除 401，因为已有专门的登录跳转处理）
+      if (status !== 401) {
+        // 创建新的错误对象以清晰标识错误来源
+        const apiError = new Error(
+          `HTTP ${status}: ${errorMessage} - ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+        );
+
+        // 设置错误名称以便在 Sentry 中分类
+        apiError.name = `HTTPError${status}`;
+
+        // 保留原始堆栈但添加 API 请求信息
+        apiError.stack = `API Request Failed\n    at ${error.config?.method?.toUpperCase()} ${error.config?.url}\n${error.stack || ''}`;
+
+        captureError(apiError, {
           type: 'HTTP Error',
           status,
           url: error.config?.url,
           method: error.config?.method,
           errorMessage,
           responseData: data,
+          requestData: error.config?.data,
+          // 添加指纹以便 Sentry 正确分组
+          fingerprint: [
+            'http-error',
+            String(status),
+            error.config?.url || 'unknown',
+          ],
         });
       }
 
@@ -138,18 +171,35 @@ service.interceptors.response.use(
       // 网络连接失败
       ElMessage.error('网络连接失败，请检查网络');
 
-      captureError(error, {
+      // 创建明确的网络错误对象
+      const networkError = new Error(
+        `网络连接失败: ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      );
+      networkError.name = 'NetworkError';
+      networkError.stack = `Network Request Failed\n    at ${error.config?.method?.toUpperCase()} ${error.config?.url}\n${error.stack || ''}`;
+
+      captureError(networkError, {
         type: 'Network Error',
         url: error.config?.url,
         method: error.config?.method,
+        fingerprint: ['network-error', error.config?.url || 'unknown'],
       });
     } else {
       // 请求配置错误
       ElMessage.error('请求配置错误');
 
-      captureError(error, {
+      // 创建明确的配置错误对象
+      const configError = new Error(
+        `请求配置错误: ${error.message || '未知错误'}`,
+      );
+      configError.name = 'RequestConfigError';
+      configError.stack = `Request Configuration Error\n${error.stack || ''}`;
+
+      captureError(configError, {
         type: 'Request Config Error',
         config: error.config,
+        errorMessage: error.message,
+        fingerprint: ['config-error'],
       });
     }
 

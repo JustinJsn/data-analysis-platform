@@ -39,43 +39,59 @@
       <div class="card-title">快速同步</div>
       <div class="sync-actions">
         <el-button
-          type="primary"
-          :loading="syncingType === 'employee'"
-          :disabled="isSyncing"
-          @click="handleTriggerSync('employee')"
-        >
-          <el-icon><User /></el-icon>
-          同步员工数据
-        </el-button>
-        <el-button
-          type="primary"
-          :loading="syncingType === 'organization'"
-          :disabled="isSyncing"
-          @click="handleTriggerSync('organization')"
-        >
-          <el-icon><OfficeBuilding /></el-icon>
-          同步组织数据
-        </el-button>
-        <el-button
-          type="primary"
-          :loading="syncingType === 'jobpost'"
-          :disabled="isSyncing"
-          @click="handleTriggerSync('jobpost')"
-        >
-          <el-icon><Suitcase /></el-icon>
-          同步职务数据
-        </el-button>
-        <el-button
           type="success"
           :loading="syncingType === 'full'"
           :disabled="isSyncing"
-          @click="handleTriggerFullSync"
+          @click="showSyncDialog = true"
         >
-          <el-icon><Refresh /></el-icon>
+          <el-icon>
+            <Refresh />
+          </el-icon>
           完整同步
         </el-button>
       </div>
     </div>
+
+    <!-- 同步时间范围选择对话框 -->
+    <el-dialog
+      v-model="showSyncDialog"
+      title="完整同步"
+      width="500px"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="syncForm" label-width="110px">
+        <el-form-item label="时间范围" prop="timeRange">
+          <el-date-picker
+            v-model="syncForm.timeRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DDTHH:mm:ssZ"
+            :clearable="true"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-alert title="说明" type="info" :closable="false" show-icon>
+          <template #default>
+            不填写时间范围将同步所有数据；填写后仅同步指定时间范围内的数据
+          </template>
+        </el-alert>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="showSyncDialog = false">取消</el-button>
+          <el-button
+            type="primary"
+            :loading="syncingType === 'full'"
+            @click="handleTriggerFullSync"
+          >
+            开始同步
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
 
     <!-- 最近批次列表 -->
     <div class="card batch-list-card">
@@ -83,7 +99,9 @@
         <div class="card-title">最近同步批次</div>
         <el-button link type="primary" @click="handleViewAllBatches">
           查看全部
-          <el-icon><ArrowRight /></el-icon>
+          <el-icon>
+            <ArrowRight />
+          </el-icon>
         </el-button>
       </div>
 
@@ -112,9 +130,8 @@ import {
 } from '@element-plus/icons-vue';
 import DataCard from '@/components/business/DataCard.vue';
 import { useSyncStore } from '@/stores/sync';
-import type { SyncType } from '@/types/api';
+import type { SyncType, SyncTriggerRequest } from '@/types/api';
 import SyncBatchTable from '@/components/sync/SyncBatchTable.vue';
-import { getSyncTypeLabel } from '@/utils/transform';
 
 const router = useRouter();
 const syncStore = useSyncStore();
@@ -138,24 +155,15 @@ const recentBatches = computed(() => {
   return syncStore.batches.slice(0, 5);
 });
 
-// (Helper functions removed as they are now handled by SyncBatchTable and transform.ts)
+// 同步对话框显示状态
+const showSyncDialog = ref(false);
 
-/**
- * 触发同步任务
- */
-const handleTriggerSync = async (type: SyncType) => {
-  try {
-    syncingType.value = type;
-    await syncStore.triggerSync(type);
-    ElMessage.success(`${getSyncTypeLabel(type)}同步已触发`);
-    // 刷新批次列表
-    await syncStore.fetchBatches();
-  } catch (error) {
-    ElMessage.error('触发同步失败，请稍后重试');
-  } finally {
-    syncingType.value = null;
-  }
-};
+// 同步表单
+const syncForm = ref<{
+  timeRange: [string, string] | null;
+}>({
+  timeRange: null
+});
 
 /**
  * 触发完整同步
@@ -163,8 +171,22 @@ const handleTriggerSync = async (type: SyncType) => {
 const handleTriggerFullSync = async () => {
   try {
     syncingType.value = 'full';
-    await syncStore.triggerFullSync();
+
+    // 构建请求参数
+    const params: SyncTriggerRequest | undefined = syncForm.value.timeRange
+      ? {
+        time_range_start: syncForm.value.timeRange[0],
+        time_range_end: syncForm.value.timeRange[1]
+      }
+      : undefined;
+
+    await syncStore.triggerFullSync(params);
     ElMessage.success('完整同步已触发');
+
+    // 关闭对话框并重置表单
+    showSyncDialog.value = false;
+    syncForm.value.timeRange = null;
+
     // 刷新批次列表
     await syncStore.fetchBatches();
   } catch (error) {
@@ -280,5 +302,11 @@ onMounted(async () => {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 </style>
