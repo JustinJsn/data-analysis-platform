@@ -121,6 +121,6 @@ export default defineConfig({
     cssCodeSplit: true,
     // 使用 Lightning CSS 进行 CSS 压缩（Rolldown 默认）
     // 使用 Oxc minifier 进行 JS 压缩（Rolldown 默认）
-    minify: 'esbuild', // 可以设置为 'oxc' 以使用更快的 Oxc 压缩器
+    minify: 'oxc', // 使用 Oxc 压缩器（Rolldown 默认，无需 esbuild）
   },
 });

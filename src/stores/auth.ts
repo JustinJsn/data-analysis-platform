@@ -2,7 +2,7 @@
  * Auth Store - 认证状态管理
  */
 import { defineStore } from 'pinia';
-import type { User, LoginRequest, LoginResponse } from '@/types/api';
+import type { User, LoginRequest, LoginResponse } from '@/types/auth';
 import { authApi } from '@/api';
 import { setSentryUser, clearSentryUser } from '@/utils/sentry';
 
@@ -75,13 +75,13 @@ export const useAuthStore = defineStore('auth', {
      * 设置认证信息
      */
     setAuth(authData: LoginResponse) {
-      this.token = authData.accessToken;
-      this.refreshToken = authData.refreshToken;
+      this.token = authData.token.accessToken;
+      this.refreshToken = authData.token.refreshToken;
       this.userInfo = authData.user;
       this.permissions = authData.user.permissions;
 
-      localStorage.setItem('access_token', authData.accessToken);
-      localStorage.setItem('refresh_token', authData.refreshToken);
+      localStorage.setItem('access_token', authData.token.accessToken);
+      localStorage.setItem('refresh_token', authData.token.refreshToken);
 
       // 设置 Sentry 用户信息
       setSentryUser({

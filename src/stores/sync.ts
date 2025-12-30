@@ -80,9 +80,9 @@ export const useSyncStore = defineStore('sync', () => {
     try {
       batchesLoading.value = true;
       const response = await syncApi.getBatches(filters.value);
-      // 后端返回结构为 { batches: [...], total: ... }
+      // 后端返回结构为 { batches: [...], pagination: { totalCount: ... } }
       batches.value = response.batches;
-      batchesTotal.value = response.total;
+      batchesTotal.value = response.pagination.totalCount;
     } catch (error) {
       batches.value = [];
       batchesTotal.value = 0;
@@ -116,18 +116,30 @@ export const useSyncStore = defineStore('sync', () => {
         response.logs.logs &&
         response.logs.logs.length > 0
       ) {
-        // 转换日志格式
-        currentLogs.value = response.logs.logs.map((log) => ({
-          id: log.log_id,
-          batchId: log.batch_id,
-          recordType: log.record_type,
-          recordId: log.record_id,
-          status: log.status,
-          level: log.level,
-          message: log.message,
-          details: log.details,
-          timestamp: log.created_at,
-        }));
+        // 转换日志格式 - 将 SyncLogRaw 转换为 SyncLog
+        currentLogs.value = response.logs.logs.map((log) => {
+          // 尝试解析 details JSON 字符串
+          let recordDetails: Record<string, any> = {};
+          try {
+            recordDetails = log.details ? JSON.parse(log.details) : {};
+          } catch {
+            // 如果解析失败，使用空对象
+          }
+
+          return {
+            id: log.log_id,
+            batchId: log.batch_id,
+            recordType: log.record_type,
+            recordIdentifier: log.record_id,
+            operation: 'update' as const, // 默认操作类型，因为原始数据没有此字段
+            status: log.status,
+            errorMessage: log.status === 'failed' ? log.message : '',
+            errorCode: log.status === 'failed' ? log.level : '',
+            recordDetails,
+            processedAt: log.created_at,
+            createdAt: log.created_at,
+          };
+        });
         logsTotal.value = response.logs.total;
         // 同步分页信息
         logsFilters.value.pageNum = response.logs.page;

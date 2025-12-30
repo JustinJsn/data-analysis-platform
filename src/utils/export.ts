@@ -98,7 +98,7 @@ export async function exportPerformanceRecords(
 ): Promise<void> {
   // 判断是否为 BusinessQueryRecord 格式（检查是否有 employeeNo 字段）
   const isBusinessQueryRecord =
-    records.length > 0 && 'employeeNo' in records[0];
+    records.length > 0 && records[0] && 'employeeNo' in records[0];
 
   let exportData: Record<string, any>[];
 

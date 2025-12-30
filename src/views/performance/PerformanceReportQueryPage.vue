@@ -89,12 +89,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Search, RefreshLeft, Download } from '@element-plus/icons-vue';
 import { usePerformanceReportStore } from '@/stores/performance-report';
 import type { QuarterTime } from '@/types/performance-report';
-import { quarterToString } from '@/utils/quarter-calculator';
 import { captureError, addBreadcrumb } from '@/utils/sentry';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PerformanceReportTable from '@/components/performance/PerformanceReportTable.vue';

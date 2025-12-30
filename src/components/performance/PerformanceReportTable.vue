@@ -25,8 +25,6 @@ import { formatDate } from '@/utils/transform';
 import {
   transformToTableRows,
   transformBusinessQueryToTableRows,
-  extractYearRange,
-  extractYearRangeFromBusinessQuery,
   extractQuarterRange,
 } from '@/utils/performance-table';
 

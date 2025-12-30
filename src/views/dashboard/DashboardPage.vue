@@ -175,8 +175,8 @@ const handleTriggerFullSync = async () => {
     // 构建请求参数
     const params: SyncTriggerRequest | undefined = syncForm.value.timeRange
       ? {
-        time_range_start: syncForm.value.timeRange[0],
-        time_range_end: syncForm.value.timeRange[1]
+        timeRangeStart: syncForm.value.timeRange[0],
+        timeRangeEnd: syncForm.value.timeRange[1]
       }
       : undefined;
 
