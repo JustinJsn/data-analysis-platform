@@ -79,6 +79,7 @@ export function getSyncTypeLabel(type: string): string {
     employee: '员工',
     organization: '组织',
     jobpost: '职务',
+    performance_report: '北森绩效',
   };
   return labels[type] || type;
 }
@@ -197,6 +198,7 @@ export function getSyncTypeTagType(type: string): string {
     employee: 'primary',
     organization: 'warning',
     jobpost: 'success',
+    performance_report: 'info',
   };
   return types[type] || '';
 }

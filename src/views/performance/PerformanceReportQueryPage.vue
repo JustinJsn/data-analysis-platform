@@ -43,11 +43,11 @@
         />
 
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
+          <el-button type="primary" native-type="button" @click="handleSearch">
             <el-icon><Search /></el-icon>
             查询
           </el-button>
-          <el-button @click="handleReset">
+          <el-button native-type="button" @click="handleReset">
             <el-icon><RefreshLeft /></el-icon>
             重置
           </el-button>
@@ -95,6 +95,7 @@ import { Search, RefreshLeft, Download } from '@element-plus/icons-vue';
 import { usePerformanceReportStore } from '@/stores/performance-report';
 import type { QuarterTime } from '@/types/performance-report';
 import { quarterToString } from '@/utils/quarter-calculator';
+import { captureError, addBreadcrumb } from '@/utils/sentry';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PerformanceReportTable from '@/components/performance/PerformanceReportTable.vue';
 import TimeRangeSelector from '@/components/performance/TimeRangeSelector.vue';
@@ -141,10 +142,10 @@ function handleQueryParamsChange() {
  * 查询
  */
 const handleSearch = async () => {
-  try {
-    // 构建查询参数
-    const params: any = {};
+  // 构建查询参数
+  const params: any = {};
 
+  try {
     if (timeRangeMode.value === 'year') {
       if (queryForm.value.startYear) {
         params.start_year = queryForm.value.startYear;
@@ -154,19 +155,14 @@ const handleSearch = async () => {
       }
     } else {
       // 季度模式：API 需要 start_quarter 和 end_quarter，格式为 'Q1', 'Q2' 等
+      // 注意：根据 API 文档，如果提供了 start_quarter 或 end_quarter，必须同时提供 start_year 和 end_year
       if (queryForm.value.startQuarter) {
         params.start_quarter = `Q${queryForm.value.startQuarter.quarter}` as 'Q1' | 'Q2' | 'Q3' | 'Q4';
-        // 注意：季度查询还需要年份范围，API 可能需要 start_year 和 end_year
-        // 从 startQuarter 和 endQuarter 提取年份
-        if (queryForm.value.startQuarter) {
-          params.start_year = queryForm.value.startQuarter.year;
-        }
-        if (queryForm.value.endQuarter) {
-          params.end_year = queryForm.value.endQuarter.year;
-        }
+        params.start_year = queryForm.value.startQuarter.year;
       }
       if (queryForm.value.endQuarter) {
         params.end_quarter = `Q${queryForm.value.endQuarter.quarter}` as 'Q1' | 'Q2' | 'Q3' | 'Q4';
+        params.end_year = queryForm.value.endQuarter.year;
       }
     }
 
@@ -181,7 +177,20 @@ const handleSearch = async () => {
 
     await reportStore.updateQueryParams(params);
     await reportStore.fetchRecords();
+
+    addBreadcrumb({
+      message: '查询绩效数据',
+      category: 'performance-report.query',
+      level: 'info',
+      data: { params, mode: timeRangeMode.value },
+    });
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Query Error',
+      queryParams: params,
+      fingerprint: ['performance-report-query-error'],
+    });
     ElMessage.error('查询失败，请稍后重试');
   }
 };
@@ -208,7 +217,17 @@ const handleReset = async () => {
   reportStore.resetQueryParams();
   try {
     await reportStore.fetchRecords();
+    addBreadcrumb({
+      message: '重置查询条件',
+      category: 'performance-report.reset',
+      level: 'info',
+    });
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Reset Error',
+      fingerprint: ['performance-report-reset-error'],
+    });
     ElMessage.error('重置失败，请稍后重试');
   }
 };
@@ -218,7 +237,7 @@ const handleReset = async () => {
  */
 const handleExport = async (
   type: 'batch' | 'all',
-  format: 'xlsx' | 'csv',
+  format: 'csv',
 ) => {
   try {
     if (type === 'batch') {
@@ -226,11 +245,23 @@ const handleExport = async (
       ElMessage.success('导出成功');
     } else {
       await reportStore.exportAll(format);
-      ElMessage.success('导出任务已提交，请等待处理完成');
-      // TODO: 实现导出任务状态轮询
+      ElMessage.success('导出成功');
     }
     showExportDialog.value = false;
+    addBreadcrumb({
+      message: '导出绩效数据',
+      category: 'performance-report.export',
+      level: 'info',
+      data: { type, format },
+    });
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Export Error',
+      exportType: type,
+      format,
+      fingerprint: ['performance-report-export-error'],
+    });
     ElMessage.error('导出失败，请稍后重试');
   }
 };
@@ -243,6 +274,13 @@ const handlePageChange = async (page: number) => {
   try {
     await reportStore.fetchRecords();
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Pagination Error',
+      page,
+      pageSize: reportStore.pageSize,
+      fingerprint: ['performance-report-pagination-error'],
+    });
     ElMessage.error('加载数据失败，请稍后重试');
   }
 };
@@ -255,6 +293,12 @@ const handleSizeChange = async (size: number) => {
   try {
     await reportStore.fetchRecords();
   } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Page Size Change Error',
+      pageSize: size,
+      fingerprint: ['performance-report-page-size-error'],
+    });
     ElMessage.error('加载数据失败，请稍后重试');
   }
 };
@@ -266,6 +310,12 @@ onMounted(async () => {
     await reportStore.fetchRecords();
   } catch (error) {
     // 静默失败，不显示错误提示（用户可以通过点击查询按钮重试）
+    // 但需要记录到 Sentry
+    const err = error instanceof Error ? error : new Error(String(error));
+    captureError(err, {
+      type: 'Performance Report Initial Load Error',
+      fingerprint: ['performance-report-initial-load-error'],
+    });
   }
 });
 </script>

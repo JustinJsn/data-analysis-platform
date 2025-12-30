@@ -78,8 +78,8 @@ export function stringToQuarter(str: string): QuarterTime | null {
     return null;
   }
 
-  const year = parseInt(match[1], 10);
-  const quarter = parseInt(match[2], 10) as 1 | 2 | 3 | 4;
+  const year = parseInt(match[1]!, 10);
+  const quarter = parseInt(match[2]!, 10) as 1 | 2 | 3 | 4;
 
   // 验证年份范围
   if (year < 2000 || year > 2100) {
@@ -104,4 +104,46 @@ export function isValidQuarter(quarter: QuarterTime): boolean {
     quarter.quarter >= 1 &&
     quarter.quarter <= 4
   );
+}
+
+/**
+ * 获取当前季度时间
+ *
+ * @returns 当前季度时间
+ */
+export function getCurrentQuarter(): QuarterTime {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 0-11 to 1-12
+  const quarter = Math.ceil(month / 3) as 1 | 2 | 3 | 4;
+
+  return { year, quarter };
+}
+
+/**
+ * 获取连续的季度列表
+ *
+ * @param endQuarter 结束季度（通常是当前季度或用户选择的结束季度）
+ * @param count 连续季度的数量（例如 12）
+ * @returns 季度数组（降序，从结束季度开始）
+ */
+export function getConsecutiveQuarters(
+  endQuarter: QuarterTime,
+  count: number,
+): QuarterTime[] {
+  const quarters: QuarterTime[] = [];
+  let currYear = endQuarter.year;
+  let currQuarter = endQuarter.quarter;
+
+  for (let i = 0; i < count; i++) {
+    quarters.push({ year: currYear, quarter: currQuarter as 1 | 2 | 3 | 4 });
+
+    currQuarter--;
+    if (currQuarter < 1) {
+      currQuarter = 4;
+      currYear--;
+    }
+  }
+
+  return quarters;
 }

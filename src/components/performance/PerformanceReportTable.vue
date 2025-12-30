@@ -27,6 +27,7 @@ import {
   transformBusinessQueryToTableRows,
   extractYearRange,
   extractYearRangeFromBusinessQuery,
+  extractQuarterRange,
 } from '@/utils/performance-table';
 
 // el-table-v2 的列类型
@@ -77,37 +78,12 @@ const tableRows = computed(() => {
  * 提取年份范围
  * 优先从查询参数中提取，确保即使没有数据也显示所有年份
  */
-const yearRange = computed(() => {
-  // 优先使用 Business Query 查询参数
-  if (props.queryParams && 'start_year' in props.queryParams) {
-    return extractYearRangeFromBusinessQuery(
-      props.queryParams as PerformanceReportBusinessQueryParams,
-      props.businessQueryData,
-    );
-  }
-  // 兼容旧格式
-  if (props.queryParams && 'start_year' in props.queryParams) {
-    return extractYearRange(
-      props.queryParams as PerformanceReportQueryParams,
-      props.data,
-    );
-  }
-  // 如果查询参数中没有年份范围，尝试从数据中提取
-  if (props.businessQueryData && props.businessQueryData.length > 0) {
-    return extractYearRangeFromBusinessQuery(
-      undefined,
-      props.businessQueryData,
-    );
-  }
-  if (props.data && props.data.length > 0) {
-    return extractYearRange(
-      props.queryParams as PerformanceReportQueryParams,
-      props.data,
-    );
-  }
-  // 默认范围
-  const currentYear = new Date().getFullYear();
-  return [currentYear, currentYear - 1, currentYear - 2];
+/**
+ * 提取季度范围
+ * 确保即使没有数据也根据查询参数或默认逻辑显示所有季度
+ */
+const displayQuarters = computed(() => {
+  return extractQuarterRange(props.queryParams as any);
 });
 
 /**
@@ -248,42 +224,40 @@ const columns = computed<TableColumn[]>(() => {
   );
 
   // 动态生成年度和季度列
-  yearRange.value.forEach((year) => {
-    ['Q4', 'Q3', 'Q2', 'Q1'].forEach((quarter) => {
-      const key = `${year}-${quarter}`;
-      cols.push({
-        key,
-        title: `${year}${quarter}`,
-        dataKey: key,
-        width: 80,
-        align: 'center',
-        headerClass: 'year-header',
-        headerRenderer: ({ column }) => {
-          return h('div', {
-            class: 'year-header-cell',
-            style: {
-              backgroundColor: '#E3F2FD',
-              color: 'var(--el-text-color-regular)',
-              fontWeight: '600',
-              fontSize: '14px',
-              padding: '14px 0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }
-          }, column.title);
-        },
-        cellRenderer: ({ rowData }) => {
-          const rating = rowData.performance_data?.[key];
-          if (rating) {
-            return h(ElTag, {
-              type: getRatingTagType(rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info',
-              size: 'small',
-            }, () => rating);
+  displayQuarters.value.forEach(({ year, quarter }) => {
+    const key = `${year}-${quarter}`;
+    cols.push({
+      key,
+      title: `${year}${quarter}`,
+      dataKey: key,
+      width: 80,
+      align: 'center',
+      headerClass: 'year-header',
+      headerRenderer: ({ column }) => {
+        return h('div', {
+          class: 'year-header-cell',
+          style: {
+            backgroundColor: '#E3F2FD',
+            color: 'var(--el-text-color-regular)',
+            fontWeight: '600',
+            fontSize: '14px',
+            padding: '14px 0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }
-          return h('span', '-');
-        },
-      });
+        }, column.title);
+      },
+      cellRenderer: ({ rowData }) => {
+        const rating = rowData.performance_data?.[key];
+        if (rating) {
+          return h(ElTag, {
+            type: getRatingTagType(rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info',
+            size: 'small',
+          }, () => rating);
+        }
+        return h('span', '-');
+      },
     });
   });
 

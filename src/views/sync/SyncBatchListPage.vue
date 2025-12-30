@@ -19,6 +19,7 @@
             <el-option label="员工" value="employee" />
             <el-option label="组织" value="organization" />
             <el-option label="职务" value="jobpost" />
+            <el-option label="北森绩效" value="performance_report" />
           </el-select>
         </el-form-item>
 

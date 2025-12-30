@@ -7,6 +7,10 @@ import type {
   BusinessQueryRecord,
 } from '@/types/performance-report';
 import { parseDepartmentPath } from './transform';
+import {
+  getCurrentQuarter,
+  getConsecutiveQuarters,
+} from './quarter-calculator';
 
 /**
  * 表格行数据（按员工分组）
@@ -199,7 +203,7 @@ export function transformBusinessQueryToTableRows(
     // 遍历所有键，查找季度评级（格式：2025Q3, 2025Q2 等）
     for (const key in record) {
       const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-      if (quarterMatch) {
+      if (quarterMatch && quarterMatch[1] && quarterMatch[2]) {
         const year = quarterMatch[1];
         const quarter = `Q${quarterMatch[2]}`;
         const rating = record[key as `${number}Q${1 | 2 | 3 | 4}`];
@@ -260,7 +264,7 @@ export function extractYearRangeFromBusinessQuery(
     for (const record of records) {
       for (const key in record) {
         const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-        if (quarterMatch) {
+        if (quarterMatch && quarterMatch[1]) {
           const year = parseInt(quarterMatch[1], 10);
           yearSet.add(year);
         }
@@ -271,7 +275,7 @@ export function extractYearRangeFromBusinessQuery(
     for (const record of records) {
       for (const key in record) {
         const yearMatch = key.match(/^year(\d{4})$/);
-        if (yearMatch) {
+        if (yearMatch && yearMatch[1]) {
           const year = parseInt(yearMatch[1], 10);
           yearSet.add(year);
         }
@@ -299,4 +303,89 @@ export function extractYearRangeFromBusinessQuery(
   }
 
   return years;
+}
+
+/**
+ * 提取季度显示范围
+ *
+ * @param queryParams 查询参数
+ * @returns 季度数组（降序），每个元素为 { year: number, quarter: string }
+ */
+export function extractQuarterRange(queryParams?: {
+  start_year?: number;
+  end_year?: number;
+  start_quarter?: string;
+  end_quarter?: string;
+}): { year: number; quarter: string }[] {
+  // 如果有明确的季度范围（从季度选择器）
+  if (
+    queryParams?.start_quarter &&
+    queryParams?.end_quarter &&
+    queryParams?.start_year &&
+    queryParams?.end_year
+  ) {
+    let startYear = queryParams.start_year;
+    let endYear = queryParams.end_year;
+    let startQ = parseInt(queryParams.start_quarter.replace('Q', ''), 10);
+    let endQ = parseInt(queryParams.end_quarter.replace('Q', ''), 10);
+
+    // 确定真正的开始和结束（确保 loop 逻辑正确）
+    const startTimeValue = startYear * 10 + startQ;
+    const endTimeValue = endYear * 10 + endQ;
+
+    if (startTimeValue > endTimeValue) {
+      // 交换，使 start 始终是较早的时间
+      [startYear, endYear] = [endYear, startYear];
+      [startQ, endQ] = [endQ, startQ];
+    }
+
+    const quarters: { year: number; quarter: string }[] = [];
+
+    // 从结束时间往回推到开始时间（降序显示）
+    let currYear = endYear;
+    let currQ = endQ;
+
+    while (
+      currYear > startYear ||
+      (currYear === startYear && currQ >= startQ)
+    ) {
+      quarters.push({ year: currYear, quarter: `Q${currQ}` });
+      currQ--;
+      if (currQ < 1) {
+        currQ = 4;
+        currYear--;
+      }
+      // 防止死循环
+      if (quarters.length > 100) break;
+    }
+
+    return quarters;
+  }
+
+  // 如果只有年份范围
+  if (queryParams?.start_year && queryParams?.end_year) {
+    let startYear = queryParams.start_year;
+    let endYear = queryParams.end_year;
+
+    if (startYear > endYear) {
+      [startYear, endYear] = [endYear, startYear];
+    }
+
+    const quarters: { year: number; quarter: string }[] = [];
+    for (let year = endYear; year >= startYear; year--) {
+      ['Q4', 'Q3', 'Q2', 'Q1'].forEach((q) => {
+        quarters.push({ year, quarter: q });
+      });
+    }
+    return quarters;
+  }
+
+  // 默认逻辑：从当前季度往前推 12 个连续季度
+  const current = getCurrentQuarter();
+  const consecutive = getConsecutiveQuarters(current, 12);
+
+  return consecutive.map((q) => ({
+    year: q.year,
+    quarter: `Q${q.quarter}`,
+  }));
 }

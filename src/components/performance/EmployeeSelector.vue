@@ -26,7 +26,7 @@
             v-model="searchKeyword"
             placeholder="搜索姓名或工号"
             clearable
-            style="margin-bottom: 12px"
+            class="search-input"
             @input="handleSearch"
           >
             <template #prefix>
@@ -39,7 +39,7 @@
             <el-table-v2
               :columns="columns"
               :data="employeeStore.list"
-              :width="580"
+              :width="576"
               :height="400"
               row-key="id"
               :row-class="getRowClass"
@@ -137,19 +137,19 @@ const columns = computed(() => {
       key: 'employeeNo',
       title: '工号',
       dataKey: 'employeeNo',
-      width: 120,
+      width: 130,
     },
     {
       key: 'name',
       title: '姓名',
       dataKey: 'name',
-      width: 120,
+      width: 130,
     },
     {
       key: 'organizationName',
       title: '部门',
       dataKey: 'organizationName',
-      width: 250,
+      width: 266,
     },
   ];
 });
@@ -222,13 +222,19 @@ onMounted(async () => {
 }
 
 .employee-selector-container {
-  min-width: 600px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-input {
+  margin-bottom: 12px;
 }
 
 .table-wrapper {
   border: 1px solid var(--el-border-color);
   border-radius: 4px;
   overflow: hidden;
+  width: 100%;
 }
 
 .selected-info {
@@ -256,5 +262,29 @@ onMounted(async () => {
 :deep(.el-table-v2__row:hover) {
   background-color: var(--el-fill-color-lighter);
   cursor: pointer;
+}
+
+:deep(.el-table-v2) {
+  width: 100%;
+}
+
+:deep(.el-table-v2__header) {
+  background-color: var(--el-fill-color-lighter);
+}
+
+:deep(.el-table-v2__header-cell) {
+  padding: 8px 12px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+:deep(.el-table-v2__cell) {
+  padding: 8px 12px;
+}
+
+/* 确保弹出框内容正确显示 */
+:deep(.el-popover__content) {
+  padding: 12px;
+  box-sizing: border-box;
 }
 </style>

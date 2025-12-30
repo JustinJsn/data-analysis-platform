@@ -212,33 +212,51 @@ export interface DepartmentForSelector {
 /* ==================== 导出相关 ==================== */
 
 /**
- * 导出请求
+ * 导出请求（根据API文档：POST /api/v1/performance-reports/export）
+ *
+ * 注意：根据API文档，导出接口直接使用查询参数，不区分批量/全量
+ * 批量导出由前端处理当前页数据，全量导出由后端处理所有数据
  */
 export interface ExportRequest {
-  /** 查询参数 */
-  query_params: PerformanceReportQueryParams;
-  /** 导出类型：batch（批量）或 all（全量） */
-  export_type: 'batch' | 'all';
-  /** 导出格式：xlsx 或 csv */
-  format: 'xlsx' | 'csv';
+  /** 导出格式，目前仅支持 csv */
+  format: 'csv';
+  /** 开始年份（2000-2100） */
+  start_year?: number;
+  /** 结束年份（2000-2100） */
+  end_year?: number;
+  /** 开始季度，必须与 end_quarter 同时提供 */
+  start_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 结束季度，必须与 start_quarter 同时提供 */
+  end_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** 员工 UserId 列表（北森ID/BeisenID，数字格式字符串），逗号分隔，最多 100 个 */
+  employee_user_ids?: string;
+  /** 部门 ID（UUID 格式），系统内部会转换为北森ID进行查询 */
+  organization_id?: string;
+  /** 是否包含下级部门，默认 false */
+  include_children?: boolean;
+  /** 批次 ID（UUID 格式），默认使用最新批次 */
+  batch_id?: string;
 }
 
 /**
  * 导出响应
+ *
+ * 注意：根据API文档，导出接口直接返回CSV文件流（Content-Type: text/csv; charset=utf-8）
+ * 响应头包含 Content-Disposition: attachment; filename=performance_reports_YYYYMMDD_HHMMSS.csv
+ * 因此不需要JSON响应体，直接处理文件流即可
  */
 export interface ExportResponse {
-  /** 任务ID（全量导出） */
-  task_id?: string;
-  /** 文件URL（批量导出直接返回） */
-  file_url?: string;
-  /** 状态 */
-  status: 'processing' | 'completed' | 'failed';
-  /** 错误信息（失败时） */
-  error_message?: string;
+  /** 文件Blob对象（用于下载） */
+  blob: Blob;
+  /** 文件名（从Content-Disposition头提取） */
+  filename: string;
 }
 
 /**
- * 导出任务状态
+ * 导出任务状态（如果后端支持异步导出任务）
+ *
+ * 注意：根据API文档，导出接口是同步的，直接返回CSV文件流
+ * 如果未来需要支持异步导出，可以使用此接口
  */
 export interface ExportTaskStatus {
   /** 任务ID */
@@ -307,10 +325,26 @@ export interface BusinessQueryRecord {
 
 /**
  * Business Query 接口的响应类型
+ *
+ * 注意：根据API文档，响应格式为：
+ * {
+ *   "code": 200,
+ *   "message": "success",
+ *   "data": { ... },
+ *   "request_id": "xxx-xxx-xxx"
+ * }
+ *
+ * 响应拦截器会提取data字段，所以这里定义的是data部分的结构
  */
 export interface BusinessQueryResponse {
   /** 数据列表 */
   list: BusinessQueryRecord[];
+  /** 当前页码 */
+  pageNum: number;
+  /** 每页条数 */
+  pageSize: number;
   /** 总记录数 */
   total: number;
+  /** 总页数 */
+  totalPages: number;
 }

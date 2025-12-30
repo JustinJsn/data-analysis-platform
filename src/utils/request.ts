@@ -56,13 +56,28 @@ service.interceptors.request.use(
  * 响应拦截器
  */
 service.interceptors.response.use(
-  (response: AxiosResponse<UnifiedResponse>) => {
+  (response: AxiosResponse<UnifiedResponse | Blob>) => {
     requestCount--;
     if (requestCount === 0) {
       NProgress.done();
     }
 
-    const { code, message, data } = response.data;
+    // 检查是否为文件流响应（如CSV导出）
+    const contentType =
+      response.headers['content-type'] ||
+      response.headers['Content-Type'] ||
+      '';
+    if (
+      contentType.includes('text/csv') ||
+      contentType.includes('application/octet-stream') ||
+      response.data instanceof Blob
+    ) {
+      // 文件流响应，直接返回整个response对象（包含headers）
+      return response;
+    }
+
+    // JSON响应，按统一格式处理
+    const { code, message, data } = response.data as UnifiedResponse;
 
     if (code !== 0) {
       // 业务失败

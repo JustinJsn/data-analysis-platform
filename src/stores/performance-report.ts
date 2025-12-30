@@ -93,6 +93,7 @@ export const usePerformanceReportStore = defineStore(
           pageSize: pageSize.value,
         };
 
+        // 调用API
         const response = await performanceReportApi.businessQuery(mergedParams);
         businessQueryRecords.value = response.list;
         total.value = response.total;
@@ -160,9 +161,12 @@ export const usePerformanceReportStore = defineStore(
     };
 
     /**
-     * 批量导出（前端处理）
+     * 批量导出（前端处理当前页数据）
+     *
+     * 注意：批量导出由前端处理，可以使用xlsx或csv格式
+     * 全量导出由后端处理，目前仅支持CSV格式（根据API文档）
      */
-    const exportBatch = async (format: 'xlsx' | 'csv' = 'xlsx') => {
+    const exportBatch = async (format: 'xlsx' | 'csv' = 'csv') => {
       try {
         exporting.value = true;
 
@@ -195,48 +199,50 @@ export const usePerformanceReportStore = defineStore(
     };
 
     /**
-     * 全量导出（后端异步处理）
+     * 全量导出（后端处理，根据API文档直接返回CSV文件流）
+     *
+     * 注意：根据API文档，导出接口目前仅支持CSV格式
      */
-    const exportAll = async (format: 'xlsx' | 'csv' = 'xlsx') => {
+    const exportAll = async (format: 'xlsx' | 'csv' = 'csv') => {
       try {
         exporting.value = true;
 
-        // 提交导出任务
-        // 注意：ExportRequest 的 query_params 类型是 PerformanceReportQueryParams
-        // 但我们需要传递 PerformanceReportBusinessQueryParams，需要进行类型转换
-        const request: ExportRequest = {
-          query_params: {
-            start_year: businessQueryParams.value.start_year,
-            end_year: businessQueryParams.value.end_year,
-            start_year_quarter: businessQueryParams.value.start_quarter
-              ? `2025-${businessQueryParams.value.start_quarter}`
-              : undefined,
-            end_year_quarter: businessQueryParams.value.end_quarter
-              ? `2025-${businessQueryParams.value.end_quarter}`
-              : undefined,
-            user_ids: businessQueryParams.value.employee_user_ids
-              ? businessQueryParams.value.employee_user_ids.split(',')
-              : undefined,
-            department_id: businessQueryParams.value.organization_id,
-            include_sub_departments: businessQueryParams.value.include_children,
-            page: businessQueryParams.value.pageNum,
-            page_size: businessQueryParams.value.pageSize,
-          },
-          export_type: 'all',
-          format,
+        // 构建导出请求（根据API文档格式）
+        const exportRequest: ExportRequest = {
+          format: 'csv', // API文档说明目前仅支持csv
+          start_year: businessQueryParams.value.start_year,
+          end_year: businessQueryParams.value.end_year,
+          start_quarter: businessQueryParams.value.start_quarter,
+          end_quarter: businessQueryParams.value.end_quarter,
+          employee_user_ids: businessQueryParams.value.employee_user_ids,
+          organization_id: businessQueryParams.value.organization_id,
+          include_children: businessQueryParams.value.include_children,
+          batch_id: businessQueryParams.value.batch_id,
         };
 
-        const response = await performanceReportApi.exportReports(request);
+        const response =
+          await performanceReportApi.exportReports(exportRequest);
 
-        exportTaskId.value = response.task_id || null;
+        // 下载文件
+        // const { downloadBlob } = await import('@/utils/export');
+        // downloadBlob是内部函数，我们需要使用downloadFile或直接下载
+        const url = URL.createObjectURL(response.blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = response.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
 
         addBreadcrumb({
-          message: '全量导出任务已提交',
+          message: '全量导出成功',
           category: 'performance-report.exportAll',
           level: 'info',
-          data: { taskId: exportTaskId.value, format },
+          data: { filename: response.filename, format },
         });
 
+        exporting.value = false;
         return response;
       } catch (error) {
         exporting.value = false;
