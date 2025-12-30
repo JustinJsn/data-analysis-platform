@@ -170,6 +170,78 @@ pnpm run format:check
 
 ---
 
+## 🐳 Docker 部署
+
+### 环境要求
+
+- Docker 20.10+ 或 Docker Desktop
+- docker-compose 2.0+（可选，用于多容器编排）
+
+### 快速开始
+
+#### 方式1：使用 Docker Compose（推荐）
+
+1. **准备环境变量文件**
+
+创建 `.env` 文件（参考 `.env.example`）：
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+VITE_SENTRY_DSN=
+VITE_APP_TITLE=数据分析平台
+```
+
+2. **启动服务**
+
+```bash
+# 构建并启动
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+3. **访问应用**
+
+打开浏览器访问：http://localhost:8080
+
+#### 方式2：使用 Docker 命令
+
+1. **构建镜像**
+
+```bash
+docker build \
+  --build-arg VITE_API_BASE_URL=http://localhost:8080 \
+  -t data-analysis-platform:latest \
+  .
+```
+
+2. **运行容器**
+
+```bash
+docker run -d \
+  --name data-analysis-platform \
+  -p 8080:80 \
+  data-analysis-platform:latest
+```
+
+### 生产环境部署
+
+查看 [Docker 部署文档](./docs/docker-deployment.md) 了解详细的生产环境部署、多实例部署和最佳实践。
+
+### 环境变量
+
+| 变量名              | 说明                   | 必需 | 默认值                  |
+| ------------------- | ---------------------- | ---- | ----------------------- |
+| `VITE_API_BASE_URL` | 后端 API 基础地址      | 是   | `http://localhost:8080` |
+| `VITE_SENTRY_DSN`   | Sentry DSN（错误追踪） | 否   | -                       |
+| `VITE_APP_TITLE`    | 应用标题               | 否   | `数据分析平台`          |
+
+---
+
 ## 📁 项目结构
 
 ```
@@ -279,6 +351,7 @@ data-analysis-platform/
 - [性能优化指南](./docs/performance-optimization.md)
 - [测试指南](./docs/TESTING_GUIDE.md)
 - [完成总结](./docs/COMPLETION_SUMMARY.md)
+- [Docker 部署文档](./docs/docker-deployment.md)
 - [绩效报表 API 文档](./docs/api-performance-reports-business-query.md)
 - [快速开始](./specs/001-data-analysis-platform/quickstart.md)
 - [功能规范](./specs/001-data-analysis-platform/spec.md)

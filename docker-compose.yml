@@ -1,0 +1,65 @@
+version: '3.8'
+
+# 多实例部署示例（使用 scale 命令）:
+# docker-compose up -d --scale app=3
+# 注意：使用 scale 时需要移除 container_name，并配置负载均衡器
+#
+# 或者定义多个服务实例:
+# app1:
+#   ...
+#   ports:
+#     - "8080:80"
+# app2:
+#   ...
+#   ports:
+#     - "8081:80"
+# app3:
+#   ...
+#   ports:
+#     - "8082:80"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # 构建时环境变量，从 .env 文件或环境变量中读取
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8080}
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
+        VITE_APP_TITLE: ${VITE_APP_TITLE:-数据分析平台}
+    container_name: data-analysis-platform
+    ports:
+      - '8080:80'
+    environment:
+      # 运行时环境变量（如果需要）
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:80/health',
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
