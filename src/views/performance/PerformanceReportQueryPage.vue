@@ -9,7 +9,9 @@
           :disabled="!reportStore.canExport"
           @click="showExportDialog = true"
         >
-          <el-icon><Download /></el-icon>
+          <el-icon>
+            <Download />
+          </el-icon>
           导出数据
         </el-button>
       </template>
@@ -44,11 +46,15 @@
 
         <el-form-item>
           <el-button type="primary" native-type="button" @click="handleSearch">
-            <el-icon><Search /></el-icon>
+            <el-icon>
+              <Search />
+            </el-icon>
             查询
           </el-button>
           <el-button native-type="button" @click="handleReset">
-            <el-icon><RefreshLeft /></el-icon>
+            <el-icon>
+              <RefreshLeft />
+            </el-icon>
             重置
           </el-button>
         </el-form-item>
@@ -89,12 +95,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Search, RefreshLeft, Download } from '@element-plus/icons-vue';
 import { usePerformanceReportStore } from '@/stores/performance-report';
 import type { QuarterTime } from '@/types/performance-report';
-import { quarterToString } from '@/utils/quarter-calculator';
 import { captureError, addBreadcrumb } from '@/utils/sentry';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PerformanceReportTable from '@/components/performance/PerformanceReportTable.vue';
@@ -237,7 +242,7 @@ const handleReset = async () => {
  */
 const handleExport = async (
   type: 'batch' | 'all',
-  format: 'csv',
+  format: 'xlsx' | 'xls',
 ) => {
   try {
     if (type === 'batch') {

@@ -1,0 +1,86 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs (will be built in container)
+dist
+dist-ssr
+build
+
+# Test files
+tests
+coverage
+.nyc_output
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# Editor directories and files
+.vscode
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation (not needed in image)
+docs
+*.md
+!README.md
+
+# Specs (not needed in image)
+specs
+
+# Docker files (don't include in build context)
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Cache and temp files
+.cache
+.temp
+.tmp
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Turbo
+.turbo
+
+# Generated files (will be regenerated)
+components.d.ts
+auto-imports.d.ts
+
+# Husky
+.husky
+

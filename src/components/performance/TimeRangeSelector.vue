@@ -209,9 +209,8 @@ function handleQuarterChange() {
       const endQuarter = calculateEndQuarter(quarterRange.value.start, queryLength.value);
       quarterRange.value.end = endQuarter;
       emit('update:endQuarter', endQuarter);
-    } catch (error) {
+    } catch {
       // 计算失败，使用默认值
-      const err = error instanceof Error ? error : new Error(String(error));
       // 可以在这里添加 Sentry 错误上报
     }
   }
@@ -227,9 +226,8 @@ function handleQueryLengthChange() {
       const endQuarter = calculateEndQuarter(quarterRange.value.start, queryLength.value);
       quarterRange.value.end = endQuarter;
       emit('update:endQuarter', endQuarter);
-    } catch (error) {
+    } catch {
       // 计算失败，使用默认值
-      const err = error instanceof Error ? error : new Error(String(error));
       // 可以在这里添加 Sentry 错误上报
     }
   }
@@ -244,9 +242,8 @@ function handleAutoCalculateChange() {
       const endQuarter = calculateEndQuarter(quarterRange.value.start, queryLength.value);
       quarterRange.value.end = endQuarter;
       emit('update:endQuarter', endQuarter);
-    } catch (error) {
+    } catch {
       // 计算失败，使用默认值
-      const err = error instanceof Error ? error : new Error(String(error));
       // 可以在这里添加 Sentry 错误上报
     }
   }

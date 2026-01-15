@@ -2,7 +2,7 @@
  * 认证相关 API
  */
 import { request } from '@/utils/request';
-import type { LoginRequest, LoginResponse, User } from '@/types/api';
+import type { LoginRequest, LoginResponse, User } from '@/types/auth';
 
 export const authApi = {
   /**

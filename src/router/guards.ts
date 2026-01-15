@@ -9,7 +9,7 @@ import NProgress from '@/utils/nprogress';
  */
 export function setupRouterGuards(router: Router) {
   // 前置守卫
-  router.beforeEach(async (to, from, next) => {
+  router.beforeEach(async (to, _from, next) => {
     // 启动进度条
     NProgress.start();
 

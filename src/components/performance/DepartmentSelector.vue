@@ -156,7 +156,7 @@ const filteredTree = computed(() => {
           : [];
         return {
           ...node,
-          children: filteredChildren.length > 0 ? filteredChildren : undefined,
+          children: filteredChildren.length > 0 ? filteredChildren : [],
         };
       });
   };
@@ -165,8 +165,8 @@ const filteredTree = computed(() => {
 });
 
 /** 处理节点点击 */
-function handleNodeClick(data: Organization) {
-  selectedDepartmentId.value = data.id;
+function handleNodeClick(data: any) {
+  selectedDepartmentId.value = (data as Organization).id;
 }
 
 /** 处理确认 */

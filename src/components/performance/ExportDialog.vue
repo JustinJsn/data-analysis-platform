@@ -16,17 +16,9 @@
 
       <el-form-item label="导出格式">
         <el-radio-group v-model="form.format">
-          <el-radio value="csv">CSV (.csv)</el-radio>
+          <el-radio value="xlsx">Excel (.xlsx)</el-radio>
+          <el-radio value="xls">Excel (.xls)</el-radio>
         </el-radio-group>
-        <el-alert
-          title="提示"
-          type="info"
-          :closable="false"
-          show-icon
-          style="margin-top: 8px"
-        >
-          <template #default> 目前仅支持CSV格式导出 </template>
-        </el-alert>
       </el-form-item>
 
       <el-alert
@@ -84,7 +76,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:visible', value: boolean): void;
-  (e: 'export', type: 'batch' | 'all', format: 'csv'): void;
+  (e: 'export', type: 'batch' | 'all', format: 'xlsx' | 'xls'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -102,10 +94,10 @@ const dialogVisible = ref(props.visible);
 /** 表单数据 */
 const form = ref<{
   exportType: 'batch' | 'all';
-  format: 'csv';
+  format: 'xlsx' | 'xls';
 }>({
   exportType: 'batch',
-  format: 'csv',
+  format: 'xlsx',
 });
 
 /** 处理关闭 */

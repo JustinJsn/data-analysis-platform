@@ -105,26 +105,6 @@ const formatDate = (dateStr: string | null | undefined): string => {
   }
 };
 
-/**
- * 格式化日期时间（YYYY-MM-DD HH:mm:ss）
- */
-const formatDateTime = (dateStr: string | null | undefined): string => {
-  if (!dateStr) return '-';
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    });
-  } catch {
-    return dateStr;
-  }
-};
 
 /**
  * 返回列表

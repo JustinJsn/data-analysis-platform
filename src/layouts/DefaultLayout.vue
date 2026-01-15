@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
+import { useIframe } from '@/composables/useIframe'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Monitor,
@@ -27,6 +28,7 @@ const router = useRouter()
 const appStore = useAppStore()
 const authStore = useAuthStore()
 const { isDark, toggleTheme } = useTheme()
+const { isInIframe } = useIframe()
 
 const isCollapsed = computed(() => appStore.sidebarCollapsed)
 const menuList = computed(() => appStore.menuList)
@@ -73,6 +75,7 @@ const handleLogout = async () => {
   <el-container class="h-screen">
     <!-- 左侧菜单 -->
     <el-aside
+      v-if="!isInIframe"
       :width="isCollapsed ? '64px' : '240px'"
       class="transition-all duration-300 border-r border-gray-200 dark:border-gray-700"
     >
@@ -118,6 +121,7 @@ const handleLogout = async () => {
     <el-container>
       <!-- 顶部导航栏 -->
       <el-header
+        v-if="!isInIframe"
         class="h-16 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
       >
         <!-- 左侧 -->

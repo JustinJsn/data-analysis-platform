@@ -53,14 +53,15 @@ export interface SyncBatchFilters {
  */
 export interface SyncBatchListResponse {
   /** 批次列表 */
-  batches: SyncBatch[];
-  /** 分页信息 */
-  pagination: {
-    pageNum: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-  };
+  list: SyncBatch[];
+  /** 当前页码 */
+  pageNum: number;
+  /** 每页数量 */
+  pageSize: number;
+  /** 总记录数 */
+  total: number;
+  /** 总页数 */
+  totalPages: number;
 }
 
 /**

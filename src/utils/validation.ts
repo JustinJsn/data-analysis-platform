@@ -189,7 +189,7 @@ export function validatePerformanceReportQueryParams(
 export const yearRules: FormItemRule[] = [
   { required: true, message: '请选择年份', trigger: 'change' },
   {
-    validator: (rule, value, callback) => {
+    validator: (_rule, value, callback) => {
       if (!Number.isInteger(value) || value < 2015 || value > 2030) {
         callback(new Error('年份必须在 2015-2030 之间'));
       } else {
@@ -218,7 +218,7 @@ export const quarterRules: FormItemRule[] = [
 export const queryLengthRules: FormItemRule[] = [
   { required: true, message: '请选择查询长度', trigger: 'change' },
   {
-    validator: (rule, value, callback) => {
+    validator: (_rule, value, callback) => {
       if (!Number.isInteger(value) || value < 1 || value > 10) {
         callback(new Error('查询长度必须在 1-10 年之间'));
       } else {
