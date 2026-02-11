@@ -348,3 +348,78 @@ export interface BusinessQueryResponse {
   /** 总页数 */
   totalPages: number;
 }
+
+/* ==================== 年度绩效显示相关 ==================== */
+
+/**
+ * 年度绩效提取结果
+ *
+ * 从 BusinessQueryRecord 的 year2025/year2024 字段中提取的年度绩效数据
+ *
+ * @example
+ * { year: 2025, rating: "A" }      // 有年度评级
+ * { year: 2024, rating: null }     // 暂无年度评级
+ */
+export interface AnnualRatingData {
+  /** 年份（如 2025, 2024） */
+  year: number;
+
+  /**
+   * 绩效评级（S/A/B/C/D）或 null（无评级）
+   *
+   * 有效值: "S", "A", "B", "C", "D", null
+   * null 表示: 无评级、空对象 {}、undefined 或字段不存在
+   */
+  rating: string | null;
+}
+
+/**
+ * 年度绩效列定义（用于 el-table-v2）
+ *
+ * 定义年度绩效列在绩效报表中的显示结构
+ * 与季度列结构相似，但使用 "年度" 后缀而不是 "Q1/Q2/Q3/Q4"
+ *
+ * @example
+ * {
+ *   year: 2025,
+ *   key: "2025-年度",
+ *   title: "2025年度",
+ *   dataKey: "performance_data.2025-年度",
+ *   width: 100,
+ *   fixed: false,
+ *   align: 'center'
+ * }
+ */
+export interface AnnualColumn {
+  /** 该列代表的年份（如 2025） */
+  year: number;
+
+  /**
+   * el-table-v2 的唯一列标识
+   * 格式: "${year}-年度"（如 "2025-年度"）
+   * 与季度模式匹配: "${year}-Q${quarter}"（如 "2025-Q4"）
+   */
+  key: string;
+
+  /**
+   * 显示给用户的列标题
+   * 格式: "${year}年度"（如 "2025年度"）
+   */
+  title: string;
+
+  /**
+   * PerformanceTableRow 对象中的数据路径
+   * 格式: "performance_data.${year}-年度"
+   * 用于 el-table-v2 访问单元格数据
+   */
+  dataKey: string;
+
+  /** 列宽（像素，通常为 100px） */
+  width: number;
+
+  /** 水平滚动时是否固定（通常为 false） */
+  fixed: boolean;
+
+  /** 单元格内文本对齐方式（评级始终为 'center'） */
+  align: 'center';
+}

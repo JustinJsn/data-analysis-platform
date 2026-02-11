@@ -1,5 +1,13 @@
 {
   "permissions": {
-    "allow": ["Bash(git fetch:*)", "Bash(powershell -File:*)"]
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(powershell -File:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(git add:*)"
+    ]
   }
 }

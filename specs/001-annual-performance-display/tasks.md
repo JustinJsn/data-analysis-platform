@@ -36,11 +36,11 @@ This is a single project structure (frontend-only):
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T001 [P] Add AnnualRatingData interface to src/types/performance-report.ts
-- [ ] T002 [P] Add AnnualColumn interface to src/types/performance-report.ts
-- [ ] T003 Implement extractAnnualRating() helper function in src/utils/performance-table.ts
-- [ ] T004 Implement extractAnnualColumns() function in src/utils/performance-table.ts
-- [ ] T005 Add year filtering logic (filterValidYears) in src/utils/performance-table.ts
+- [x] T001 [P] Add AnnualRatingData interface to src/types/performance-report.ts
+- [x] T002 [P] Add AnnualColumn interface to src/types/performance-report.ts
+- [x] T003 Implement extractAnnualRating() helper function in src/utils/performance-table.ts
+- [x] T004 Implement extractAnnualColumns() function in src/utils/performance-table.ts
+- [x] T005 Add year filtering logic (filterValidYears) in src/utils/performance-table.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -64,10 +64,10 @@ This is a single project structure (frontend-only):
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Modify transformBusinessQueryToTableRows() to extract annual ratings from year fields in src/utils/performance-table.ts
-- [ ] T012 [US1] Update PerformanceReportTable.vue columns computed to include annual columns before quarterly in src/components/performance/PerformanceReportTable.vue
-- [ ] T013 [US1] Add annual column cell renderer with colored tag support in src/components/performance/PerformanceReportTable.vue
-- [ ] T014 [US1] Verify annual columns use same getRatingTagType() function as quarterly in src/components/performance/PerformanceReportTable.vue
+- [x] T011 [US1] Modify transformBusinessQueryToTableRows() to extract annual ratings from year fields in src/utils/performance-table.ts
+- [x] T012 [US1] Update PerformanceReportTable.vue columns computed to include annual columns before quarterly in src/components/performance/PerformanceReportTable.vue
+- [x] T013 [US1] Add annual column cell renderer with colored tag support in src/components/performance/PerformanceReportTable.vue
+- [x] T014 [US1] Verify annual columns use same getRatingTagType() function as quarterly in src/components/performance/PerformanceReportTable.vue
 - [ ] T015 [P] [US1] E2E test: Verify annual columns appear with correct headers ("2025年度", "2024年度") in tests/e2e/performance-report.spec.ts
 - [ ] T016 [P] [US1] E2E test: Verify annual columns positioned before quarterly columns in tests/e2e/performance-report.spec.ts
 - [ ] T017 [P] [US1] E2E test: Verify annual ratings display with correct colored tags (S=green, A=green, B=blue, C=orange, D=red) in tests/e2e/performance-report.spec.ts
@@ -91,9 +91,9 @@ This is a single project structure (frontend-only):
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Add null safety checks in extractAnnualRating() for empty object, null, undefined in src/utils/performance-table.ts
-- [ ] T023 [US2] Ensure cell renderer displays "-" for empty string ratings in src/components/performance/PerformanceReportTable.vue
-- [ ] T024 [US2] Add defensive handling for missing yearXXXX fields in transformBusinessQueryToTableRows() in src/utils/performance-table.ts
+- [x] T022 [US2] Add null safety checks in extractAnnualRating() for empty object, null, undefined in src/utils/performance-table.ts
+- [x] T023 [US2] Ensure cell renderer displays "-" for empty string ratings in src/components/performance/PerformanceReportTable.vue
+- [x] T024 [US2] Add defensive handling for missing yearXXXX fields in transformBusinessQueryToTableRows() in src/utils/performance-table.ts
 - [ ] T025 [P] [US2] E2E test: Verify table renders without layout shifts when data is missing in tests/e2e/performance-report.spec.ts
 - [ ] T026 [P] [US2] E2E test: Verify no console errors when annual data is missing in tests/e2e/performance-report.spec.ts
 
@@ -116,9 +116,9 @@ This is a single project structure (frontend-only):
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Refactor column generation algorithm to insert annual column before quarterly loop in src/components/performance/PerformanceReportTable.vue
-- [ ] T032 [US3] Extract year range from displayQuarters and generate annual columns for each year in src/components/performance/PerformanceReportTable.vue
-- [ ] T033 [US3] Verify annual columns use correct title format ("${year}年度") and key format ("${year}-年度") in src/components/performance/PerformanceReportTable.vue
+- [x] T031 [US3] Refactor column generation algorithm to insert annual column before quarterly loop in src/components/performance/PerformanceReportTable.vue
+- [x] T032 [US3] Extract year range from displayQuarters and generate annual columns for each year in src/components/performance/PerformanceReportTable.vue
+- [x] T033 [US3] Verify annual columns use correct title format ("${year}年度") and key format ("${year}-年度") in src/components/performance/PerformanceReportTable.vue
 - [ ] T034 [P] [US3] E2E test: Verify table horizontal scrolling works correctly with annual columns in tests/e2e/performance-report.spec.ts
 - [ ] T035 [P] [US3] E2E test: Verify annual column width (100px) matches quarterly columns in tests/e2e/performance-report.spec.ts
 
@@ -133,9 +133,9 @@ This is a single project structure (frontend-only):
 - [ ] T036 [P] E2E test: Export performance report and verify annual columns included in CSV/Excel in tests/e2e/performance-report.spec.ts
 - [ ] T037 [P] E2E test: Verify exported file includes correct annual column headers ("2025年度") in tests/e2e/performance-report.spec.ts
 - [ ] T038 [P] E2E test: Verify exported annual data matches displayed data (ratings or empty cells) in tests/e2e/performance-report.spec.ts
-- [ ] T039 Run TypeScript type check (vue-tsc) and verify zero errors with strict mode
-- [ ] T040 [P] Run oxlint and oxfmt to verify code quality compliance
-- [ ] T041 [P] Add JSDoc comments to new utility functions in src/utils/performance-table.ts
+- [x] T039 Run TypeScript type check (vue-tsc) and verify zero errors with strict mode
+- [x] T040 [P] Run oxlint and oxfmt to verify code quality compliance
+- [x] T041 [P] Add JSDoc comments to new utility functions in src/utils/performance-table.ts
 - [ ] T042 Verify performance: Table renders <1 second for 100 employees × 12 quarters + 3 annual columns
 - [ ] T043 [P] Update quickstart.md examples if implementation deviates from plan
 - [ ] T044 Run all unit tests and verify 80%+ coverage for modified files
