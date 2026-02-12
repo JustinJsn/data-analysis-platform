@@ -1,5 +1,14 @@
 {
   "permissions": {
-    "allow": ["Bash(git fetch:*)", "Bash(powershell -File:*)"]
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(powershell -File:*)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -RequireTasks -IncludeTasks)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(pnpm test:*)"
+    ]
   }
 }

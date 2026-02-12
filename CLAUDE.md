@@ -4,6 +4,9 @@ Auto-generated from all feature plans. Last updated: 2026-02-11
 
 ## Active Technologies
 
+- TypeScript 5.9+ + Vue 3 (Composition API), Pinia 3.x, Element Plus, xlsx library (002-export-headers-fix)
+- N/A (frontend-only feature) (002-export-headers-fix)
+
 - TypeScript 5.9+ + Vue 3 (Composition API), Element Plus (el-table-v2), Pinia 3.x (001-annual-performance-display)
 
 ## Project Structure
@@ -23,6 +26,8 @@ npm test; npm run lint
 TypeScript 5.9+: Follow standard conventions
 
 ## Recent Changes
+
+- 002-export-headers-fix: Added TypeScript 5.9+ + Vue 3 (Composition API), Pinia 3.x, Element Plus, xlsx library
 
 - 001-annual-performance-display: Added TypeScript 5.9+ + Vue 3 (Composition API), Element Plus (el-table-v2), Pinia 3.x
 
