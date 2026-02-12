@@ -293,12 +293,9 @@ export async function exportPerformanceRecords(
       years.forEach((year) => {
         // 添加年度列
         timeColumns.push(`${year}年度`);
-        // 添加该年的季度列（倒序）
+        // 添加该年的所有季度列（倒序），无论数据是否存在
         [4, 3, 2, 1].forEach((q) => {
-          const quarterKey = `${year}Q${q}`;
-          if (quarterSet.has(quarterKey)) {
-            timeColumns.push(quarterKey);
-          }
+          timeColumns.push(`${year}Q${q}`);
         });
       });
     }

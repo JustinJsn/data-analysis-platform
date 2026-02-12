@@ -273,4 +273,44 @@ describe('exportPerformanceRecords with timeRangeParams', () => {
     expect(global.URL.createObjectURL).toHaveBeenCalled();
     expect(document.createElement).toHaveBeenCalledWith('a');
   });
+
+  it('[T010] 回退逻辑应该为每个年份生成全部季度列（即使数据不存在）', async () => {
+    const records: BusinessQueryRecord[] = [
+      {
+        employeeNo: '001',
+        name: '张三',
+        level1Department: '技术部',
+        level2Department: '',
+        level3Department: '',
+        level4Department: '',
+        employmentDate: '2020-01-01',
+        position: '工程师',
+        ratingCountS: 0,
+        ratingCountA: 0,
+        ratingCountB: 0,
+        ratingCountC: 0,
+        ratingCountD: 0,
+        // 只有部分季度有数据
+        '2023Q2': 'B',
+        '2024Q4': 'A',
+        // 年度数据
+        year2023: { rating: 'B' },
+        year2024: { rating: 'A' },
+        year2025: { rating: 'C' },
+      } as any,
+    ];
+
+    // Call without timeRangeParams - should use fallback logic
+    await exportPerformanceRecords(records, 'xlsx', '测试回退逻辑');
+
+    // Verify that URL.createObjectURL was called (file was created)
+    expect(global.URL.createObjectURL).toHaveBeenCalled();
+    expect(document.createElement).toHaveBeenCalledWith('a');
+
+    // The exported columns should include ALL quarters for each year,
+    // not just the ones with data (2023Q2, 2024Q4)
+    // Expected columns: 2023年度, 2023Q4, 2023Q3, 2023Q2, 2023Q1,
+    //                   2024年度, 2024Q4, 2024Q3, 2024Q2, 2024Q1,
+    //                   2025年度, 2025Q4, 2025Q3, 2025Q2, 2025Q1
+  });
 });
