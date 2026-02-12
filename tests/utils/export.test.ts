@@ -11,7 +11,7 @@ import {
 import type { BusinessQueryRecord } from '@/types/performance-report';
 
 describe('generateTimeRangeColumns', () => {
-  it('应该生成单年全部季度', () => {
+  it('应该生成单年全部季度（包含年度列）', () => {
     const columns = generateTimeRangeColumns({
       start_year: 2024,
       end_year: 2024,
@@ -19,10 +19,17 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q4',
     });
 
-    expect(columns).toEqual(['2024Q1', '2024Q2', '2024Q3', '2024Q4']);
+    // 年度列 + 4个季度列（倒序）
+    expect(columns).toEqual([
+      '2024年度',
+      '2024Q4',
+      '2024Q3',
+      '2024Q2',
+      '2024Q1',
+    ]);
   });
 
-  it('应该生成多年部分季度', () => {
+  it('应该生成多年部分季度（包含年度列）', () => {
     const columns = generateTimeRangeColumns({
       start_year: 2024,
       end_year: 2025,
@@ -30,19 +37,34 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q2',
     });
 
-    expect(columns).toEqual(['2024Q3', '2024Q4', '2025Q1', '2025Q2']);
+    // 2024: 年度 + Q4, Q3
+    // 2025: 年度 + Q2, Q1
+    expect(columns).toEqual([
+      '2024年度',
+      '2024Q4',
+      '2024Q3',
+      '2025年度',
+      '2025Q2',
+      '2025Q1',
+    ]);
   });
 
-  it('当未指定季度时应默认为全年', () => {
+  it('当未指定季度时应默认为全年（包含年度列）', () => {
     const columns = generateTimeRangeColumns({
       start_year: 2024,
       end_year: 2024,
     });
 
-    expect(columns).toEqual(['2024Q1', '2024Q2', '2024Q3', '2024Q4']);
+    expect(columns).toEqual([
+      '2024年度',
+      '2024Q4',
+      '2024Q3',
+      '2024Q2',
+      '2024Q1',
+    ]);
   });
 
-  it('应该处理单季度情况', () => {
+  it('应该处理单季度情况（包含年度列）', () => {
     const columns = generateTimeRangeColumns({
       start_year: 2024,
       end_year: 2024,
@@ -50,7 +72,7 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q3',
     });
 
-    expect(columns).toEqual(['2024Q3']);
+    expect(columns).toEqual(['2024年度', '2024Q3']);
   });
 
   it('应该处理多年跨度（边界情况：10年）', () => {
@@ -61,12 +83,14 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q4',
     });
 
-    expect(columns).toHaveLength(40); // 10 years * 4 quarters
-    expect(columns[0]).toBe('2020Q1');
-    expect(columns[39]).toBe('2029Q4');
+    // 10 years * (1 annual + 4 quarters) = 50 columns
+    expect(columns).toHaveLength(50);
+    expect(columns[0]).toBe('2020年度');
+    expect(columns[1]).toBe('2020Q4');
+    expect(columns[49]).toBe('2029Q1');
   });
 
-  it('应该按时间顺序排列结果', () => {
+  it('应该按年份升序、每年内部季度倒序排列', () => {
     const columns = generateTimeRangeColumns({
       start_year: 2023,
       end_year: 2024,
@@ -74,11 +98,9 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q1',
     });
 
-    expect(columns).toEqual(['2023Q4', '2024Q1']);
-    // Verify chronological order
-    for (let i = 1; i < columns.length; i++) {
-      expect(columns[i] > columns[i - 1]).toBe(true);
-    }
+    // 2023: 年度 + Q4
+    // 2024: 年度 + Q1
+    expect(columns).toEqual(['2023年度', '2023Q4', '2024年度', '2024Q1']);
   });
 
   it('应该处理完整年份范围（多年全部季度）', () => {
@@ -87,20 +109,24 @@ describe('generateTimeRangeColumns', () => {
       end_year: 2025,
     });
 
-    expect(columns).toHaveLength(12); // 3 years * 4 quarters
+    // 3 years * (1 annual + 4 quarters) = 15 columns
+    expect(columns).toHaveLength(15);
     expect(columns).toEqual([
-      '2023Q1',
-      '2023Q2',
-      '2023Q3',
+      '2023年度',
       '2023Q4',
-      '2024Q1',
-      '2024Q2',
-      '2024Q3',
+      '2023Q3',
+      '2023Q2',
+      '2023Q1',
+      '2024年度',
       '2024Q4',
-      '2025Q1',
-      '2025Q2',
-      '2025Q3',
+      '2024Q3',
+      '2024Q2',
+      '2024Q1',
+      '2025年度',
       '2025Q4',
+      '2025Q3',
+      '2025Q2',
+      '2025Q1',
     ]);
   });
 
@@ -112,21 +138,25 @@ describe('generateTimeRangeColumns', () => {
       end_quarter: 'Q3',
     });
 
-    // First year: Q2-Q4 (3 quarters)
-    // Middle year (2024): Q1-Q4 (4 quarters)
-    // Last year: Q1-Q3 (3 quarters)
-    expect(columns).toHaveLength(10);
+    // First year: 年度 + Q4, Q3, Q2 (4 columns)
+    // Middle year (2024): 年度 + Q4, Q3, Q2, Q1 (5 columns)
+    // Last year: 年度 + Q3, Q2, Q1 (4 columns)
+    // Total: 13 columns
+    expect(columns).toHaveLength(13);
     expect(columns).toEqual([
-      '2023Q2',
-      '2023Q3',
+      '2023年度',
       '2023Q4',
-      '2024Q1',
-      '2024Q2',
-      '2024Q3',
+      '2023Q3',
+      '2023Q2',
+      '2024年度',
       '2024Q4',
-      '2025Q1',
-      '2025Q2',
+      '2024Q3',
+      '2024Q2',
+      '2024Q1',
+      '2025年度',
       '2025Q3',
+      '2025Q2',
+      '2025Q1',
     ]);
   });
 });
