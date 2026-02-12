@@ -1,7 +1,7 @@
 <template>
   <div class="performance-report-table" v-loading="loading">
     <el-table-v2
-      :columns="columns"
+      :columns="(columns as any)"
       :data="tableRows"
       :width="tableWidth"
       :height="tableHeight"
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref, onMounted, onUnmounted } from 'vue';
+import { computed, h, ref, onMounted, onUnmounted, type VNode } from 'vue';
 import { ElTag } from 'element-plus';
 import type {
   PerformanceRecord,
@@ -28,17 +28,37 @@ import {
   extractQuarterRange,
 } from '@/utils/performance-table';
 
+// 表格行数据类型
+interface TableRowData {
+  employee_number?: string;
+  employee_name?: string;
+  department_level1?: string;
+  department_level2?: string;
+  department_level3?: string;
+  department_level4?: string;
+  employment_date?: string | null;
+  position?: string;
+  performance_data?: Record<string, string>;
+  rating_counts?: {
+    S?: number;
+    A?: number;
+    B?: number;
+    C?: number;
+    D?: number;
+  };
+}
+
 // el-table-v2 的列类型
 interface TableColumn {
   key: string;
   title: string;
   dataKey: string;
   width: number;
-  fixed?: boolean | 'left' | 'right';
+  fixed?: true | 'left' | 'right';
   align?: 'left' | 'center' | 'right';
   headerClass?: string;
-  headerRenderer?: (props: { column: TableColumn }) => unknown;
-  cellRenderer?: (props: { rowData: Record<string, unknown>; cellData: unknown }) => unknown;
+  headerRenderer?: (props: { column: TableColumn }) => VNode;
+  cellRenderer?: (props: { rowData: TableRowData; cellData: unknown }) => VNode | string | number;
 }
 
 interface Props {
@@ -208,7 +228,7 @@ const columns = computed<TableColumn[]>(() => {
       width: 110,
       fixed: 'left',
       align: 'center',
-      cellRenderer: ({ rowData }) => formatDate(rowData.employment_date),
+      cellRenderer: ({ rowData }) => formatDate(rowData.employment_date as string | null | undefined),
     },
     {
       key: 'position',

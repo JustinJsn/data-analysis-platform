@@ -165,8 +165,9 @@ const filteredTree = computed(() => {
 });
 
 /** 处理节点点击 */
-function handleNodeClick(data: Organization) {
-  selectedDepartmentId.value = data.id;
+function handleNodeClick(data: unknown, _node: unknown, _e: MouseEvent) {
+  const org = data as Organization;
+  selectedDepartmentId.value = org.id;
 }
 
 /** 处理确认 */

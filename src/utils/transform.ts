@@ -195,15 +195,14 @@ export function hideEmail(email: string): string {
  */
 export function getSyncTypeTagType(
   type: string,
-): 'info' | 'success' | 'warning' | 'primary' | '' {
-  const types: Record<string, 'info' | 'success' | 'warning' | 'primary' | ''> =
-    {
-      employee: 'primary',
-      organization: 'warning',
-      jobpost: 'success',
-      performance_report: 'info',
-    };
-  return types[type] || '';
+): 'info' | 'success' | 'warning' | 'primary' {
+  const types: Record<string, 'info' | 'success' | 'warning' | 'primary'> = {
+    employee: 'primary',
+    organization: 'warning',
+    jobpost: 'success',
+    performance_report: 'info',
+  };
+  return types[type] || 'info';
 }
 
 /**

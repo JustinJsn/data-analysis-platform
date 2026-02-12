@@ -68,7 +68,7 @@ export function generateTimeRangeColumns(
     // Add quarterly columns in descending order (Q4, Q3, Q2, Q1)
     for (let quarter = 4; quarter >= 1; quarter--) {
       // Only include quarters within the specified range for this year
-      if (quarter >= firstQuarter && quarter <= lastQuarter) {
+      if (quarter >= firstQuarter! && quarter <= lastQuarter!) {
         columns.push(`${year}Q${quarter}`);
       }
     }
@@ -88,7 +88,7 @@ export function generateTimeRangeColumns(
 export async function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   filename: string = '导出数据',
-  format: 'xlsx' = 'xlsx',
+  _format: 'xlsx' = 'xlsx',
 ): Promise<void> {
   try {
     // 创建工作簿
@@ -164,7 +164,7 @@ export async function exportToCSV<T extends Record<string, unknown>>(
  */
 export async function convertCsvToExcel(
   csvBlob: Blob,
-  format: 'xlsx' = 'xlsx',
+  _format: 'xlsx' = 'xlsx',
 ): Promise<Blob> {
   try {
     // 读取 CSV 文本
@@ -263,19 +263,21 @@ export async function exportPerformanceRecords(
       // 回退到当前行为：扫描数据以查找季度和年度
       const quarterSet = new Set<string>();
       const yearSet = new Set<number>();
-      records.forEach((record: Record<string, unknown>) => {
-        Object.keys(record).forEach((key) => {
-          // 匹配季度列（如 2023Q4）
-          if (/^\d{4}Q[1-4]$/.test(key)) {
-            quarterSet.add(key);
-          }
-          // 匹配年度键（如 year2023）
-          const yearMatch = key.match(/^year(\d{4})$/);
-          if (yearMatch?.[1]) {
-            yearSet.add(parseInt(yearMatch[1], 10));
-          }
-        });
-      });
+      (records as unknown as Array<Record<string, unknown>>).forEach(
+        (record) => {
+          Object.keys(record).forEach((key) => {
+            // 匹配季度列（如 2023Q4）
+            if (/^\d{4}Q[1-4]$/.test(key)) {
+              quarterSet.add(key);
+            }
+            // 匹配年度键（如 year2023）
+            const yearMatch = key.match(/^year(\d{4})$/);
+            if (yearMatch?.[1]) {
+              yearSet.add(parseInt(yearMatch[1], 10));
+            }
+          });
+        },
+      );
 
       // 按年份升序，每年内部：年度 -> Q4 -> Q3 -> Q2 -> Q1
       const years = Array.from(yearSet).sort((a, b) => a - b);
@@ -323,7 +325,9 @@ export async function exportPerformanceRecords(
             (yearData?.rating as string) || (yearData?.grade as string) || '';
         } else {
           // 季度列：直接从记录中获取
-          const quarterValue = (record as Record<string, unknown>)[column];
+          const quarterValue = (record as unknown as Record<string, unknown>)[
+            column
+          ];
           row[column] = typeof quarterValue === 'string' ? quarterValue : '';
         }
       });

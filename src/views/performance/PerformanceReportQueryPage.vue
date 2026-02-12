@@ -99,7 +99,7 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Search, RefreshLeft, Download } from '@element-plus/icons-vue';
 import { usePerformanceReportStore } from '@/stores/performance-report';
-import type { QuarterTime } from '@/types/performance-report';
+import type { QuarterTime, PerformanceReportBusinessQueryParams } from '@/types/performance-report';
 import { captureError, addBreadcrumb } from '@/utils/sentry';
 import PageHeader from '@/components/common/PageHeader.vue';
 import PerformanceReportTable from '@/components/performance/PerformanceReportTable.vue';

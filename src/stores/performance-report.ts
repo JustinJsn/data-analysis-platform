@@ -181,11 +181,13 @@ export const usePerformanceReportStore = defineStore(
         }
 
         // 从当前查询中提取时间范围参数
-        // 如果没有明确的查询参数，提供合理的默认值
-        let timeRangeParams;
+        // 如果没有明确的查询参数,提供合理的默认值
+        let timeRangeParams:
+          | import('@/utils/export').ExportTimeRangeParams
+          | undefined;
         if (
-          businessQueryParams.value.start_year &&
-          businessQueryParams.value.end_year
+          businessQueryParams.value.start_year !== undefined &&
+          businessQueryParams.value.end_year !== undefined
         ) {
           timeRangeParams = {
             start_year: businessQueryParams.value.start_year,
@@ -215,8 +217,8 @@ export const usePerformanceReportStore = defineStore(
           if (years.size > 0) {
             const yearList = Array.from(years).sort((a, b) => a - b);
             timeRangeParams = {
-              start_year: yearList[0],
-              end_year: yearList[yearList.length - 1],
+              start_year: yearList[0]!,
+              end_year: yearList[yearList.length - 1]!,
               start_quarter: undefined,
               end_quarter: undefined,
             };
