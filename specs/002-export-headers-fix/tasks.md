@@ -23,9 +23,9 @@ This is a web application project. File paths use the `frontend/` prefix for sou
 
 **Purpose**: Ensure development environment and tooling are ready
 
-- [ ] T001 Verify TypeScript 5.9+ strict mode configuration in frontend/tsconfig.json
-- [ ] T002 [P] Verify xlsx library is available in frontend/package.json dependencies
-- [ ] T003 [P] Run existing test suite to establish baseline (pnpm test)
+- [x] T001 Verify TypeScript 5.9+ strict mode configuration in frontend/tsconfig.json
+- [x] T002 [P] Verify xlsx library is available in frontend/package.json dependencies
+- [x] T003 [P] Run existing test suite to establish baseline (pnpm test)
 
 ---
 
@@ -35,9 +35,9 @@ This is a web application project. File paths use the `frontend/` prefix for sou
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Define ExportTimeRangeParams interface in frontend/src/utils/export.ts
-- [ ] T005 [P] Implement generateTimeRangeColumns utility function in frontend/src/utils/export.ts
-- [ ] T006 Write unit tests for generateTimeRangeColumns in frontend/tests/utils/export.test.ts
+- [x] T004 [P] Define ExportTimeRangeParams interface in frontend/src/utils/export.ts
+- [x] T005 [P] Implement generateTimeRangeColumns utility function in frontend/src/utils/export.ts
+- [x] T006 Write unit tests for generateTimeRangeColumns in frontend/tests/utils/export.test.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -53,23 +53,23 @@ This is a web application project. File paths use the `frontend/` prefix for sou
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T007 [P] [US1] Unit test: exportPerformanceRecords with timeRangeParams generates complete columns in frontend/tests/utils/export.test.ts
-- [ ] T008 [P] [US1] Unit test: exportPerformanceRecords falls back to data scanning when timeRangeParams undefined in frontend/tests/utils/export.test.ts
-- [ ] T009 [P] [US1] Unit test: empty records array with timeRangeParams generates header-only export in frontend/tests/utils/export.test.ts
-- [ ] T010 [P] [US1] E2E test: Export with sparse data shows complete header set in frontend/tests/e2e/performance-report-export.spec.ts
+- [x] T007 [P] [US1] Unit test: exportPerformanceRecords with timeRangeParams generates complete columns in frontend/tests/utils/export.test.ts
+- [x] T008 [P] [US1] Unit test: exportPerformanceRecords falls back to data scanning when timeRangeParams undefined in frontend/tests/utils/export.test.ts
+- [x] T009 [P] [US1] Unit test: empty records array with timeRangeParams generates header-only export in frontend/tests/utils/export.test.ts
+- [x] T010 [P] [US1] E2E test: Export with sparse data shows complete header set in frontend/tests/e2e/performance-report-export.spec.ts
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Update exportPerformanceRecords function signature to accept optional timeRangeParams in frontend/src/utils/export.ts
-- [ ] T012 [US1] Modify BusinessQueryRecord export logic to call generateTimeRangeColumns when timeRangeParams provided in frontend/src/utils/export.ts
-- [ ] T013 [US1] Update record transformation to fill all generated time columns with empty strings for missing data in frontend/src/utils/export.ts
-- [ ] T014 [US1] Add fallback logic to scan data for quarters when timeRangeParams undefined (maintain backward compatibility) in frontend/src/utils/export.ts
-- [ ] T015 [US1] Update exportBatch method to extract and pass timeRangeParams from businessQueryParams in frontend/src/stores/performance-report.ts
-- [ ] T016 [US1] Add Sentry breadcrumb logging for timeRangeParams in exportBatch in frontend/src/stores/performance-report.ts
-- [ ] T017 [US1] Verify all unit tests pass (pnpm test:unit)
-- [ ] T018 [US1] Verify all E2E tests pass (pnpm test:e2e)
-- [ ] T019 [US1] Verify TypeScript compilation with strict mode (pnpm run type-check)
-- [ ] T020 [US1] Verify linting and formatting (pnpm run lint && pnpm run format)
+- [x] T011 [US1] Update exportPerformanceRecords function signature to accept optional timeRangeParams in frontend/src/utils/export.ts
+- [x] T012 [US1] Modify BusinessQueryRecord export logic to call generateTimeRangeColumns when timeRangeParams provided in frontend/src/utils/export.ts
+- [x] T013 [US1] Update record transformation to fill all generated time columns with empty strings for missing data in frontend/src/utils/export.ts
+- [x] T014 [US1] Add fallback logic to scan data for quarters when timeRangeParams undefined (maintain backward compatibility) in frontend/src/utils/export.ts
+- [x] T015 [US1] Update exportBatch method to extract and pass timeRangeParams from businessQueryParams in frontend/src/stores/performance-report.ts
+- [x] T016 [US1] Add Sentry breadcrumb logging for timeRangeParams in exportBatch in frontend/src/stores/performance-report.ts
+- [x] T017 [US1] Verify all unit tests pass (pnpm test:unit)
+- [x] T018 [US1] Verify all E2E tests pass (pnpm test:e2e)
+- [x] T019 [US1] Verify TypeScript compilation with strict mode (pnpm run type-check)
+- [x] T020 [US1] Verify linting and formatting (pnpm run lint && pnpm run format)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - exports show complete headers for queried time ranges
 
@@ -79,12 +79,12 @@ This is a web application project. File paths use the `frontend/` prefix for sou
 
 **Purpose**: Final validation and documentation
 
-- [ ] T021 [P] Manual verification: Export with query 2024Q1-Q4, verify all 4 columns appear in Excel file
-- [ ] T022 [P] Manual verification: Export with no query params, verify backward compatibility (current behavior maintained)
-- [ ] T023 [P] Manual verification: Export with large time range (10 years), verify performance impact < 5%
-- [ ] T024 [P] Performance test: Measure export time with and without timeRangeParams for baseline comparison
-- [ ] T025 Code review: Verify no `any` types, all functions have explicit return types
-- [ ] T026 Update MEMORY.md with lessons learned about time range generation algorithms (if applicable)
+- [x] T021 [P] Manual verification: Export with query 2024Q1-Q4, verify all 4 columns appear in Excel file
+- [x] T022 [P] Manual verification: Export with no query params, verify backward compatibility (current behavior maintained)
+- [x] T023 [P] Manual verification: Export with large time range (10 years), verify performance impact < 5%
+- [x] T024 [P] Performance test: Measure export time with and without timeRangeParams for baseline comparison
+- [x] T025 Code review: Verify no `any` types, all functions have explicit return types
+- [x] T026 Update MEMORY.md with lessons learned about time range generation algorithms (if applicable)
 
 ---
 

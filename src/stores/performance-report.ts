@@ -175,15 +175,32 @@ export const usePerformanceReportStore = defineStore(
             ? businessQueryRecords.value
             : records.value;
 
+        // 从当前查询中提取时间范围参数
+        const timeRangeParams =
+          businessQueryParams.value.start_year &&
+          businessQueryParams.value.end_year
+            ? {
+                start_year: businessQueryParams.value.start_year,
+                end_year: businessQueryParams.value.end_year,
+                start_quarter: businessQueryParams.value.start_quarter,
+                end_quarter: businessQueryParams.value.end_quarter,
+              }
+            : undefined;
+
         // 调用导出工具函数
         const { exportPerformanceRecords } = await import('@/utils/export');
-        await exportPerformanceRecords(data as any, format, '绩效数据');
+        await exportPerformanceRecords(
+          data as any,
+          format,
+          '绩效数据',
+          timeRangeParams,
+        );
 
         addBreadcrumb({
           message: '批量导出成功',
           category: 'performance-report.exportBatch',
           level: 'info',
-          data: { count: data.length, format },
+          data: { count: data.length, format, timeRangeParams },
         });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));

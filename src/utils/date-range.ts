@@ -58,17 +58,18 @@ export function yearRangeToDateRange(
   startYear: number,
   endYear: number,
 ): TimeRange {
-  // 验证参数
-  if (startYear > endYear) {
-    throw new Error('开始年份不能大于结束年份');
-  }
-
+  // 先验证单个参数的范围
   if (startYear < 2000 || startYear > 2100) {
     throw new Error('开始年份必须在 2000-2100 之间');
   }
 
   if (endYear < 2000 || endYear > 2100) {
     throw new Error('结束年份必须在 2000-2100 之间');
+  }
+
+  // 再验证参数之间的关系
+  if (startYear > endYear) {
+    throw new Error('开始年份不能大于结束年份');
   }
 
   return {

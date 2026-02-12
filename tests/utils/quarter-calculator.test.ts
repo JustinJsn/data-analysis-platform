@@ -220,7 +220,7 @@ describe('quarter-calculator', () => {
       const result = getConsecutiveQuarters(endQuarter, 8);
       expect(result).toHaveLength(8);
       expect(result[0]).toEqual({ year: 2025, quarter: 4 });
-      expect(result[7]).toEqual({ year: 2023, quarter: 4 });
+      expect(result[7]).toEqual({ year: 2024, quarter: 1 });
     });
 
     it('应该返回降序列表', () => {

@@ -9,6 +9,64 @@ import type {
 } from '@/types/performance-report';
 
 /**
+ * Time range parameters for export
+ */
+export interface ExportTimeRangeParams {
+  /** Starting year (2000-2100) */
+  start_year: number;
+  /** Ending year (2000-2100) */
+  end_year: number;
+  /** Optional starting quarter (default: Q1) */
+  start_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** Optional ending quarter (default: Q4) */
+  end_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+}
+
+/**
+ * Generate complete list of time period columns for a query range
+ *
+ * @example
+ * generateTimeRangeColumns({
+ *   start_year: 2024,
+ *   end_year: 2025,
+ *   start_quarter: 'Q3',
+ *   end_quarter: 'Q2'
+ * })
+ * // Returns: ['2024Q3', '2024Q4', '2025Q1', '2025Q2']
+ */
+export function generateTimeRangeColumns(
+  params: ExportTimeRangeParams,
+): string[] {
+  const columns: string[] = [];
+  const { start_year, end_year } = params;
+
+  // Default to full year if quarters not specified
+  const start_quarter = params.start_quarter || 'Q1';
+  const end_quarter = params.end_quarter || 'Q4';
+
+  // Convert quarter strings to numbers
+  const quarterToNum: Record<string, number> = {
+    Q1: 1,
+    Q2: 2,
+    Q3: 3,
+    Q4: 4,
+  };
+  const startQ = quarterToNum[start_quarter];
+  const endQ = quarterToNum[end_quarter];
+
+  for (let year = start_year; year <= end_year; year++) {
+    const firstQuarter = year === start_year ? startQ : 1;
+    const lastQuarter = year === end_year ? endQ : 4;
+
+    for (let quarter = firstQuarter; quarter <= lastQuarter; quarter++) {
+      columns.push(`${year}Q${quarter}`);
+    }
+  }
+
+  return columns;
+}
+
+/**
  * 导出数据到 Excel 文件
  *
  * @param data 要导出的数据数组
@@ -178,11 +236,13 @@ export async function convertCsvToExcel(
  * @param records 绩效数据记录数组（可以是 PerformanceRecord 或 BusinessQueryRecord）
  * @param format 导出格式 ('xlsx' | 'xls')
  * @param filename 文件名（不含扩展名）
+ * @param timeRangeParams 可选的查询参数，用于生成完整的列集合
  */
 export async function exportPerformanceRecords(
   records: PerformanceRecord[] | BusinessQueryRecord[],
   format: 'xlsx' | 'xls' = 'xlsx',
   filename: string = '绩效数据',
+  timeRangeParams?: ExportTimeRangeParams,
 ): Promise<void> {
   // 判断是否为 BusinessQueryRecord 格式（检查是否有 employeeNo 字段）
   const isBusinessQueryRecord =
@@ -192,6 +252,25 @@ export async function exportPerformanceRecords(
 
   if (isBusinessQueryRecord) {
     // BusinessQueryRecord 格式
+    // 确定要包含的时间列
+    let timeColumns: string[];
+
+    if (timeRangeParams?.start_year && timeRangeParams?.end_year) {
+      // 从查询参数生成完整的列集合
+      timeColumns = generateTimeRangeColumns(timeRangeParams);
+    } else {
+      // 回退到当前行为：扫描数据以查找季度
+      const quarterSet = new Set<string>();
+      records.forEach((record: any) => {
+        Object.keys(record).forEach((key) => {
+          if (/^\d{4}Q[1-4]$/.test(key)) {
+            quarterSet.add(key);
+          }
+        });
+      });
+      timeColumns = Array.from(quarterSet).sort();
+    }
+
     exportData = records.map((record: any) => {
       const row: Record<string, any> = {
         员工工号: record.employeeNo || '',
@@ -209,15 +288,10 @@ export async function exportPerformanceRecords(
         D级次数: record.ratingCountD ?? 0,
       };
 
-      // 添加季度评级列（格式：2025Q3）
-      for (const key in record) {
-        const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-        if (quarterMatch) {
-          const year = quarterMatch[1];
-          const quarter = `Q${quarterMatch[2]}`;
-          row[`${year}${quarter}`] = record[key] || '';
-        }
-      }
+      // 添加时间期间列（完整集合）
+      timeColumns.forEach((column) => {
+        row[column] = record[column] || ''; // 缺失数据时使用空字符串
+      });
 
       return row;
     });

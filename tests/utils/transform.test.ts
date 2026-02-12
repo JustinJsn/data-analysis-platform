@@ -106,7 +106,7 @@ describe('transform utils', () => {
   describe('transformPerformanceQueryParams', () => {
     it('应该正确转换查询参数', () => {
       const input = {
-        page: 1,
+        pageNum: 1,
         pageSize: 10,
         year: 2024,
         quarter: 'Q1',
@@ -132,7 +132,7 @@ describe('transform utils', () => {
 
     it('应该只转换存在的参数', () => {
       const input = {
-        page: 1,
+        pageNum: 1,
         pageSize: 10,
       };
 

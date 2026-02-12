@@ -22,10 +22,15 @@ vi.mock('@/utils/sentry', () => ({
 }));
 
 // Mock export utils
-vi.mock('@/utils/export', () => ({
-  exportPerformanceRecords: vi.fn(),
-  downloadFile: vi.fn(),
-}));
+vi.mock('@/utils/export', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    exportPerformanceRecords: vi.fn(),
+    downloadFile: vi.fn(),
+    convertCsvToExcel: vi.fn(),
+  };
+});
 
 import { performanceReportApi } from '@/api/performance-report';
 import { exportPerformanceRecords, downloadFile } from '@/utils/export';
@@ -301,6 +306,7 @@ describe('Performance Report Store', () => {
         store.businessQueryRecords,
         'xlsx',
         '绩效数据',
+        undefined, // timeRangeParams is undefined when no query params are set
       );
       expect(store.exporting).toBe(false);
     });
@@ -350,10 +356,22 @@ describe('Performance Report Store', () => {
         mockResponse,
       );
 
+      // Mock convertCsvToExcel to return a Blob
+      const { convertCsvToExcel } = await import('@/utils/export');
+      vi.mocked(convertCsvToExcel).mockResolvedValue(
+        new Blob(['converted'], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+      );
+
       // Mock DOM methods
       const createElementSpy = vi.spyOn(document, 'createElement');
-      const appendChildSpy = vi.spyOn(document.body, 'appendChild');
-      const removeChildSpy = vi.spyOn(document.body, 'removeChild');
+      const appendChildSpy = vi
+        .spyOn(document.body, 'appendChild')
+        .mockImplementation(() => null as any);
+      const removeChildSpy = vi
+        .spyOn(document.body, 'removeChild')
+        .mockImplementation(() => null as any);
       const clickSpy = vi.fn();
       const revokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL');
 
