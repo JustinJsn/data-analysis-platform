@@ -175,16 +175,76 @@ export const usePerformanceReportStore = defineStore(
             ? businessQueryRecords.value
             : records.value;
 
+        // 验证是否有数据
+        if (data.length === 0) {
+          throw new Error('没有可导出的数据');
+        }
+
+        // 从当前查询中提取时间范围参数
+        // 如果没有明确的查询参数，提供合理的默认值
+        let timeRangeParams;
+        if (
+          businessQueryParams.value.start_year &&
+          businessQueryParams.value.end_year
+        ) {
+          timeRangeParams = {
+            start_year: businessQueryParams.value.start_year,
+            end_year: businessQueryParams.value.end_year,
+            start_quarter: businessQueryParams.value.start_quarter,
+            end_quarter: businessQueryParams.value.end_quarter,
+          };
+        } else {
+          // 如果没有查询参数，尝试从数据中推断年份范围
+          const years = new Set<number>();
+          data.forEach((record: any) => {
+            // 从 yearXXXX 键中提取年份
+            Object.keys(record).forEach((key) => {
+              const yearMatch = key.match(/^year(\d{4})$/);
+              if (yearMatch && yearMatch[1]) {
+                years.add(parseInt(yearMatch[1], 10));
+              }
+              // 从季度键中提取年份
+              const quarterMatch = key.match(/^(\d{4})Q[1-4]$/);
+              if (quarterMatch && quarterMatch[1]) {
+                years.add(parseInt(quarterMatch[1], 10));
+              }
+            });
+          });
+
+          if (years.size > 0) {
+            const yearList = Array.from(years).sort((a, b) => a - b);
+            timeRangeParams = {
+              start_year: yearList[0],
+              end_year: yearList[yearList.length - 1],
+              start_quarter: undefined,
+              end_quarter: undefined,
+            };
+          }
+        }
+
+        // 生成带时间范围的文件名
+        let filename = '绩效数据';
+        if (timeRangeParams) {
+          filename = `绩效数据_${timeRangeParams.start_year}-${timeRangeParams.end_year}`;
+        }
+
         // 调用导出工具函数
         const { exportPerformanceRecords } = await import('@/utils/export');
-        await exportPerformanceRecords(data as any, format, '绩效数据');
+        await exportPerformanceRecords(
+          data as any,
+          format,
+          filename,
+          timeRangeParams,
+        );
 
         addBreadcrumb({
           message: '批量导出成功',
           category: 'performance-report.exportBatch',
           level: 'info',
-          data: { count: data.length, format },
+          data: { count: data.length, format, timeRangeParams, filename },
         });
+
+        return { count: data.length, filename };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         captureError(err, {

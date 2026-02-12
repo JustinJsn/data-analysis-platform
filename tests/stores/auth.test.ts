@@ -99,8 +99,10 @@ describe('Auth Store', () => {
     it('setAuth 应该设置认证信息', () => {
       const store = useAuthStore();
       const authData = {
-        accessToken: 'test-access-token',
-        refreshToken: 'test-refresh-token',
+        token: {
+          accessToken: 'test-access-token',
+          refreshToken: 'test-refresh-token',
+        },
         user: {
           id: '1',
           username: 'admin',

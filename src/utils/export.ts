@@ -9,6 +9,75 @@ import type {
 } from '@/types/performance-report';
 
 /**
+ * Time range parameters for export
+ */
+export interface ExportTimeRangeParams {
+  /** Starting year (2000-2100) */
+  start_year: number;
+  /** Ending year (2000-2100) */
+  end_year: number;
+  /** Optional starting quarter (default: Q1) */
+  start_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  /** Optional ending quarter (default: Q4) */
+  end_quarter?: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+}
+
+/**
+ * Generate complete list of time period columns for a query range
+ * Includes both annual columns and quarterly columns in the correct order:
+ * For each year: annual column, then Q4, Q3, Q2, Q1 (quarters in descending order)
+ *
+ * @example
+ * generateTimeRangeColumns({
+ *   start_year: 2023,
+ *   end_year: 2025,
+ *   start_quarter: 'Q2',
+ *   end_quarter: 'Q3'
+ * })
+ * // Returns: ['2023年度', '2023Q4', '2023Q3', '2023Q2', '2024年度', '2024Q4', ..., '2025年度', '2025Q3', '2025Q2']
+ */
+export function generateTimeRangeColumns(
+  params: ExportTimeRangeParams,
+): string[] {
+  const columns: string[] = [];
+  const { start_year, end_year } = params;
+
+  // Default to full year if quarters not specified
+  const start_quarter = params.start_quarter || 'Q1';
+  const end_quarter = params.end_quarter || 'Q4';
+
+  // Convert quarter strings to numbers
+  const quarterToNum: Record<string, number> = {
+    Q1: 1,
+    Q2: 2,
+    Q3: 3,
+    Q4: 4,
+  };
+  const startQ = quarterToNum[start_quarter];
+  const endQ = quarterToNum[end_quarter];
+
+  // Generate columns for each year (ascending order)
+  for (let year = start_year; year <= end_year; year++) {
+    // Add annual column first
+    columns.push(`${year}年度`);
+
+    // Determine which quarters to include for this year
+    const firstQuarter = year === start_year ? startQ : 1;
+    const lastQuarter = year === end_year ? endQ : 4;
+
+    // Add quarterly columns in descending order (Q4, Q3, Q2, Q1)
+    for (let quarter = 4; quarter >= 1; quarter--) {
+      // Only include quarters within the specified range for this year
+      if (quarter >= firstQuarter && quarter <= lastQuarter) {
+        columns.push(`${year}Q${quarter}`);
+      }
+    }
+  }
+
+  return columns;
+}
+
+/**
  * 导出数据到 Excel 文件
  *
  * @param data 要导出的数据数组
@@ -178,11 +247,13 @@ export async function convertCsvToExcel(
  * @param records 绩效数据记录数组（可以是 PerformanceRecord 或 BusinessQueryRecord）
  * @param format 导出格式 ('xlsx' | 'xls')
  * @param filename 文件名（不含扩展名）
+ * @param timeRangeParams 可选的查询参数，用于生成完整的列集合
  */
 export async function exportPerformanceRecords(
   records: PerformanceRecord[] | BusinessQueryRecord[],
   format: 'xlsx' | 'xls' = 'xlsx',
   filename: string = '绩效数据',
+  timeRangeParams?: ExportTimeRangeParams,
 ): Promise<void> {
   // 判断是否为 BusinessQueryRecord 格式（检查是否有 employeeNo 字段）
   const isBusinessQueryRecord =
@@ -192,6 +263,43 @@ export async function exportPerformanceRecords(
 
   if (isBusinessQueryRecord) {
     // BusinessQueryRecord 格式
+    // 确定要包含的时间列
+    let timeColumns: string[];
+
+    if (timeRangeParams?.start_year && timeRangeParams?.end_year) {
+      // 从查询参数生成完整的列集合（包含年度+季度）
+      timeColumns = generateTimeRangeColumns(timeRangeParams);
+    } else {
+      // 回退到当前行为：扫描数据以查找季度和年度
+      const quarterSet = new Set<string>();
+      const yearSet = new Set<number>();
+      records.forEach((record: any) => {
+        Object.keys(record).forEach((key) => {
+          // 匹配季度列（如 2023Q4）
+          if (/^\d{4}Q[1-4]$/.test(key)) {
+            quarterSet.add(key);
+          }
+          // 匹配年度键（如 year2023）
+          const yearMatch = key.match(/^year(\d{4})$/);
+          if (yearMatch && yearMatch[1]) {
+            yearSet.add(parseInt(yearMatch[1], 10));
+          }
+        });
+      });
+
+      // 按年份升序，每年内部：年度 -> Q4 -> Q3 -> Q2 -> Q1
+      const years = Array.from(yearSet).sort((a, b) => a - b);
+      timeColumns = [];
+      years.forEach((year) => {
+        // 添加年度列
+        timeColumns.push(`${year}年度`);
+        // 添加该年的所有季度列（倒序），无论数据是否存在
+        [4, 3, 2, 1].forEach((q) => {
+          timeColumns.push(`${year}Q${q}`);
+        });
+      });
+    }
+
     exportData = records.map((record: any) => {
       const row: Record<string, any> = {
         员工工号: record.employeeNo || '',
@@ -209,15 +317,21 @@ export async function exportPerformanceRecords(
         D级次数: record.ratingCountD ?? 0,
       };
 
-      // 添加季度评级列（格式：2025Q3）
-      for (const key in record) {
-        const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-        if (quarterMatch) {
-          const year = quarterMatch[1];
-          const quarter = `Q${quarterMatch[2]}`;
-          row[`${year}${quarter}`] = record[key] || '';
+      // 添加时间期间列（完整集合）
+      timeColumns.forEach((column) => {
+        // 检查是否为年度列
+        const yearMatch = column.match(/^(\d{4})年度$/);
+        if (yearMatch && yearMatch[1]) {
+          // 年度列：从 yearXXXX 对象中提取评级
+          const year = yearMatch[1];
+          const yearData = record[`year${year}`];
+          // 假设年度数据中有 rating 字段，如果没有则使用空字符串
+          row[column] = yearData?.rating || yearData?.grade || '';
+        } else {
+          // 季度列：直接从记录中获取
+          row[column] = record[column] || '';
         }
-      }
+      });
 
       return row;
     });

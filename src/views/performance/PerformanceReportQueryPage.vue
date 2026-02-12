@@ -246,11 +246,11 @@ const handleExport = async (
 ) => {
   try {
     if (type === 'batch') {
-      await reportStore.exportBatch(format);
-      ElMessage.success('导出成功');
+      const result = await reportStore.exportBatch(format);
+      ElMessage.success(`导出成功！已导出 ${result?.count || 0} 条记录`);
     } else {
-      await reportStore.exportAll(format);
-      ElMessage.success('导出成功');
+      const result = await reportStore.exportAll(format);
+      ElMessage.success(`导出成功！文件：${result?.filename || '绩效数据'}`);
     }
     showExportDialog.value = false;
     addBreadcrumb({
@@ -261,13 +261,22 @@ const handleExport = async (
     });
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
+
+    // 根据错误类型给出更友好的提示
+    let errorMessage = '导出失败，请稍后重试';
+    if (err.message === '没有可导出的数据') {
+      errorMessage = '没有可导出的数据，请先查询数据';
+    } else if (err.message.includes('权限')) {
+      errorMessage = '没有导出权限，请联系管理员';
+    }
+
     captureError(err, {
       type: 'Performance Report Export Error',
       exportType: type,
       format,
       fingerprint: ['performance-report-export-error'],
     });
-    ElMessage.error('导出失败，请稍后重试');
+    ElMessage.error(errorMessage);
   }
 };
 

@@ -3,12 +3,20 @@
     "allow": [
       "Bash(git fetch:*)",
       "Bash(powershell -File:*)",
-      "Bash(powershell.exe:*)",
-      "Bash(npm run type-check:*)",
-      "Bash(npm run:*)",
-      "Bash(npx vue-tsc:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -RequireTasks -IncludeTasks)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(pnpm test:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/check-prerequisites.ps1:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm test:unit:*)",
+      "Bash(pnpm run type-check:*)",
+      "Bash(pnpm exec vue-tsc:*)",
+      "Bash(pnpm run lint)",
+      "Bash(pnpm run format:*)"
     ]
   }
 }
