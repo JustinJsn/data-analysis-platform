@@ -284,29 +284,45 @@ describe('Performance Report Store', () => {
       const store = usePerformanceReportStore();
       store.businessQueryRecords = [
         {
-          id: '1',
-          batch_id: 'batch1',
-          year: 2025,
-          quarter: 'Q1',
-          employee_name: '张三',
-          employee_user_id: 'user1',
-          organization_name: '技术部',
-          organization_id: 'org1',
-          performance_rating: 'A',
-          created_at: '2025-01-01T00:00:00Z',
-          updated_at: '2025-01-01T00:00:00Z',
+          employeeNo: '001',
+          name: '张三',
+          level1Department: '技术部',
+          level2Department: null,
+          level3Department: null,
+          level4Department: null,
+          employmentDate: '2020-01-01',
+          position: '工程师',
+          ratingCountS: 0,
+          ratingCountA: 1,
+          ratingCountB: 0,
+          ratingCountC: 0,
+          ratingCountD: 0,
+          '2025Q1': 'A',
+          year2025: { rating: 'A' },
         },
       ];
 
       vi.mocked(exportPerformanceRecords).mockResolvedValue(undefined);
 
-      await store.exportBatch('xlsx');
+      const result = await store.exportBatch('xlsx');
 
+      // 验证返回值
+      expect(result).toEqual({
+        count: 1,
+        filename: '绩效数据_2025-2025',
+      });
+
+      // 验证调用参数（从数据推断出的时间参数）
       expect(exportPerformanceRecords).toHaveBeenCalledWith(
         store.businessQueryRecords,
         'xlsx',
-        '绩效数据',
-        undefined, // timeRangeParams is undefined when no query params are set
+        '绩效数据_2025-2025',
+        {
+          start_year: 2025,
+          end_year: 2025,
+          start_quarter: undefined,
+          end_quarter: undefined,
+        },
       );
       expect(store.exporting).toBe(false);
     });
@@ -315,17 +331,20 @@ describe('Performance Report Store', () => {
       const store = usePerformanceReportStore();
       store.businessQueryRecords = [
         {
-          id: '1',
-          batch_id: 'batch1',
-          year: 2025,
-          quarter: 'Q1',
-          employee_name: '张三',
-          employee_user_id: 'user1',
-          organization_name: '技术部',
-          organization_id: 'org1',
-          performance_rating: 'A',
-          created_at: '2025-01-01T00:00:00Z',
-          updated_at: '2025-01-01T00:00:00Z',
+          employeeNo: '001',
+          name: '张三',
+          level1Department: '技术部',
+          level2Department: null,
+          level3Department: null,
+          level4Department: null,
+          employmentDate: '2020-01-01',
+          position: '工程师',
+          ratingCountS: 0,
+          ratingCountA: 1,
+          ratingCountB: 0,
+          ratingCountC: 0,
+          ratingCountD: 0,
+          '2025Q1': 'A',
         },
       ];
 
@@ -334,6 +353,14 @@ describe('Performance Report Store', () => {
       );
 
       await expect(store.exportBatch()).rejects.toThrow('导出失败');
+      expect(store.exporting).toBe(false);
+    });
+
+    it('exportBatch 在没有数据时应该抛出错误', async () => {
+      const store = usePerformanceReportStore();
+      store.businessQueryRecords = [];
+
+      await expect(store.exportBatch()).rejects.toThrow('没有可导出的数据');
       expect(store.exporting).toBe(false);
     });
 
