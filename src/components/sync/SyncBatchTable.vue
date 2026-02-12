@@ -23,7 +23,7 @@
 
       <el-table-column prop="sync_type" label="同步类型" min-width="100">
         <template #default="{ row }">
-          <el-tag :type="getSyncTypeTagType(row.sync_type) as any" size="small">
+          <el-tag :type="getSyncTypeTagType(row.sync_type)" size="small">
             {{ getSyncTypeLabel(row.sync_type) }}
           </el-tag>
         </template>
@@ -31,7 +31,7 @@
 
       <el-table-column prop="status" label="状态" min-width="100">
         <template #default="{ row }">
-          <el-tag :type="getStatusType(row.status) as any" size="small">
+          <el-tag :type="getStatusType(row.status)" size="small">
             {{ getStatusLabel(row.status) }}
           </el-tag>
         </template>
@@ -136,8 +136,6 @@ import {
   formatDurationDesc
 } from '@/utils/transform';
 import type { SyncBatch } from '@/types/api';
-
-// TagType moved to inline as any to simplify for now
 
 interface Props {
   data: SyncBatch[];

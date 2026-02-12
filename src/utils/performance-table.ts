@@ -147,7 +147,7 @@ export function extractYearRange(
   else if (queryParams.start_year_quarter && queryParams.end_year_quarter) {
     const startMatch = queryParams.start_year_quarter.match(/^(\d{4})-Q\d$/);
     const endMatch = queryParams.end_year_quarter.match(/^(\d{4})-Q\d$/);
-    if (startMatch && endMatch && startMatch[1] && endMatch[1]) {
+    if (startMatch?.[1] && endMatch?.[1]) {
       startYear = parseInt(startMatch[1], 10);
       endYear = parseInt(endMatch[1], 10);
     }
@@ -204,7 +204,7 @@ export function transformBusinessQueryToTableRows(
     // 遍历所有键，查找季度评级（格式：2025Q3, 2025Q2 等）
     for (const key in record) {
       const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-      if (quarterMatch && quarterMatch[1] && quarterMatch[2]) {
+      if (quarterMatch?.[1] && quarterMatch?.[2]) {
         const year = quarterMatch[1];
         const quarter = `Q${quarterMatch[2]}`;
         const rating = record[key as `${number}Q${1 | 2 | 3 | 4}`];
@@ -217,7 +217,7 @@ export function transformBusinessQueryToTableRows(
     // 提取年度数据（格式：year2025 -> 2025-年度）
     for (const key in record) {
       const yearMatch = key.match(/^year(\d{4})$/);
-      if (yearMatch && yearMatch[1]) {
+      if (yearMatch?.[1]) {
         const year = yearMatch[1];
         const yearField = record[key as `year${number}`];
         const annualRating = extractAnnualRating(yearField);
@@ -277,7 +277,7 @@ export function extractYearRangeFromBusinessQuery(
     for (const record of records) {
       for (const key in record) {
         const quarterMatch = key.match(/^(\d{4})Q([1-4])$/);
-        if (quarterMatch && quarterMatch[1]) {
+        if (quarterMatch?.[1]) {
           const year = parseInt(quarterMatch[1], 10);
           yearSet.add(year);
         }
@@ -288,7 +288,7 @@ export function extractYearRangeFromBusinessQuery(
     for (const record of records) {
       for (const key in record) {
         const yearMatch = key.match(/^year(\d{4})$/);
-        if (yearMatch && yearMatch[1]) {
+        if (yearMatch?.[1]) {
           const year = parseInt(yearMatch[1], 10);
           yearSet.add(year);
         }
@@ -321,7 +321,7 @@ export function extractYearRangeFromBusinessQuery(
 /**
  * 提取季度显示范围
  *
- * @param queryParams 查询参数
+ * @param queryParams 查询参数（支持两种格式）
  * @returns 季度数组（降序），每个元素为 { year: number, quarter: string }
  */
 export function extractQuarterRange(queryParams?: {
@@ -329,7 +329,55 @@ export function extractQuarterRange(queryParams?: {
   end_year?: number;
   start_quarter?: string;
   end_quarter?: string;
+  start_year_quarter?: string;
+  end_year_quarter?: string;
 }): { year: number; quarter: string }[] {
+  // 处理 start_year_quarter 和 end_year_quarter 格式（例如 "2025-Q1"）
+  if (queryParams?.start_year_quarter && queryParams?.end_year_quarter) {
+    const startMatch =
+      queryParams.start_year_quarter.match(/^(\d{4})-Q([1-4])$/);
+    const endMatch = queryParams.end_year_quarter.match(/^(\d{4})-Q([1-4])$/);
+
+    if (startMatch?.[1] && startMatch?.[2] && endMatch?.[1] && endMatch?.[2]) {
+      let startYear = parseInt(startMatch[1], 10);
+      let endYear = parseInt(endMatch[1], 10);
+      let startQ = parseInt(startMatch[2], 10);
+      let endQ = parseInt(endMatch[2], 10);
+
+      // 确定真正的开始和结束（确保 loop 逻辑正确）
+      const startTimeValue = startYear * 10 + startQ;
+      const endTimeValue = endYear * 10 + endQ;
+
+      if (startTimeValue > endTimeValue) {
+        // 交换，使 start 始终是较早的时间
+        [startYear, endYear] = [endYear, startYear];
+        [startQ, endQ] = [endQ, startQ];
+      }
+
+      const quarters: { year: number; quarter: string }[] = [];
+
+      // 从结束时间往回推到开始时间（降序显示）
+      let currYear = endYear;
+      let currQ = endQ;
+
+      while (
+        currYear > startYear ||
+        (currYear === startYear && currQ >= startQ)
+      ) {
+        quarters.push({ year: currYear, quarter: `Q${currQ}` });
+        currQ--;
+        if (currQ < 1) {
+          currQ = 4;
+          currYear--;
+        }
+        // 防止死循环
+        if (quarters.length > 100) break;
+      }
+
+      return quarters;
+    }
+  }
+
   // 如果有明确的季度范围（从季度选择器）
   if (
     queryParams?.start_quarter &&
@@ -424,7 +472,7 @@ export function extractQuarterRange(queryParams?: {
  * extractAnnualRating(null)                         → null
  * extractAnnualRating(undefined)                    → null
  */
-export function extractAnnualRating(yearField: any): string | null {
+export function extractAnnualRating(yearField: unknown): string | null {
   if (!yearField) return null;
 
   // 格式1: 直接字符串（预期格式）
@@ -434,7 +482,9 @@ export function extractAnnualRating(yearField: any): string | null {
 
   // 格式2: 嵌套对象（备用格式）
   if (typeof yearField === 'object') {
-    return yearField.rating || yearField.performance_rating || null;
+    const obj = yearField as Record<string, unknown>;
+    const rating = obj.rating || obj.performance_rating;
+    return typeof rating === 'string' ? rating : null;
   }
 
   return null;

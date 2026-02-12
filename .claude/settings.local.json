@@ -16,7 +16,9 @@
       "Bash(pnpm run type-check:*)",
       "Bash(pnpm exec vue-tsc:*)",
       "Bash(pnpm run lint)",
-      "Bash(pnpm run format:*)"
+      "Bash(pnpm run format:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(node -e:*)"
     ]
   }
 }

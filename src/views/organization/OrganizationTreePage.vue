@@ -93,8 +93,8 @@ const selectedOrganization = ref<Organization | null>(null);
  * 节点点击事件
  * el-tree-v2 的 node-click 事件参数: (data, node, e)
  */
-const handleNodeClick = (data: any) => {
-  selectedOrganization.value = data as Organization;
+const handleNodeClick = (data: Organization) => {
+  selectedOrganization.value = data;
   drawerVisible.value = true;
 };
 

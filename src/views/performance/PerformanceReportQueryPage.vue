@@ -148,7 +148,7 @@ function handleQueryParamsChange() {
  */
 const handleSearch = async () => {
   // 构建查询参数
-  const params: any = {};
+  const params: Partial<PerformanceReportBusinessQueryParams> = {};
 
   try {
     if (timeRangeMode.value === 'year') {
@@ -240,10 +240,7 @@ const handleReset = async () => {
 /**
  * 处理导出
  */
-const handleExport = async (
-  type: 'batch' | 'all',
-  format: 'xlsx' | 'xls',
-) => {
+const handleExport = async (type: 'batch' | 'all', format: 'xlsx') => {
   try {
     if (type === 'batch') {
       const result = await reportStore.exportBatch(format);

@@ -34,11 +34,11 @@ interface TableColumn {
   title: string;
   dataKey: string;
   width: number;
-  fixed?: any; // el-table-v2 的 fixed 类型
+  fixed?: boolean | 'left' | 'right';
   align?: 'left' | 'center' | 'right';
   headerClass?: string;
-  headerRenderer?: (props: { column: any }) => any;
-  cellRenderer?: (props: { rowData: any; cellData: any }) => any;
+  headerRenderer?: (props: { column: TableColumn }) => unknown;
+  cellRenderer?: (props: { rowData: Record<string, unknown>; cellData: unknown }) => unknown;
 }
 
 interface Props {
@@ -81,7 +81,7 @@ const tableRows = computed(() => {
  * 确保即使没有数据也根据查询参数或默认逻辑显示所有季度
  */
 const displayQuarters = computed(() => {
-  return extractQuarterRange(props.queryParams as any);
+  return extractQuarterRange(props.queryParams);
 });
 
 /**

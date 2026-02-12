@@ -163,9 +163,9 @@ export const usePerformanceReportStore = defineStore(
     /**
      * 批量导出（前端处理当前页数据）
      *
-     * 注意：批量导出由前端处理，支持 xlsx 或 xls 格式
+     * 注意：批量导出由前端处理，仅支持 xlsx 格式
      */
-    const exportBatch = async (format: 'xlsx' | 'xls' = 'xlsx') => {
+    const exportBatch = async (format: 'xlsx' = 'xlsx') => {
       try {
         exporting.value = true;
 
@@ -196,16 +196,17 @@ export const usePerformanceReportStore = defineStore(
         } else {
           // 如果没有查询参数，尝试从数据中推断年份范围
           const years = new Set<number>();
-          data.forEach((record: any) => {
+          // 使用类型守卫来安全地访问动态键
+          data.forEach((record) => {
             // 从 yearXXXX 键中提取年份
-            Object.keys(record).forEach((key) => {
+            Object.keys(record as Record<string, unknown>).forEach((key) => {
               const yearMatch = key.match(/^year(\d{4})$/);
-              if (yearMatch && yearMatch[1]) {
+              if (yearMatch?.[1]) {
                 years.add(parseInt(yearMatch[1], 10));
               }
               // 从季度键中提取年份
               const quarterMatch = key.match(/^(\d{4})Q[1-4]$/);
-              if (quarterMatch && quarterMatch[1]) {
+              if (quarterMatch?.[1]) {
                 years.add(parseInt(quarterMatch[1], 10));
               }
             });
@@ -230,12 +231,7 @@ export const usePerformanceReportStore = defineStore(
 
         // 调用导出工具函数
         const { exportPerformanceRecords } = await import('@/utils/export');
-        await exportPerformanceRecords(
-          data as any,
-          format,
-          filename,
-          timeRangeParams,
-        );
+        await exportPerformanceRecords(data, format, filename, timeRangeParams);
 
         addBreadcrumb({
           message: '批量导出成功',
@@ -260,15 +256,15 @@ export const usePerformanceReportStore = defineStore(
     /**
      * 全量导出（后端处理）
      *
-     * 注意：如果后端返回 CSV 格式，会在前端自动转换为 XLSX/XLS
+     * 注意：如果后端返回 CSV 格式，会直接下载 CSV 文件（避免大数据量时前端转换内存溢出）
      */
-    const exportAll = async (format: 'xlsx' | 'xls' = 'xlsx') => {
+    const exportAll = async (format: 'xlsx' = 'xlsx') => {
       try {
         exporting.value = true;
 
-        // 构建导出请求，尝试请求 XLSX 格式
+        // 构建导出请求，固定使用 XLSX 格式
         const exportRequest: ExportRequest = {
-          format: format === 'xls' ? 'xlsx' : format, // 如果后端不支持 xls，使用 xlsx
+          format: 'xlsx',
           start_year: businessQueryParams.value.start_year,
           end_year: businessQueryParams.value.end_year,
           start_quarter: businessQueryParams.value.start_quarter,
@@ -283,19 +279,10 @@ export const usePerformanceReportStore = defineStore(
         const response =
           await performanceReportApi.exportReports(exportRequest);
 
-        // 检查返回的文件类型
-        let finalBlob = response.blob;
-        let finalFilename = response.filename;
-
-        // 如果返回的是 CSV 文件，转换为 Excel
-        if (
-          response.blob.type === 'text/csv' ||
-          response.filename.endsWith('.csv')
-        ) {
-          const { convertCsvToExcel } = await import('@/utils/export');
-          finalBlob = await convertCsvToExcel(response.blob, format);
-          finalFilename = response.filename.replace(/\.csv$/i, `.${format}`);
-        }
+        // 直接使用后端返回的文件，不在前端转换格式
+        // 这样可以避免大数据量时前端转换导致的内存溢出问题
+        const finalBlob = response.blob;
+        const finalFilename = response.filename;
 
         // 下载文件
         const url = URL.createObjectURL(finalBlob);

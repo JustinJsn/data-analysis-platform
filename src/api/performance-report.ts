@@ -49,9 +49,9 @@ export const performanceReportApi = {
    * @param data 导出请求
    * @returns 导出响应（包含Blob和文件名）
    *
-   * 注意：根据API文档，导出接口直接返回CSV文件流
-   * 响应头：Content-Type: text/csv; charset=utf-8
-   * 响应头：Content-Disposition: attachment; filename=performance_reports_YYYYMMDD_HHMMSS.csv
+   * 注意：根据API响应，导出接口返回 XLSX 文件流
+   * 响应头：Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+   * 响应头：Content-Disposition: attachment; filename=performance_reports_YYYYMMDD_HHMMSS.xlsx
    */
   async exportReports(data: ExportRequest): Promise<ExportResponse> {
     // 使用axios实例直接调用，指定responseType为blob
@@ -84,10 +84,10 @@ export const performanceReportApi = {
       response.headers['content-disposition'] ||
       response.headers['Content-Disposition'] ||
       '';
-    let filename = 'performance_reports.csv';
+    let filename = 'performance_reports.xlsx'; // 默认使用 xlsx 格式
 
     if (contentDisposition) {
-      // 支持两种格式：filename="xxx.csv" 或 filename=xxx.csv
+      // 支持两种格式：filename="xxx.xlsx" 或 filename=xxx.xlsx
       const filenameMatch = contentDisposition.match(
         /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
       );

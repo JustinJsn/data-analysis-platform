@@ -193,13 +193,16 @@ export function hideEmail(email: string): string {
 /**
  * 获取同步类型标签颜色
  */
-export function getSyncTypeTagType(type: string): string {
-  const types: Record<string, string> = {
-    employee: 'primary',
-    organization: 'warning',
-    jobpost: 'success',
-    performance_report: 'info',
-  };
+export function getSyncTypeTagType(
+  type: string,
+): 'info' | 'success' | 'warning' | 'primary' | '' {
+  const types: Record<string, 'info' | 'success' | 'warning' | 'primary' | ''> =
+    {
+      employee: 'primary',
+      organization: 'warning',
+      jobpost: 'success',
+      performance_report: 'info',
+    };
   return types[type] || '';
 }
 

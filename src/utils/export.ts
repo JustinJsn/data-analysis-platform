@@ -82,13 +82,13 @@ export function generateTimeRangeColumns(
  *
  * @param data 要导出的数据数组
  * @param filename 文件名（不含扩展名）
- * @param format 导出格式 ('xlsx' | 'xls')，默认为 'xlsx'
+ * @param format 导出格式（固定为 'xlsx'）
  * @returns Promise<void>
  */
 export async function exportToExcel<T extends Record<string, unknown>>(
   data: T[],
   filename: string = '导出数据',
-  format: 'xlsx' | 'xls' = 'xlsx',
+  format: 'xlsx' = 'xlsx',
 ): Promise<void> {
   try {
     // 创建工作簿
@@ -102,22 +102,16 @@ export async function exportToExcel<T extends Record<string, unknown>>(
 
     // 生成 Excel 文件并下载
     const excelBuffer = XLSX.write(workbook, {
-      bookType: format,
+      bookType: 'xlsx',
       type: 'array',
     });
 
-    // 根据格式设置 MIME 类型
-    const mimeType =
-      format === 'xls'
-        ? 'application/vnd.ms-excel'
-        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-
     // 创建 Blob 并下载
     const blob = new Blob([excelBuffer], {
-      type: mimeType,
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    downloadBlob(blob, `${filename}.${format}`);
+    downloadBlob(blob, `${filename}.xlsx`);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     throw new Error(`导出 Excel 失败: ${err.message}`);
@@ -165,12 +159,12 @@ export async function exportToCSV<T extends Record<string, unknown>>(
  * 将 CSV Blob 转换为 Excel Blob
  *
  * @param csvBlob CSV 文件的 Blob 对象
- * @param format 目标格式 ('xlsx' | 'xls')，默认为 'xlsx'
+ * @param format 目标格式（固定为 'xlsx'）
  * @returns Excel 文件的 Blob 对象
  */
 export async function convertCsvToExcel(
   csvBlob: Blob,
-  format: 'xlsx' | 'xls' = 'xlsx',
+  format: 'xlsx' = 'xlsx',
 ): Promise<Blob> {
   try {
     // 读取 CSV 文本
@@ -224,17 +218,13 @@ export async function convertCsvToExcel(
 
     // 生成 Excel 文件
     const excelBuffer = XLSX.write(workbook, {
-      bookType: format,
+      bookType: 'xlsx',
       type: 'array',
     });
 
-    // 根据格式设置 MIME 类型
-    const mimeType =
-      format === 'xls'
-        ? 'application/vnd.ms-excel'
-        : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-
-    return new Blob([excelBuffer], { type: mimeType });
+    return new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     throw new Error(`CSV 转 Excel 失败: ${err.message}`);
@@ -245,13 +235,13 @@ export async function convertCsvToExcel(
  * 导出绩效数据
  *
  * @param records 绩效数据记录数组（可以是 PerformanceRecord 或 BusinessQueryRecord）
- * @param format 导出格式 ('xlsx' | 'xls')
+ * @param format 导出格式（固定为 'xlsx'）
  * @param filename 文件名（不含扩展名）
  * @param timeRangeParams 可选的查询参数，用于生成完整的列集合
  */
 export async function exportPerformanceRecords(
   records: PerformanceRecord[] | BusinessQueryRecord[],
-  format: 'xlsx' | 'xls' = 'xlsx',
+  format: 'xlsx' = 'xlsx',
   filename: string = '绩效数据',
   timeRangeParams?: ExportTimeRangeParams,
 ): Promise<void> {
@@ -273,7 +263,7 @@ export async function exportPerformanceRecords(
       // 回退到当前行为：扫描数据以查找季度和年度
       const quarterSet = new Set<string>();
       const yearSet = new Set<number>();
-      records.forEach((record: any) => {
+      records.forEach((record: Record<string, unknown>) => {
         Object.keys(record).forEach((key) => {
           // 匹配季度列（如 2023Q4）
           if (/^\d{4}Q[1-4]$/.test(key)) {
@@ -281,7 +271,7 @@ export async function exportPerformanceRecords(
           }
           // 匹配年度键（如 year2023）
           const yearMatch = key.match(/^year(\d{4})$/);
-          if (yearMatch && yearMatch[1]) {
+          if (yearMatch?.[1]) {
             yearSet.add(parseInt(yearMatch[1], 10));
           }
         });
@@ -300,8 +290,8 @@ export async function exportPerformanceRecords(
       });
     }
 
-    exportData = records.map((record: any) => {
-      const row: Record<string, any> = {
+    exportData = (records as BusinessQueryRecord[]).map((record) => {
+      const row: Record<string, string | number> = {
         员工工号: record.employeeNo || '',
         员工姓名: record.name || '',
         一级部门: record.level1Department || '',
@@ -321,15 +311,20 @@ export async function exportPerformanceRecords(
       timeColumns.forEach((column) => {
         // 检查是否为年度列
         const yearMatch = column.match(/^(\d{4})年度$/);
-        if (yearMatch && yearMatch[1]) {
+        if (yearMatch?.[1]) {
           // 年度列：从 yearXXXX 对象中提取评级
           const year = yearMatch[1];
-          const yearData = record[`year${year}`];
+          const yearKey = `year${year}` as keyof BusinessQueryRecord;
+          const yearData = record[yearKey] as
+            | Record<string, unknown>
+            | undefined;
           // 假设年度数据中有 rating 字段，如果没有则使用空字符串
-          row[column] = yearData?.rating || yearData?.grade || '';
+          row[column] =
+            (yearData?.rating as string) || (yearData?.grade as string) || '';
         } else {
           // 季度列：直接从记录中获取
-          row[column] = record[column] || '';
+          const quarterValue = (record as Record<string, unknown>)[column];
+          row[column] = typeof quarterValue === 'string' ? quarterValue : '';
         }
       });
 

@@ -411,10 +411,10 @@ describe('Performance Report Store', () => {
       createElementSpy.mockReturnValue(mockLink);
       vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test-url');
 
-      await store.exportAll('csv');
+      await store.exportAll();
 
       expect(performanceReportApi.exportReports).toHaveBeenCalledWith({
-        format: 'csv',
+        format: 'xlsx',
         start_year: 2025,
         end_year: 2025,
         start_quarter: undefined,

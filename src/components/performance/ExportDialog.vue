@@ -15,10 +15,7 @@
       </el-form-item>
 
       <el-form-item label="导出格式">
-        <el-radio-group v-model="form.format">
-          <el-radio value="xlsx">Excel (.xlsx)</el-radio>
-          <el-radio value="xls">Excel (.xls)</el-radio>
-        </el-radio-group>
+        <el-tag type="success">Excel (.xlsx)</el-tag>
       </el-form-item>
 
       <el-alert
@@ -76,7 +73,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:visible', value: boolean): void;
-  (e: 'export', type: 'batch' | 'all', format: 'xlsx' | 'xls'): void;
+  (e: 'export', type: 'batch' | 'all', format: 'xlsx'): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -94,7 +91,7 @@ const dialogVisible = ref(props.visible);
 /** 表单数据 */
 const form = ref<{
   exportType: 'batch' | 'all';
-  format: 'xlsx' | 'xls';
+  format: 'xlsx';
 }>({
   exportType: 'batch',
   format: 'xlsx',
