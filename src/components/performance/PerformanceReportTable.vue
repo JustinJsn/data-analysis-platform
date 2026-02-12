@@ -221,21 +221,27 @@ const columns = computed<TableColumn[]>(() => {
     }
   );
 
-  // 动态生成年度和季度列
-  displayQuarters.value.forEach(({ year, quarter }) => {
-    const key = `${year}-${quarter}`;
+  // 提取年份列表（从 displayQuarters 中获取唯一年份）
+  const years = Array.from(
+    new Set(displayQuarters.value.map((q) => q.year))
+  ).sort((a, b) => b - a); // 降序排列
+
+  // 为每个年份生成：年度列 + 该年的季度列
+  for (const year of years) {
+    // 添加年度列（在季度列之前）
+    const annualKey = `${year}-年度`;
     cols.push({
-      key,
-      title: `${year}${quarter}`,
-      dataKey: key,
-      width: 80,
+      key: annualKey,
+      title: `${year}年度`,
+      dataKey: annualKey,
+      width: 100,
       align: 'center',
       headerClass: 'year-header',
       headerRenderer: ({ column }) => {
         return h('div', {
           class: 'year-header-cell',
           style: {
-            backgroundColor: '#E3F2FD',
+            backgroundColor: '#FFE0B2',
             color: 'var(--el-text-color-regular)',
             fontWeight: '600',
             fontSize: '14px',
@@ -247,7 +253,7 @@ const columns = computed<TableColumn[]>(() => {
         }, column.title);
       },
       cellRenderer: ({ rowData }) => {
-        const rating = rowData.performance_data?.[key];
+        const rating = rowData.performance_data?.[annualKey];
         if (rating) {
           return h(ElTag, {
             type: getRatingTagType(rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info',
@@ -257,7 +263,46 @@ const columns = computed<TableColumn[]>(() => {
         return h('span', '-');
       },
     });
-  });
+
+    // 添加该年份的季度列
+    const quartersForYear = displayQuarters.value.filter((q) => q.year === year);
+    quartersForYear.forEach(({ quarter }) => {
+      const key = `${year}-${quarter}`;
+      cols.push({
+        key,
+        title: `${year}${quarter}`,
+        dataKey: key,
+        width: 80,
+        align: 'center',
+        headerClass: 'year-header',
+        headerRenderer: ({ column }) => {
+          return h('div', {
+            class: 'year-header-cell',
+            style: {
+              backgroundColor: '#E3F2FD',
+              color: 'var(--el-text-color-regular)',
+              fontWeight: '600',
+              fontSize: '14px',
+              padding: '14px 0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }
+          }, column.title);
+        },
+        cellRenderer: ({ rowData }) => {
+          const rating = rowData.performance_data?.[key];
+          if (rating) {
+            return h(ElTag, {
+              type: getRatingTagType(rating) as 'success' | 'primary' | 'warning' | 'danger' | 'info',
+              size: 'small',
+            }, () => rating);
+          }
+          return h('span', '-');
+        },
+      });
+    });
+  }
 
   // 绩效评级计数列
   cols.push(
@@ -335,6 +380,11 @@ const columns = computed<TableColumn[]>(() => {
 /* 年度列表头背景色 */
 .performance-report-table :deep(.el-table-v2__header-cell.year-header) {
   background-color: #E3F2FD;
+}
+
+/* 年度（年度）列表头背景色 - 使用橙色系区分 */
+.performance-report-table :deep(.el-table-v2__header-cell:has(.year-header-cell[style*="FFE0B2"])) {
+  background-color: #FFE0B2;
 }
 
 .performance-report-table :deep(.el-table-v2__row) {

@@ -5,6 +5,7 @@
 import type {
   PerformanceRecord,
   BusinessQueryRecord,
+  AnnualColumn,
 } from '@/types/performance-report';
 import { parseDepartmentPath } from './transform';
 import {
@@ -213,6 +214,18 @@ export function transformBusinessQueryToTableRows(
       }
     }
 
+    // 提取年度数据（格式：year2025 -> 2025-年度）
+    for (const key in record) {
+      const yearMatch = key.match(/^year(\d{4})$/);
+      if (yearMatch && yearMatch[1]) {
+        const year = yearMatch[1];
+        const yearField = record[key as `year${number}`];
+        const annualRating = extractAnnualRating(yearField);
+        // 存储空字符串用于 null（显示为 "-"）
+        performanceData[`${year}-年度`] = annualRating || '';
+      }
+    }
+
     return {
       employee_id: record.employeeNo || '',
       employee_number: record.employeeNo || '',
@@ -388,4 +401,92 @@ export function extractQuarterRange(queryParams?: {
     year: q.year,
     quarter: `Q${q.quarter}`,
   }));
+}
+
+/* ==================== 年度绩效相关工具函数 ==================== */
+
+/**
+ * 从 year 字段中提取年度绩效评级
+ *
+ * 支持三种格式:
+ * - 直接字符串: "A"
+ * - 嵌套对象: { rating: "A" } 或 { performance_rating: "A" }
+ * - 空值: {}, null, undefined
+ *
+ * @param yearField - year2025/year2024 字段的值
+ * @returns 绩效评级（S/A/B/C/D）或 null（无评级）
+ *
+ * @example
+ * extractAnnualRating("A")                          → "A"
+ * extractAnnualRating({ rating: "B" })              → "B"
+ * extractAnnualRating({ performance_rating: "C" })  → "C"
+ * extractAnnualRating({})                           → null
+ * extractAnnualRating(null)                         → null
+ * extractAnnualRating(undefined)                    → null
+ */
+export function extractAnnualRating(yearField: any): string | null {
+  if (!yearField) return null;
+
+  // 格式1: 直接字符串（预期格式）
+  if (typeof yearField === 'string') {
+    return yearField;
+  }
+
+  // 格式2: 嵌套对象（备用格式）
+  if (typeof yearField === 'object') {
+    return yearField.rating || yearField.performance_rating || null;
+  }
+
+  return null;
+}
+
+/**
+ * 生成年度绩效列定义数组
+ *
+ * 过滤掉未来年份（> 当前年份 + 1），防止显示无意义的未来年度评级
+ *
+ * @param years - 年份数组（如 [2025, 2024, 2023]）
+ * @returns 年度列定义数组
+ *
+ * @example
+ * // 假设当前年份为 2026
+ * extractAnnualColumns([2028, 2027, 2026, 2025, 2024])
+ * → [
+ *     { year: 2027, key: "2027-年度", title: "2027年度", ... },
+ *     { year: 2026, key: "2026-年度", title: "2026年度", ... },
+ *     { year: 2025, key: "2025-年度", title: "2025年度", ... },
+ *     { year: 2024, key: "2024-年度", title: "2024年度", ... }
+ *   ]
+ */
+export function extractAnnualColumns(years: number[]): AnnualColumn[] {
+  // 过滤未来年份（最多显示到当前年份+1）
+  const validYears = filterValidYears(years);
+
+  return validYears.map((year) => ({
+    year,
+    key: `${year}-年度`,
+    title: `${year}年度`,
+    dataKey: `performance_data.${year}-年度`,
+    width: 100,
+    fixed: false,
+    align: 'center' as const,
+  }));
+}
+
+/**
+ * 过滤年份到有效显示范围
+ *
+ * 移除超过 current year + 1 的年份，防止显示未来年度评级
+ *
+ * @param years - 年份数组
+ * @returns 过滤后的年份数组
+ *
+ * @example
+ * // 假设当前年份为 2026
+ * filterValidYears([2028, 2027, 2026, 2025, 2024])
+ * → [2027, 2026, 2025, 2024]
+ */
+export function filterValidYears(years: number[]): number[] {
+  const currentYear = new Date().getFullYear();
+  return years.filter((year) => year <= currentYear + 1);
 }
