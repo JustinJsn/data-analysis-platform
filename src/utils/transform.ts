@@ -73,15 +73,17 @@ export function formatDuration(ms: number | null | undefined): string {
 
 /**
  * 同步类型显示名称
+ * 支持 API 返回的 snake_case (sync_type) 或 camelCase (syncType)，未匹配时返回原值或「未知」
  */
-export function getSyncTypeLabel(type: string): string {
+export function getSyncTypeLabel(type: string | undefined | null): string {
+  if (type == null || type === '') return '未知';
   const labels: Record<string, string> = {
     employee: '员工',
     organization: '组织',
     jobpost: '职务',
     performance_report: '北森绩效',
   };
-  return labels[type] || type;
+  return labels[type] ?? type;
 }
 
 /**

@@ -66,6 +66,10 @@
             {{ formatDateTime(syncStore.currentBatch.completed_at) }}
           </el-descriptions-item>
 
+          <el-descriptions-item label="持续时间">
+            {{ formatDuration(syncStore.currentBatch.duration_ms) }}
+          </el-descriptions-item>
+
           <el-descriptions-item label="总记录数">
             {{ syncStore.currentBatch.total_records }}
           </el-descriptions-item>
@@ -114,7 +118,9 @@
         <el-table-column prop="recordId" label="记录ID" width="200" />
         <el-table-column prop="recordType" label="记录类型" width="120">
           <template #default="{ row }">
-            <el-tag size="small">{{ row.recordType }}</el-tag>
+            <el-tag :type="getSyncTypeTagType(row.recordType)" size="small">
+              {{ getSyncTypeLabel(row.recordType) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -128,21 +134,21 @@
         <el-table-column prop="level" label="级别" width="100">
           <template #default="{ row }">
             <el-tag v-if="row.level === 'success'" type="success" size="small">
-              {{ row.level }}
+              成功
             </el-tag>
             <el-tag
-              v-else-if="row.level === 'error'"
+              v-else-if="row.level === 'failed' || row.level === 'error'"
               type="danger"
               size="small"
             >
-              {{ row.level }}
+              失败
             </el-tag>
             <el-tag
               v-else-if="row.level === 'warning'"
               type="warning"
               size="small"
             >
-              {{ row.level }}
+              警告
             </el-tag>
             <el-tag v-else type="info" size="small">
               {{ row.level || '-' }}
@@ -154,15 +160,35 @@
           label="消息"
           min-width="200"
           show-overflow-tooltip
-        />
-        <el-table-column
-          prop="details"
-          label="详情"
-          min-width="300"
-          show-overflow-tooltip
         >
           <template #default="{ row }">
-            <span v-if="row.details">{{ formatDetails(row.details) }}</span>
+            <span
+              v-if="row.status === 'failed' && row.errorMessage"
+              class="text-danger"
+            >
+              {{ row.errorMessage }}
+            </span>
+            <span v-else>{{ row.message }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="details" label="详情" min-width="300">
+          <template #default="{ row }">
+            <el-popover
+              v-if="row.details"
+              placement="left"
+              title="详细信息"
+              :width="400"
+              trigger="hover"
+            >
+              <template #reference>
+                <div class="details-cell">
+                  {{ formatDetails(row.details) }}
+                </div>
+              </template>
+              <div class="json-viewer">
+                <pre>{{ formatJson(row.details) }}</pre>
+              </div>
+            </el-popover>
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -195,35 +221,13 @@ import { useRouter, useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useSyncStore } from '@/stores/sync';
-import type { SyncType } from '@/types/api';
+import { getSyncTypeLabel, getSyncTypeTagType } from '@/utils/transform';
 
 const router = useRouter();
 const route = useRoute();
 const syncStore = useSyncStore();
 
-/**
- * 获取同步类型标签
- */
-const getSyncTypeLabel = (type: SyncType): string => {
-  const labels: Record<SyncType, string> = {
-    employee: '员工',
-    organization: '组织',
-    jobpost: '职务'
-  };
-  return labels[type] || type;
-};
 
-/**
- * 获取同步类型标签颜色
- */
-const getSyncTypeTagType = (type: SyncType) => {
-  const types: Record<SyncType, any> = {
-    employee: 'primary',
-    organization: 'warning',
-    jobpost: 'success'
-  };
-  return types[type] || '';
-};
 
 /**
  * 格式化日期时间
@@ -247,23 +251,88 @@ const formatDateTime = (dateStr: string | null | undefined): string => {
 };
 
 /**
+ * 格式化持续时间
+ */
+const formatDuration = (ms: number | null | undefined): string => {
+  if (ms === null || ms === undefined) return '-';
+
+  if (ms < 1000) return `${ms}ms`;
+
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  const remainingSeconds = seconds % 60;
+  const remainingMinutes = minutes % 60;
+
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}小时`);
+  if (remainingMinutes > 0) parts.push(`${remainingMinutes}分`);
+  if (remainingSeconds > 0) parts.push(`${remainingSeconds}秒`);
+  if (parts.length === 0) return `${ms}ms`;
+
+  return parts.join('');
+};
+
+/**
  * 格式化详情信息
  */
 const formatDetails = (details: string | Record<string, any> | undefined): string => {
   if (!details) return '-';
 
-  // 如果是字符串，尝试解析JSON
+  // 如果是字符串，尝试解析JSON并提取关键信息
   if (typeof details === 'string') {
     try {
       const parsed = JSON.parse(details);
-      return JSON.stringify(parsed, null, 2);
+      // 提取关键字段用于表格显示
+      const keyFields: string[] = [];
+      if (parsed.code) keyFields.push(`code: ${parsed.code}`);
+      if (parsed.name) keyFields.push(`name: ${parsed.name}`);
+      if (parsed.oId) keyFields.push(`oId: ${parsed.oId}`);
+
+      // 绩效报告相关字段
+      if (parsed.employee_name) keyFields.push(`姓名: ${parsed.employee_name}`);
+      if (parsed.year) keyFields.push(`年份: ${parsed.year}`);
+      if (parsed.performance_rating) keyFields.push(`等级: ${parsed.performance_rating}`);
+      if (parsed.organization_full_name) keyFields.push(`部门: ${parsed.organization_full_name}`);
+
+      // 如果有关键字段，显示关键字段；否则显示完整JSON（单行）
+      return keyFields.length > 0
+        ? keyFields.join(', ')
+        : JSON.stringify(parsed);
     } catch {
       return details;
     }
   }
 
-  // 如果是对象，直接格式化
-  return JSON.stringify(details, null, 2);
+  // 如果是对象，提取关键信息
+  const keyFields: string[] = [];
+  if (details.code) keyFields.push(`code: ${details.code}`);
+  if (details.name) keyFields.push(`name: ${details.name}`);
+  if (details.oId) keyFields.push(`oId: ${details.oId}`);
+
+  // 绩效报告相关字段
+  if (details.employee_name) keyFields.push(`姓名: ${details.employee_name}`);
+  if (details.year) keyFields.push(`年份: ${details.year}`);
+  if (details.performance_rating) keyFields.push(`等级: ${details.performance_rating}`);
+  if (details.organization_full_name) keyFields.push(`部门: ${details.organization_full_name}`);
+
+  return keyFields.length > 0
+    ? keyFields.join(', ')
+    : JSON.stringify(details);
+};
+
+/**
+ * 格式化JSON
+ */
+const formatJson = (details: string | Record<string, any> | undefined): string => {
+  if (!details) return '';
+  try {
+    const obj = typeof details === 'string' ? JSON.parse(details) : details;
+    return JSON.stringify(obj, null, 2);
+  } catch {
+    return String(details);
+  }
 };
 
 /**
@@ -401,5 +470,29 @@ watch(
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
+}
+
+.text-danger {
+  color: var(--el-color-danger);
+}
+
+.details-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.json-viewer {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.json-viewer pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 12px;
 }
 </style>

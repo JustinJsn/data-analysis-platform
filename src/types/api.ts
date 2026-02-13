@@ -60,7 +60,11 @@ export interface ErrorResponse {
 /**
  * 同步类型
  */
-export type SyncType = 'employee' | 'organization' | 'jobpost';
+export type SyncType =
+  | 'employee'
+  | 'organization'
+  | 'jobpost'
+  | 'performance_report';
 
 /**
  * 同步状态
@@ -155,6 +159,8 @@ export interface SyncLogRaw {
   message: string;
   /** 详情（JSON字符串） */
   details: string;
+  /** 错误信息 */
+  error_message?: string;
   /** 创建时间 */
   created_at: string;
 }

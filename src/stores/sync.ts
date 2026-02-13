@@ -15,6 +15,17 @@ import type {
 } from '@/types/api';
 import { syncApi } from '@/api';
 
+/**
+ * 将 API 可能返回的 camelCase syncType 规范为 sync_type，保证 performance_report 等标签能正确展示
+ */
+function normalizeBatch(
+  batch: SyncBatch | (SyncBatch & { syncType?: SyncType }),
+): SyncBatch {
+  const sync_type =
+    batch.sync_type ?? (batch as { syncType?: SyncType }).syncType;
+  return { ...batch, sync_type } as SyncBatch;
+}
+
 export const useSyncStore = defineStore('sync', () => {
   // ==================== State ====================
 
@@ -81,7 +92,7 @@ export const useSyncStore = defineStore('sync', () => {
       batchesLoading.value = true;
       const response = await syncApi.getBatches(filters.value);
       // 后端返回结构为 { list: [...], pageNum, pageSize, total, totalPages }
-      batches.value = response.list;
+      batches.value = (response.list ?? []).map((b) => normalizeBatch(b));
       batchesTotal.value = response.total;
     } catch (error) {
       batches.value = [];
@@ -108,38 +119,27 @@ export const useSyncStore = defineStore('sync', () => {
       const page = logPage ?? logsFilters.value.pageNum;
       const pageSize = logPageSize ?? logsFilters.value.pageSize;
       const response = await syncApi.getBatchDetail(id, page, pageSize);
-      // 从响应中提取批次信息
-      currentBatch.value = response.batch;
+      // 从响应中提取批次信息（统一 syncType -> sync_type，保证 performance_report 等标签正确展示）
+      currentBatch.value = normalizeBatch(response.batch);
       // 处理分页的日志数据
       if (
         response.logs &&
         response.logs.logs &&
         response.logs.logs.length > 0
       ) {
-        // 转换日志格式 - 将 SyncLogRaw 转换为 SyncLog
-        currentLogs.value = response.logs.logs.map((log) => {
-          // 尝试解析 details JSON 字符串
-          let recordDetails: Record<string, any> = {};
-          try {
-            recordDetails = log.details ? JSON.parse(log.details) : {};
-          } catch {
-            // 如果解析失败，使用空对象
-          }
-
-          return {
-            id: log.log_id,
-            batchId: log.batch_id,
-            recordType: log.record_type,
-            recordIdentifier: log.record_id,
-            operation: 'update' as const, // 默认操作类型，因为原始数据没有此字段
-            status: log.status,
-            errorMessage: log.status === 'failed' ? log.message : '',
-            errorCode: log.status === 'failed' ? log.level : '',
-            recordDetails,
-            processedAt: log.created_at,
-            createdAt: log.created_at,
-          };
-        });
+        // 转换日志格式 - 将 SyncLogRaw 转换为组件需要的格式
+        currentLogs.value = response.logs.logs.map((log) => ({
+          id: log.log_id,
+          batchId: log.batch_id,
+          recordType: log.record_type,
+          recordId: log.record_id,
+          status: log.status,
+          level: log.level,
+          message: log.message,
+          errorMessage: log.error_message,
+          details: log.details,
+          timestamp: log.created_at,
+        }));
         logsTotal.value = response.logs.total;
         // 同步分页信息
         logsFilters.value.pageNum = response.logs.page;

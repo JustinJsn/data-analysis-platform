@@ -52,8 +52,17 @@ describe('transform utils', () => {
       expect(getSyncTypeLabel('jobpost')).toBe('职务');
     });
 
+    it('应该返回北森绩效标签', () => {
+      expect(getSyncTypeLabel('performance_report')).toBe('北森绩效');
+    });
+
     it('应该处理未知类型', () => {
       expect(getSyncTypeLabel('unknown' as any)).toBe('unknown');
+    });
+
+    it('应该处理 null/undefined 返回未知', () => {
+      expect(getSyncTypeLabel(null as any)).toBe('未知');
+      expect(getSyncTypeLabel(undefined)).toBe('未知');
     });
   });
 

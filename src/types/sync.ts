@@ -9,7 +9,7 @@ export interface SyncBatch {
   /** 批次ID */
   batch_id: string;
   /** 同步类型 */
-  sync_type: 'employee' | 'organization' | 'jobpost';
+  sync_type: 'employee' | 'organization' | 'jobpost' | 'performance_report';
   /** 状态 */
   status: 'running' | 'success' | 'failed' | 'partial_success';
   /** 触发模式 */
@@ -39,7 +39,7 @@ export interface SyncBatchFilters {
   /** 每页数量（最大100） */
   pageSize: number;
   /** 同步类型 */
-  syncType?: 'employee' | 'organization' | 'jobpost';
+  syncType?: 'employee' | 'organization' | 'jobpost' | 'performance_report';
   /** 状态 */
   status?: 'running' | 'success' | 'failed';
   /** 开始时间（ISO 8601格式） */
@@ -74,22 +74,20 @@ export interface SyncLog {
   batchId: string;
   /** 记录类型 */
   recordType: string;
-  /** 记录标识符 */
-  recordIdentifier: string;
-  /** 操作类型 */
-  operation: 'insert' | 'update' | 'delete';
+  /** 记录ID */
+  recordId: string;
   /** 状态 */
   status: 'success' | 'failed';
+  /** 级别 */
+  level: string;
+  /** 消息 */
+  message: string;
+  /** 详情（JSON字符串） */
+  details: string;
   /** 错误信息 */
-  errorMessage: string;
-  /** 错误代码 */
-  errorCode: string;
-  /** 记录详情（JSON对象） */
-  recordDetails: Record<string, any>;
-  /** 处理时间 */
-  processedAt: string;
-  /** 创建时间 */
-  createdAt: string;
+  errorMessage?: string;
+  /** 时间戳 */
+  timestamp: string;
 }
 
 /**
